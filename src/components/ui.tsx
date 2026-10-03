@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
+import { LLink } from "@/i18n/LocaleProvider";
 
 export function Container({
   className = "",
@@ -15,13 +15,34 @@ export function Container({
   );
 }
 
+/**
+ * Renders a dictionary string where *asterisked* segments become italic accent text.
+ * Example: "Build a body that *looks* strong" → Build a body that <em>looks</em> strong
+ */
+export function Rich({ text, emClass = "" }: { text: string; emClass?: string }) {
+  const parts = text.split("*");
+  return (
+    <>
+      {parts.map((p, i) =>
+        i % 2 === 1 ? (
+          <em key={i} className={`font-light italic ${emClass}`}>
+            {p}
+          </em>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 type ButtonProps = {
   href: string;
   variant?: "primary" | "secondary" | "ghost" | "light" | "outline-light";
   size?: "md" | "lg";
   children: ReactNode;
   className?: string;
-} & Omit<ComponentProps<typeof Link>, "href" | "children">;
+} & Omit<ComponentProps<typeof LLink>, "href" | "children">;
 
 export function Button({
   href,
@@ -50,13 +71,13 @@ export function Button({
       "border border-cream/40 text-cream hover:border-cream hover:bg-cream/10",
   };
   return (
-    <Link
+    <LLink
       href={href}
       className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
       {...rest}
     >
       {children}
-    </Link>
+    </LLink>
   );
 }
 
@@ -92,10 +113,7 @@ export function Eyebrow({
         light ? "text-sage" : "text-clay"
       } ${className}`}
     >
-      <span
-        className={`h-px w-8 ${light ? "bg-sage" : "bg-clay"}`}
-        aria-hidden
-      />
+      <span className={`h-px w-8 ${light ? "bg-sage" : "bg-clay"}`} aria-hidden />
       {children}
     </p>
   );
@@ -120,7 +138,7 @@ export function Heading({
   return (
     <Tag
       className={`font-display font-medium tracking-[-0.02em] ${sizes[Tag]} ${
-        light ? "text-cream" : "text-forest"
+        light ? "text-cream [&_em]:text-sage" : "text-forest [&_em]:text-moss"
       } ${className}`}
     >
       {children}

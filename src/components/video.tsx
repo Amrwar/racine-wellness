@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo, useState } from "react";
-import { embedUrl, formatDate, thumbnail, type Video, videoCategories } from "@/lib/videos";
+import { embedUrl, formatDate, getCategories, thumbnail, type Video } from "@/lib/videos";
+import { LLink, useLocale } from "@/i18n/LocaleProvider";
+import type { Dictionary } from "@/i18n/en";
 import { Play } from "./icons";
+
+type Common = Dictionary["common"];
 
 /* Thumbnail with graceful fallback if the remote image is missing */
 function Thumb({
@@ -35,22 +38,24 @@ function Thumb({
 }
 
 /* ---------- Player (click-to-load for performance) ---------- */
-export function VideoPlayer({ video, autoplay = false }: { video: Video; autoplay?: boolean }) {
+export function VideoPlayer({
+  video,
+  playLabel,
+  autoplay = false,
+}: {
+  video: Video;
+  playLabel: string;
+  autoplay?: boolean;
+}) {
+  const locale = useLocale();
   const [active, setActive] = useState(autoplay);
-  const src = embedUrl(video.source);
+  const src = embedUrl(video.source, locale);
 
   return (
     <div className="relative aspect-video overflow-hidden rounded-3xl bg-forest-deep shadow-soft">
       {active ? (
         video.source.type === "file" ? (
-          <video
-            src={src}
-            poster={video.source.poster}
-            controls
-            autoPlay
-            playsInline
-            className="h-full w-full"
-          />
+          <video src={src} poster={video.source.poster} controls autoPlay playsInline className="h-full w-full" />
         ) : (
           <iframe
             src={`${src}&autoplay=1`}
@@ -65,7 +70,7 @@ export function VideoPlayer({ video, autoplay = false }: { video: Video; autopla
           type="button"
           onClick={() => setActive(true)}
           className="group absolute inset-0 h-full w-full text-left"
-          aria-label={`Play ${video.title}`}
+          aria-label={`${playLabel}: ${video.title}`}
         >
           <Thumb
             video={video}
@@ -81,9 +86,7 @@ export function VideoPlayer({ video, autoplay = false }: { video: Video; autopla
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-sage">
               {video.category} · {video.duration}
             </span>
-            <span className="mt-1 block font-display text-xl font-medium sm:text-2xl">
-              {video.title}
-            </span>
+            <span className="mt-1 block font-display text-xl font-medium sm:text-2xl">{video.title}</span>
           </span>
         </button>
       )}
@@ -93,8 +96,9 @@ export function VideoPlayer({ video, autoplay = false }: { video: Video; autopla
 
 /* ---------- Card ---------- */
 export function VideoCard({ video, index = 0 }: { video: Video; index?: number }) {
+  const locale = useLocale();
   return (
-    <Link
+    <LLink
       href={`/videos/${video.slug}`}
       className={`group flex flex-col animate-fade-up delay-${(index % 4) + 1}`}
     >
@@ -116,29 +120,30 @@ export function VideoCard({ video, index = 0 }: { video: Video; index?: number }
         {video.category}
         <span className="h-px w-5 bg-sand-dark" aria-hidden />
         <span className="font-medium normal-case tracking-normal text-stone">
-          {formatDate(video.date)}
+          {formatDate(video.date, locale)}
         </span>
       </div>
       <h3 className="mt-2 font-display text-xl font-medium leading-snug text-forest transition group-hover:text-moss">
         {video.title}
       </h3>
       <p className="line-clamp-2 mt-2 text-sm leading-relaxed text-stone">{video.description}</p>
-    </Link>
+    </LLink>
   );
 }
 
 /* ---------- Filterable gallery ---------- */
-export function VideoGallery({ videos }: { videos: Video[] }) {
-  const [cat, setCat] = useState("All");
+export function VideoGallery({ videos, t }: { videos: Video[]; t: Common }) {
+  const categories = useMemo(() => getCategories(videos, t.all), [videos, t.all]);
+  const [cat, setCat] = useState(t.all);
   const list = useMemo(
-    () => (cat === "All" ? videos : videos.filter((v) => v.category === cat)),
-    [cat, videos],
+    () => (cat === t.all ? videos : videos.filter((v) => v.category === cat)),
+    [cat, videos, t.all],
   );
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter videos by category">
-        {videoCategories.map((c) => {
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label={t.filterLabel}>
+        {categories.map((c) => {
           const active = c === cat;
           return (
             <button
@@ -147,9 +152,7 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
               aria-selected={active}
               onClick={() => setCat(c)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                active
-                  ? "bg-forest text-cream"
-                  : "border border-forest/15 text-forest hover:border-forest/40"
+                active ? "bg-forest text-cream" : "border border-forest/15 text-forest hover:border-forest/40"
               }`}
             >
               {c}
@@ -164,9 +167,7 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
         ))}
       </div>
 
-      {list.length === 0 && (
-        <p className="mt-10 text-stone">No videos in this category yet. Check back soon.</p>
-      )}
+      {list.length === 0 && <p className="mt-10 text-stone">{t.noVideos}</p>}
     </div>
   );
 }

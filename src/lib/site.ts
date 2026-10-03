@@ -1,12 +1,9 @@
 export const site = {
-  name: "Racine Wellness",
-  tagline: "Train the body. Nourish the roots.",
-  owner: "Alex Tremblay",
-  credentials: "Certified Personal Trainer · Naturopath (N.D.)",
-  description:
-    "Montreal personal trainer and naturopath helping busy people build a stronger physique and a sustainable lifestyle through movement, nutrition and natural health.",
-  url: "https://racine-wellness.vercel.app",
-  email: "hello@racinewellness.ca",
+  name: "HealthyZone",
+  brand: { first: "Healthy", second: "Zone" },
+  owner: "Ziad",
+  url: "https://healthyzone.vercel.app",
+  email: "info@healthyzone.ca",
   phone: "+1 (514) 555-0142",
   phoneHref: "tel:+15145550142",
   address: {
@@ -16,27 +13,33 @@ export const site = {
     postal: "H2W 1Z4",
     country: "CA",
   },
+  geo: { latitude: 45.5176, longitude: -73.5826 },
   mapsEmbed:
     "https://www.google.com/maps?q=4210+Boulevard+Saint-Laurent,+Montr%C3%A9al,+QC&output=embed",
   mapsLink:
     "https://www.google.com/maps/search/?api=1&query=4210+Boulevard+Saint-Laurent+Montr%C3%A9al+QC",
-  hours: [
-    { day: "Monday – Friday", time: "6:00 – 20:00" },
-    { day: "Saturday", time: "8:00 – 14:00" },
-    { day: "Sunday", time: "Closed" },
-  ],
   socials: {
-    instagram: "https://instagram.com/",
+    instagram: "https://www.instagram.com/healthyzone.ca/",
     youtube: "https://youtube.com/",
     facebook: "https://facebook.com/",
   },
 };
 
-export const nav = [
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/programs", label: "Programs" },
-  { href: "/videos", label: "Videos" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
+export const navPaths = [
+  { key: "about", href: "/about" },
+  { key: "services", href: "/services" },
+  { key: "programs", href: "/programs" },
+  { key: "videos", href: "/videos" },
+  { key: "faq", href: "/faq" },
+  { key: "contact", href: "/contact" },
 ] as const;
+
+export type NavKey = (typeof navPaths)[number]["key"];
+
+/** Site-wide photography. Replace with the studio's own photos in /public/images. */
+export const images = {
+  hero: "/images/hero.jpg",
+  intro: "/images/community.jpg",
+  portrait: "/images/portrait.jpg",
+  coaching: "/images/coaching.jpg",
+};

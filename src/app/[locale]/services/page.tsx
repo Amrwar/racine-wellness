@@ -1,31 +1,30 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { services } from "@/lib/content";
+import { notFound } from "next/navigation";
+import { getDictionary } from "@/i18n";
+import { isLocale } from "@/i18n/config";
 import { serviceIcons } from "@/components/icons";
-import { Arrow, Button, Check, Container, Eyebrow, Heading, PageHero } from "@/components/ui";
+import { Arrow, Button, Check, Container, Eyebrow, Heading, PageHero, Rich } from "@/components/ui";
 import { CTA } from "@/components/sections";
+import { alternatesFor } from "../layout";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description:
-    "Personal training, naturopathic consultations, nutrition coaching and online coaching in Montréal. Combine them into one personalized plan.",
-};
+export async function generateMetadata({ params }: PageProps<"/[locale]/services">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const m = getDictionary(locale).meta.pages.services;
+  return { title: m.title, description: m.description, alternates: alternatesFor("/services") };
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({ params }: PageProps<"/[locale]/services">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const t = getDictionary(locale);
+
   return (
     <>
-      <PageHero
-        eyebrow="Services"
-        title={
-          <>
-            Four ways to work together,{" "}
-            <em className="font-light italic text-moss">one philosophy.</em>
-          </>
-        }
-        lead="Start with the service that matches your biggest need. Most clients combine training with naturopathic care for the fastest, most lasting results."
-      >
-        <nav aria-label="Services" className="flex flex-wrap gap-2">
-          {services.map((s) => (
+      <PageHero eyebrow={t.servicesPage.eyebrow} title={<Rich text={t.servicesPage.title} />} lead={t.servicesPage.lead}>
+        <nav aria-label={t.nav.services} className="flex flex-wrap gap-2">
+          {t.services.map((s) => (
             <a
               key={s.slug}
               href={`#${s.slug}`}
@@ -37,7 +36,7 @@ export default function ServicesPage() {
         </nav>
       </PageHero>
 
-      {services.map((s, i) => {
+      {t.services.map((s, i) => {
         const Icon = serviceIcons[s.icon];
         const flip = i % 2 === 1;
         return (
@@ -68,7 +67,10 @@ export default function ServicesPage() {
                   <p className="mt-6 text-lg leading-relaxed text-stone">{s.description}</p>
                   <ul className="mt-8 grid gap-3 sm:grid-cols-2">
                     {s.includes.map((inc) => (
-                      <li key={inc} className="flex items-start gap-3 rounded-2xl bg-white/70 p-4 text-sm font-medium text-forest">
+                      <li
+                        key={inc}
+                        className="flex items-start gap-3 rounded-2xl bg-white/70 p-4 text-sm font-medium text-forest"
+                      >
                         <Check className="text-moss" />
                         {inc}
                       </li>
@@ -76,10 +78,10 @@ export default function ServicesPage() {
                   </ul>
                   <div className="mt-9 flex flex-wrap gap-3">
                     <Button href="/contact">
-                      Enquire about {s.title.toLowerCase()} <Arrow />
+                      {t.servicesPage.enquire} {s.title.toLowerCase()} <Arrow />
                     </Button>
                     <Button href="/programs" variant="ghost">
-                      See programs
+                      {t.common.seePrograms}
                     </Button>
                   </div>
                 </div>
@@ -89,10 +91,7 @@ export default function ServicesPage() {
         );
       })}
 
-      <CTA
-        title="Not sure where to start?"
-        text="Book a free discovery call and I'll recommend the right starting point for your goals, schedule and budget."
-      />
+      <CTA t={t} title={t.cta.servicesTitle} text={t.cta.servicesText} />
     </>
   );
 }

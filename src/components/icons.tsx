@@ -45,6 +45,17 @@ export function Laptop(p: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function Hands(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...p}>
+      <path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M13 10.5V6a1.5 1.5 0 0 1 3 0v6" />
+      <path d="M16 12V8.5a1.5 1.5 0 0 1 3 0V14c0 4-2.5 7-6.5 7S6 18.5 4.5 15.5L3 12.5a1.4 1.4 0 0 1 2.4-1.4L7 13" />
+    </svg>
+  );
+}
+
 export function Play(p: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
@@ -123,4 +134,4 @@ export function Quote(p: SVGProps<SVGSVGElement>) {
   );
 }
 
-export const serviceIcons = { dumbbell: Dumbbell, leaf: Leaf, bowl: Bowl, laptop: Laptop };
+export const serviceIcons = { hands: Hands, dumbbell: Dumbbell, leaf: Leaf, bowl: Bowl, laptop: Laptop };

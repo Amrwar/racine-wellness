@@ -1,22 +1,26 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
-import { videos } from "@/lib/videos";
+import { getVideoSlugs } from "@/lib/videos";
+import { localePath, locales } from "@/i18n/config";
+
+const pages = ["/", "/about", "/services", "/programs", "/videos", "/faq", "/contact"];
+
+function entry(path: string, lastModified: Date, priority: number, changeFrequency: "monthly" | "yearly") {
+  return locales.map((locale) => ({
+    url: `${site.url}${localePath(locale, path)}`,
+    lastModified,
+    changeFrequency,
+    priority,
+    alternates: {
+      languages: Object.fromEntries(locales.map((l) => [l, `${site.url}${localePath(l, path)}`])),
+    },
+  }));
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const pages = ["", "/about", "/services", "/programs", "/videos", "/faq", "/contact"].map(
-    (p) => ({
-      url: `${site.url}${p}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: p === "" ? 1 : 0.8,
-    }),
-  );
-  const videoPages = videos.map((v) => ({
-    url: `${site.url}/videos/${v.slug}`,
-    lastModified: new Date(v.date),
-    changeFrequency: "yearly" as const,
-    priority: 0.6,
-  }));
-  return [...pages, ...videoPages];
+  return [
+    ...pages.flatMap((p) => entry(p, now, p === "/" ? 1 : 0.8, "monthly")),
+    ...getVideoSlugs().flatMap((slug) => entry(`/videos/${slug}`, now, 0.6, "yearly")),
+  ];
 }

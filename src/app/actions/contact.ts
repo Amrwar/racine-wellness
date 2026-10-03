@@ -1,6 +1,8 @@
 "use server";
 
 import { site } from "@/lib/site";
+import { fill, getDictionary } from "@/i18n";
+import { isLocale } from "@/i18n/config";
 
 export type ContactState = {
   status: "idle" | "success" | "error";
@@ -18,9 +20,13 @@ export async function sendContact(
   _prev: ContactState,
   formData: FormData,
 ): Promise<ContactState> {
+  const rawLocale = clean(formData.get("locale"), 5);
+  const locale = isLocale(rawLocale) ? rawLocale : "en";
+  const t = getDictionary(locale).form;
+
   // Honeypot: real users never fill this.
   if (clean(formData.get("company"))) {
-    return { status: "success", message: "Thanks! We'll be in touch shortly." };
+    return { status: "success", message: fill(t.success, { name: "" }) };
   }
 
   const name = clean(formData.get("name"), 120);
@@ -30,28 +36,29 @@ export async function sendContact(
   const message = clean(formData.get("message"), 3000);
 
   const errors: ContactState["errors"] = {};
-  if (name.length < 2) errors.name = "Please enter your name.";
-  if (!EMAIL_RE.test(email)) errors.email = "Please enter a valid email address.";
-  if (!interest) errors.interest = "Please choose what you're interested in.";
-  if (message.length < 10) errors.message = "Tell us a little more (at least 10 characters).";
+  if (name.length < 2) errors.name = t.errors.name;
+  if (!EMAIL_RE.test(email)) errors.email = t.errors.email;
+  if (!interest) errors.interest = t.errors.interest;
+  if (message.length < 10) errors.message = t.errors.message;
 
   if (Object.keys(errors).length) {
-    return { status: "error", message: "Please fix the highlighted fields.", errors };
+    return { status: "error", message: t.fixFields, errors };
   }
 
-  const subject = `New enquiry from ${name} · ${interest}`;
+  const subject = `New enquiry from ${name} · ${interest} [${locale.toUpperCase()}]`;
   const text = [
     `Name: ${name}`,
     `Email: ${email}`,
     `Phone: ${phone || "—"}`,
     `Interest: ${interest}`,
+    `Language: ${locale === "fr" ? "Français" : "English"}`,
     "",
     message,
   ].join("\n");
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL ?? site.email;
-  const from = process.env.CONTACT_FROM_EMAIL ?? "Racine Wellness <onboarding@resend.dev>";
+  const from = process.env.CONTACT_FROM_EMAIL ?? `${site.name} <onboarding@resend.dev>`;
 
   try {
     if (apiKey) {
@@ -73,14 +80,11 @@ export async function sendContact(
     }
   } catch (err) {
     console.error(err);
-    return {
-      status: "error",
-      message: `Something went wrong sending your message. Please email ${site.email} directly.`,
-    };
+    return { status: "error", message: fill(t.failed, { email: site.email }) };
   }
 
   return {
     status: "success",
-    message: `Thanks ${name.split(" ")[0]}! Your message is on its way. Expect a reply within one business day.`,
+    message: fill(t.success, { name: name.split(" ")[0] }),
   };
 }

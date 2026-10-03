@@ -1,15 +1,26 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getDictionary } from "@/i18n";
+import { isLocale } from "@/i18n/config";
 import { site } from "@/lib/site";
-import { Container, Eyebrow, Heading, Lead } from "@/components/ui";
+import { Container, Eyebrow, Heading, Lead, Rich } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { Clock, Mail, MapPin, Phone } from "@/components/icons";
+import { alternatesFor } from "../layout";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: `Book a free discovery call with ${site.owner}, personal trainer and naturopath in the Plateau, Montréal. Studio hours, address and contact form.`,
-};
+export async function generateMetadata({ params }: PageProps<"/[locale]/contact">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const m = getDictionary(locale).meta.pages.contact;
+  return { title: m.title, description: m.description, alternates: alternatesFor("/contact") };
+}
 
-export default function ContactPage() {
+export default async function ContactPage({ params }: PageProps<"/[locale]/contact">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const t = getDictionary(locale);
+  const c = t.contactPage;
+
   return (
     <>
       <section className="relative overflow-hidden border-b border-sand bg-sand/40 pt-36 pb-20 sm:pt-44 sm:pb-24">
@@ -19,42 +30,35 @@ export default function ContactPage() {
         />
         <Container className="relative">
           <div className="grid gap-16 lg:grid-cols-12">
-            {/* Left: intro + details */}
             <div className="lg:col-span-5">
-              <Eyebrow className="animate-fade-up">Contact</Eyebrow>
+              <Eyebrow className="animate-fade-up">{c.eyebrow}</Eyebrow>
               <Heading as="h1" className="animate-fade-up delay-1">
-                Let’s start with a{" "}
-                <em className="font-light italic text-moss">conversation.</em>
+                <Rich text={c.title} />
               </Heading>
-              <Lead className="mt-7 animate-fade-up delay-2">
-                Tell me where you are and where you want to be. I’ll reply within one business day
-                to set up a free 20-minute discovery call, in French or English.
-              </Lead>
+              <Lead className="mt-7 animate-fade-up delay-2">{c.lead}</Lead>
 
               <ul className="mt-12 space-y-7 animate-fade-up delay-3">
-                <Detail icon={MapPin} label="Studio">
+                <Detail icon={MapPin} label={c.studio}>
                   <a href={site.mapsLink} target="_blank" rel="noreferrer" className="hover:text-clay">
                     {site.address.street}
                     <br />
                     {site.address.city}, {site.address.region} {site.address.postal}
                   </a>
-                  <span className="mt-1 block text-sm text-stone">
-                    Plateau-Mont-Royal · 4 min from Mont-Royal metro
-                  </span>
+                  <span className="mt-1 block text-sm text-stone">{c.studioNote}</span>
                 </Detail>
-                <Detail icon={Phone} label="Phone">
+                <Detail icon={Phone} label={c.phone}>
                   <a href={site.phoneHref} className="hover:text-clay">
                     {site.phone}
                   </a>
                 </Detail>
-                <Detail icon={Mail} label="Email">
+                <Detail icon={Mail} label={c.email}>
                   <a href={`mailto:${site.email}`} className="hover:text-clay">
                     {site.email}
                   </a>
                 </Detail>
-                <Detail icon={Clock} label="Hours">
+                <Detail icon={Clock} label={c.hours}>
                   <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1">
-                    {site.hours.map((h) => (
+                    {t.hours.map((h) => (
                       <div key={h.day} className="contents">
                         <dt className="text-stone">{h.day}</dt>
                         <dd className="font-medium">{h.time}</dd>
@@ -65,45 +69,38 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            {/* Right: form */}
             <div className="lg:col-span-7">
               <div className="relative rounded-[2.5rem] bg-cream p-6 shadow-soft sm:p-10 animate-fade-up delay-2">
-                <h2 className="font-display text-2xl font-medium text-forest">Send a message</h2>
-                <p className="mt-2 mb-8 text-sm text-stone">
-                  All fields except phone are required. Your details stay private.
-                </p>
-                <ContactForm />
+                <h2 className="font-display text-2xl font-medium text-forest">{c.formTitle}</h2>
+                <p className="mt-2 mb-8 text-sm text-stone">{c.formNote}</p>
+                <ContactForm t={t.form} />
               </div>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Map */}
       <section className="py-20 sm:py-28">
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <Eyebrow>Find the studio</Eyebrow>
-              <Heading as="h3">In the heart of the Plateau</Heading>
-              <p className="mt-5 leading-relaxed text-stone">
-                A private, fully equipped studio on Boulevard Saint-Laurent. Street parking and
-                BIXI stations nearby. Buzz #302 when you arrive. Showers and towels provided.
-              </p>
+              <Eyebrow>{c.mapEyebrow}</Eyebrow>
+              <Heading as="h3">{c.mapTitle}</Heading>
+              <p className="mt-5 leading-relaxed text-stone">{c.mapText}</p>
               <a
                 href={site.mapsLink}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-clay"
               >
-                Open in Google Maps ↗
+                {t.common.openMaps}
               </a>
             </div>
             <div className="lg:col-span-8">
               <div className="overflow-hidden rounded-[2.5rem] shadow-card">
                 <iframe
-                  title={`Map to ${site.name}`}
-                  src={site.mapsEmbed}
+                  title={c.mapAlt}
+                  src={`${site.mapsEmbed}&hl=${locale}`}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="h-[380px] w-full grayscale-[30%] sm:h-[460px]"

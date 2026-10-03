@@ -1,19 +1,18 @@
-import Link from "next/link";
-import { nav, site } from "@/lib/site";
+import { navPaths, site } from "@/lib/site";
+import { LLink } from "@/i18n/LocaleProvider";
+import type { Dictionary } from "@/i18n/en";
 import { Logo } from "./Logo";
 import { Facebook, Instagram, Youtube } from "./icons";
 
-export function Footer() {
+export function Footer({ t }: { t: Dictionary }) {
   return (
     <footer className="relative overflow-hidden bg-forest-deep text-cream">
       <div className="grain absolute inset-0" aria-hidden />
       <div className="relative mx-auto max-w-7xl px-5 pt-20 pb-10 sm:px-8 lg:px-12">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <Logo light />
-            <p className="mt-6 max-w-sm text-base leading-relaxed text-sage">
-              {site.description}
-            </p>
+            <Logo light label={t.header.home} />
+            <p className="mt-6 max-w-sm text-base leading-relaxed text-sage">{t.footer.description}</p>
             <div className="mt-8 flex gap-3">
               {[
                 { href: site.socials.instagram, Icon: Instagram, label: "Instagram" },
@@ -35,22 +34,22 @@ export function Footer() {
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">Explore</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">{t.footer.explore}</h3>
             <ul className="mt-5 space-y-3">
-              {nav.map((n) => (
+              {navPaths.map((n) => (
                 <li key={n.href}>
-                  <Link href={n.href} className="text-cream/80 transition hover:text-cream">
-                    {n.label}
-                  </Link>
+                  <LLink href={n.href} className="text-cream/80 transition hover:text-cream">
+                    {t.nav[n.key]}
+                  </LLink>
                 </li>
               ))}
             </ul>
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">Hours</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">{t.footer.hours}</h3>
             <ul className="mt-5 space-y-3 text-cream/80">
-              {site.hours.map((h) => (
+              {t.hours.map((h) => (
                 <li key={h.day}>
                   <span className="block text-sm text-sage/80">{h.day}</span>
                   {h.time}
@@ -60,7 +59,7 @@ export function Footer() {
           </div>
 
           <div className="lg:col-span-3">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">Studio</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-sage">{t.footer.studio}</h3>
             <address className="mt-5 not-italic leading-relaxed text-cream/80">
               {site.address.street}
               <br />
@@ -76,10 +75,14 @@ export function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col gap-4 border-t border-cream/10 pt-8 text-sm text-sage/80 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} {site.name}. {t.footer.rights}
+          </p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-cream">Privacy policy</Link>
-            <span>Montréal, Québec</span>
+            <LLink href="/privacy" className="hover:text-cream">
+              {t.footer.privacy}
+            </LLink>
+            <span>{t.footer.city}</span>
           </div>
         </div>
       </div>

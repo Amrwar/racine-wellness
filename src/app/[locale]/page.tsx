@@ -1,23 +1,27 @@
 import Image from "next/image";
-import Link from "next/link";
-import { process, stats } from "@/lib/content";
-import { videos } from "@/lib/videos";
-import { site } from "@/lib/site";
-import { Arrow, Button, Container, Eyebrow, Heading, Lead, SectionHeader } from "@/components/ui";
+import { getDictionary } from "@/i18n";
+import { isLocale } from "@/i18n/config";
+import { LLink } from "@/i18n/LocaleProvider";
+import { getVideos } from "@/lib/videos";
+import { site, images } from "@/lib/site";
+import { Arrow, Button, Container, Eyebrow, Heading, Lead, Rich, SectionHeader } from "@/components/ui";
 import { CTA, FAQList, ServicesGrid, Testimonials } from "@/components/sections";
 import { VideoCard } from "@/components/video";
-import { faqs } from "@/lib/content";
+import { notFound } from "next/navigation";
 
-export default function HomePage() {
-  const latest = videos.slice(0, 3);
+export default async function HomePage({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const t = getDictionary(locale);
+  const latest = getVideos(locale).slice(0, 3);
 
   return (
     <>
       {/* ---------- Hero ---------- */}
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-forest-deep text-cream">
         <Image
-          src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=2400&q=80"
-          alt="Athlete training with a kettlebell in natural light"
+          src={images.hero}
+          alt=""
           fill
           priority
           sizes="100vw"
@@ -30,30 +34,26 @@ export default function HomePage() {
         <Container className="relative flex min-h-[100svh] flex-col justify-end pb-16 pt-40 sm:pb-24">
           <div className="max-w-4xl">
             <Eyebrow light className="animate-fade-up">
-              Personal trainer & naturopath · Montréal
+              {t.home.heroEyebrow}
             </Eyebrow>
             <Heading as="h1" light className="animate-fade-up delay-1">
-              Build a body that{" "}
-              <em className="font-light italic text-sage">looks</em> strong and{" "}
-              <em className="font-light italic text-sage">feels</em> alive.
+              <Rich text={t.home.heroTitle} />
             </Heading>
             <Lead light className="mt-8 max-w-2xl animate-fade-up delay-2">
-              Strength training and naturopathic care, combined into one plan. For busy
-              Montrealers who want a better physique, more energy and habits that
-              finally stick.
+              {t.home.heroLead}
             </Lead>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row animate-fade-up delay-3">
               <Button href="/contact" variant="light" size="lg">
-                Book a free discovery call <Arrow />
+                {t.header.bookDiscovery} <Arrow />
               </Button>
               <Button href="/services" variant="outline-light" size="lg">
-                Explore services
+                {t.common.explore}
               </Button>
             </div>
           </div>
 
           <dl className="mt-20 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-cream/15 pt-10 sm:grid-cols-4 animate-fade-up delay-4">
-            {stats.map((s) => (
+            {t.stats.map((s) => (
               <div key={s.label} className="flex flex-col-reverse gap-1">
                 <dt className="text-sm text-sage">{s.label}</dt>
                 <dd className="font-display text-4xl font-medium text-cream sm:text-5xl">{s.value}</dd>
@@ -70,46 +70,27 @@ export default function HomePage() {
             <div className="relative lg:col-span-5">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] shadow-soft">
                 <Image
-                  src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=80"
-                  alt="Calm stretch in morning light"
+                  src={images.intro}
+                  alt=""
                   fill
                   sizes="(min-width: 1024px) 40vw, 100vw"
                   className="object-cover"
                 />
               </div>
               <div className="absolute -bottom-8 -right-4 max-w-[260px] rounded-3xl bg-forest p-6 text-cream shadow-soft sm:-right-10">
-                <p className="font-display text-lg leading-snug">
-                  “A strong body isn’t built in the gym alone. It’s built in how you eat,
-                  sleep and recover.”
-                </p>
-                <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-sage">
-                  {site.owner}
-                </p>
+                <p className="font-display text-lg leading-snug">{t.home.quote}</p>
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-sage">{site.owner}</p>
               </div>
             </div>
             <div className="lg:col-span-6 lg:col-start-7">
-              <Eyebrow>The Racine approach</Eyebrow>
+              <Eyebrow>{t.home.introEyebrow}</Eyebrow>
               <Heading>
-                Two disciplines.{" "}
-                <em className="font-light italic text-moss">One coherent plan.</em>
+                <Rich text={t.home.introTitle} />
               </Heading>
-              <Lead className="mt-6">
-                Most trainers program your workouts. Most naturopaths talk about your
-                digestion. Few look at both, together, as one system.
-              </Lead>
-              <p className="mt-5 leading-relaxed text-stone">
-                That’s the gap I built Racine to close. As a certified personal trainer and
-                naturopath, I design your strength training, nutrition and natural health
-                protocol as a single plan, so every piece supports the others and nothing
-                works against you.
-              </p>
+              <Lead className="mt-6">{t.home.introLead}</Lead>
+              <p className="mt-5 leading-relaxed text-stone">{t.home.introText}</p>
               <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-                {[
-                  "Evidence-based strength programming",
-                  "Root-cause naturopathic assessment",
-                  "Nutrition you can sustain",
-                  "Sleep, stress & recovery coaching",
-                ].map((item) => (
+                {t.home.introPoints.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-forest">
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-clay" />
                     <span className="font-medium">{item}</span>
@@ -118,7 +99,7 @@ export default function HomePage() {
               </ul>
               <div className="mt-10">
                 <Button href="/about" variant="ghost">
-                  Meet {site.owner.split(" ")[0]} <Arrow />
+                  {t.home.meet} <Arrow />
                 </Button>
               </div>
             </div>
@@ -131,21 +112,16 @@ export default function HomePage() {
         <Container>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeader
-              eyebrow="Services"
-              title={
-                <>
-                  Everything you need,{" "}
-                  <em className="font-light italic text-moss">nothing you don’t.</em>
-                </>
-              }
-              lead="Choose one service or combine them. Every path starts with a conversation about your goals."
+              eyebrow={t.home.servicesEyebrow}
+              title={<Rich text={t.home.servicesTitle} />}
+              lead={t.home.servicesLead}
             />
             <Button href="/services" variant="ghost" className="shrink-0">
-              All services <Arrow />
+              {t.common.allServices} <Arrow />
             </Button>
           </div>
           <div className="mt-16">
-            <ServicesGrid />
+            <ServicesGrid services={t.services} learnMore={t.common.learnMore} />
           </div>
         </Container>
       </section>
@@ -153,13 +129,9 @@ export default function HomePage() {
       {/* ---------- Process ---------- */}
       <section className="py-24 sm:py-32">
         <Container>
-          <SectionHeader
-            eyebrow="How it works"
-            align="center"
-            title="A clear path from first call to lasting results"
-          />
+          <SectionHeader eyebrow={t.home.processEyebrow} align="center" title={t.home.processTitle} />
           <ol className="mt-16 grid gap-px overflow-hidden rounded-3xl bg-sand-dark/60 sm:grid-cols-2 lg:grid-cols-4">
-            {process.map((p, i) => (
+            {t.process.map((p, i) => (
               <li
                 key={p.step}
                 className={`relative bg-cream p-8 transition hover:bg-white animate-fade-up delay-${i + 1}`}
@@ -173,19 +145,19 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <Testimonials />
+      <Testimonials t={t} />
 
       {/* ---------- Latest videos ---------- */}
       <section className="py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeader
-              eyebrow="From the studio"
-              title="Latest videos"
-              lead="Short, practical lessons on training, nutrition and natural health. New episodes most weeks."
+              eyebrow={t.home.videosEyebrow}
+              title={t.home.videosTitle}
+              lead={t.home.videosLead}
             />
             <Button href="/videos" variant="ghost" className="shrink-0">
-              Watch all videos <Arrow />
+              {t.common.watchAll} <Arrow />
             </Button>
           </div>
           <div className="mt-16 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -201,26 +173,22 @@ export default function HomePage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <SectionHeader
-                eyebrow="Questions"
-                title="Good to know before you start"
-                lead="A few of the things people ask most. The full list lives on the FAQ page."
-              />
-              <Link
+              <SectionHeader eyebrow={t.home.faqEyebrow} title={t.home.faqTitle} lead={t.home.faqLead} />
+              <LLink
                 href="/faq"
                 className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-clay"
               >
-                See all questions <Arrow />
-              </Link>
+                {t.common.seeAll} <Arrow />
+              </LLink>
             </div>
             <div className="lg:col-span-7 lg:col-start-6">
-              <FAQList items={faqs.slice(0, 4)} />
+              <FAQList items={t.faqs.slice(0, 4)} />
             </div>
           </div>
         </Container>
       </section>
 
-      <CTA />
+      <CTA t={t} />
     </>
   );
 }

@@ -1,19 +1,17 @@
 import Image from "next/image";
-import Link from "next/link";
-import { faqs, services, testimonials } from "@/lib/content";
+import type { Dictionary } from "@/i18n/en";
+import { LLink } from "@/i18n/LocaleProvider";
 import { serviceIcons, Quote } from "./icons";
-import { Arrow, Button, Container, Eyebrow, Heading, Lead, SectionHeader } from "./ui";
+import { Arrow, Button, Container, Eyebrow, Heading, Lead, Rich, SectionHeader } from "./ui";
 
 /* ---------- FAQ ---------- */
-export function FAQList({ items = faqs }: { items?: typeof faqs }) {
+export function FAQList({ items }: { items: Dictionary["faqs"] }) {
   return (
     <div className="divide-y divide-sand-dark/70 border-y border-sand-dark/70">
       {items.map((f, i) => (
         <details key={f.q} className="group py-2" open={i === 0}>
           <summary className="flex items-start justify-between gap-6 py-5 text-left">
-            <span className="font-display text-xl font-medium text-forest sm:text-2xl">
-              {f.q}
-            </span>
+            <span className="font-display text-xl font-medium text-forest sm:text-2xl">{f.q}</span>
             <span className="chev mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-forest/20 text-forest transition-transform duration-300">
               <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
                 <path d="M8 2v12M2 8h12" />
@@ -28,29 +26,33 @@ export function FAQList({ items = faqs }: { items?: typeof faqs }) {
 }
 
 /* ---------- Services grid ---------- */
-export function ServicesGrid({ compact = false }: { compact?: boolean }) {
+export function ServicesGrid({
+  services,
+  learnMore,
+}: {
+  services: Dictionary["services"];
+  learnMore: string;
+}) {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
       {services.map((s, i) => {
         const Icon = serviceIcons[s.icon];
         return (
-          <Link
+          <LLink
             key={s.slug}
             href={`/services#${s.slug}`}
             className={`group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-card transition duration-500 hover:-translate-y-1 hover:shadow-soft animate-fade-up delay-${(i % 4) + 1}`}
           >
-            {!compact && (
-              <div className="relative aspect-[16/10] overflow-hidden">
-                <Image
-                  src={s.image}
-                  alt={s.title}
-                  fill
-                  sizes="(min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/50 to-transparent" />
-              </div>
-            )}
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <Image
+                src={s.image}
+                alt={s.title}
+                fill
+                sizes="(min-width: 640px) 50vw, 100vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/50 to-transparent" />
+            </div>
             <div className="flex flex-1 flex-col p-7">
               <span className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-sand text-forest">
                 <Icon className="h-6 w-6" />
@@ -58,10 +60,10 @@ export function ServicesGrid({ compact = false }: { compact?: boolean }) {
               <h3 className="font-display text-2xl font-medium text-forest">{s.title}</h3>
               <p className="mt-3 flex-1 leading-relaxed text-stone">{s.short}</p>
               <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-clay">
-                Learn more <Arrow />
+                {learnMore} <Arrow />
               </span>
             </div>
-          </Link>
+          </LLink>
         );
       })}
     </div>
@@ -69,7 +71,7 @@ export function ServicesGrid({ compact = false }: { compact?: boolean }) {
 }
 
 /* ---------- Testimonials ---------- */
-export function Testimonials() {
+export function Testimonials({ t }: { t: Dictionary }) {
   return (
     <section className="relative overflow-hidden bg-forest py-24 text-cream sm:py-32">
       <div className="grain absolute inset-0" aria-hidden />
@@ -80,27 +82,23 @@ export function Testimonials() {
       <Container className="relative">
         <SectionHeader
           light
-          eyebrow="Client stories"
-          title={
-            <>
-              Real people. <em className="font-light italic text-sage">Real change.</em>
-            </>
-          }
-          lead="Results come from consistency and a plan that fits your life. Here's what that looks like for a few of my clients."
+          eyebrow={t.testimonialsSection.eyebrow}
+          title={<Rich text={t.testimonialsSection.title} />}
+          lead={t.testimonialsSection.lead}
         />
         <div className="mt-16 grid gap-6 lg:grid-cols-3">
-          {testimonials.map((t, i) => (
+          {t.testimonials.map((item, i) => (
             <figure
-              key={t.name}
+              key={item.name}
               className={`flex flex-col rounded-3xl border border-cream/10 bg-cream/[0.04] p-8 backdrop-blur-sm animate-fade-up delay-${i + 1}`}
             >
               <Quote className="h-8 w-8 text-sage/70" />
               <blockquote className="mt-5 flex-1 font-display text-xl leading-relaxed text-cream/95">
-                {t.quote}
+                {item.quote}
               </blockquote>
               <figcaption className="mt-8 border-t border-cream/10 pt-5">
-                <div className="font-semibold">{t.name}</div>
-                <div className="text-sm text-sage">{t.detail}</div>
+                <div className="font-semibold">{item.name}</div>
+                <div className="text-sm text-sage">{item.detail}</div>
               </figcaption>
             </figure>
           ))}
@@ -112,9 +110,11 @@ export function Testimonials() {
 
 /* ---------- Call to action ---------- */
 export function CTA({
-  title = "Ready to feel strong, clear and energized?",
-  text = "Start with a free 20-minute discovery call. No pressure, just an honest conversation about where you are and where you want to go.",
+  t,
+  title,
+  text,
 }: {
+  t: Dictionary;
   title?: string;
   text?: string;
 }) {
@@ -129,16 +129,16 @@ export function CTA({
           />
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
             <div>
-              <Eyebrow className="text-cream/80 [&>span]:bg-cream/80">Get started</Eyebrow>
-              <Heading className="text-cream">{title}</Heading>
-              <Lead className="mt-5 text-cream/85">{text}</Lead>
+              <Eyebrow className="text-cream/80 [&>span]:bg-cream/80">{t.cta.eyebrow}</Eyebrow>
+              <Heading className="text-cream">{title ?? t.cta.title}</Heading>
+              <Lead className="mt-5 text-cream/85">{text ?? t.cta.text}</Lead>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
               <Button href="/contact" variant="light" size="lg">
-                Book a free discovery call <Arrow />
+                {t.header.bookDiscovery} <Arrow />
               </Button>
               <Button href="/programs" variant="outline-light" size="lg">
-                Compare programs
+                {t.common.compare}
               </Button>
             </div>
           </div>

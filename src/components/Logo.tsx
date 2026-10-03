@@ -1,12 +1,12 @@
-import Link from "next/link";
+import { LLink } from "@/i18n/LocaleProvider";
 import { site } from "@/lib/site";
 
-export function Logo({ light = false }: { light?: boolean }) {
+export function Logo({ light = false, label }: { light?: boolean; label: string }) {
   return (
-    <Link
+    <LLink
       href="/"
       className={`group inline-flex items-center gap-2.5 ${light ? "text-cream" : "text-forest"}`}
-      aria-label={`${site.name} home`}
+      aria-label={label}
     >
       <span
         className={`grid h-9 w-9 place-items-center rounded-full ${
@@ -21,9 +21,9 @@ export function Logo({ light = false }: { light?: boolean }) {
         </svg>
       </span>
       <span className="font-display text-xl font-semibold tracking-tight">
-        {site.name.split(" ")[0]}
-        <span className={light ? "text-sage" : "text-clay"}>.</span>
+        {site.brand.first}
+        <span className={light ? "text-sage" : "text-clay"}>{site.brand.second}</span>
       </span>
-    </Link>
+    </LLink>
   );
 }

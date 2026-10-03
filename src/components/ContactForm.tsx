@@ -2,23 +2,17 @@
 
 import { useActionState } from "react";
 import { sendContact, type ContactState } from "@/app/actions/contact";
+import { useLocale } from "@/i18n/LocaleProvider";
+import type { Dictionary } from "@/i18n/en";
 import { Arrow } from "./ui";
 
 const initial: ContactState = { status: "idle" };
 
-const interests = [
-  "Free discovery call",
-  "Personal training",
-  "Naturopathic consultation",
-  "Nutrition & lifestyle coaching",
-  "Online coaching",
-  "Something else",
-];
-
 const field =
   "w-full rounded-2xl border bg-white/70 px-4 py-3.5 text-ink placeholder:text-stone/50 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-clay/60";
 
-export function ContactForm() {
+export function ContactForm({ t }: { t: Dictionary["form"] }) {
+  const locale = useLocale();
   const [state, action, pending] = useActionState(sendContact, initial);
   const e = state.errors ?? {};
 
@@ -33,7 +27,7 @@ export function ContactForm() {
             <path d="m5 12.5 4.5 4.5L19 7.5" />
           </svg>
         </div>
-        <h3 className="mt-6 font-display text-2xl font-medium text-forest">Message received</h3>
+        <h3 className="mt-6 font-display text-2xl font-medium text-forest">{t.successTitle}</h3>
         <p className="mt-3 text-stone">{state.message}</p>
       </div>
     );
@@ -41,18 +35,20 @@ export function ContactForm() {
 
   return (
     <form action={action} noValidate className="space-y-5">
+      <input type="hidden" name="locale" value={locale} />
+
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Full name" htmlFor="name" error={e.name}>
+        <Field label={t.name} htmlFor="name" error={e.name}>
           <input
             id="name"
             name="name"
             autoComplete="name"
             required
             className={`${field} ${e.name ? "border-clay" : "border-sand-dark"}`}
-            placeholder="Marie Tremblay"
+            placeholder={t.namePlaceholder}
           />
         </Field>
-        <Field label="Email" htmlFor="email" error={e.email}>
+        <Field label={t.email} htmlFor="email" error={e.email}>
           <input
             id="email"
             name="email"
@@ -60,23 +56,23 @@ export function ContactForm() {
             autoComplete="email"
             required
             className={`${field} ${e.email ? "border-clay" : "border-sand-dark"}`}
-            placeholder="you@example.com"
+            placeholder={t.emailPlaceholder}
           />
         </Field>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Phone (optional)" htmlFor="phone" error={e.phone}>
+        <Field label={t.phone} htmlFor="phone" error={e.phone}>
           <input
             id="phone"
             name="phone"
             type="tel"
             autoComplete="tel"
             className={`${field} border-sand-dark`}
-            placeholder="514 555 0142"
+            placeholder={t.phonePlaceholder}
           />
         </Field>
-        <Field label="I'm interested in" htmlFor="interest" error={e.interest}>
+        <Field label={t.interest} htmlFor="interest" error={e.interest}>
           <select
             id="interest"
             name="interest"
@@ -85,23 +81,23 @@ export function ContactForm() {
             className={`${field} appearance-none ${e.interest ? "border-clay" : "border-sand-dark"}`}
           >
             <option value="" disabled>
-              Choose an option
+              {t.choose}
             </option>
-            {interests.map((i) => (
+            {t.interests.map((i) => (
               <option key={i}>{i}</option>
             ))}
           </select>
         </Field>
       </div>
 
-      <Field label="Tell me about your goals" htmlFor="message" error={e.message}>
+      <Field label={t.message} htmlFor="message" error={e.message}>
         <textarea
           id="message"
           name="message"
           rows={5}
           required
           className={`${field} resize-y ${e.message ? "border-clay" : "border-sand-dark"}`}
-          placeholder="Where are you now, where do you want to be, and what's been getting in the way?"
+          placeholder={t.messagePlaceholder}
         />
       </Field>
 
@@ -118,15 +114,13 @@ export function ContactForm() {
       )}
 
       <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-relaxed text-stone/80">
-          By submitting, you agree to be contacted about your enquiry. Your information is never shared.
-        </p>
+        <p className="text-xs leading-relaxed text-stone/80">{t.consent}</p>
         <button
           type="submit"
           disabled={pending}
           className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream transition hover:-translate-y-0.5 hover:bg-forest-deep hover:shadow-soft disabled:cursor-wait disabled:opacity-60"
         >
-          {pending ? "Sending…" : "Send message"}
+          {pending ? t.sending : t.submit}
           {!pending && <Arrow />}
         </button>
       </div>

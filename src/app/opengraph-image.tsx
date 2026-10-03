@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/lib/site";
+import { en } from "@/i18n/en";
 
-export const alt = `${site.name} · Personal Trainer & Naturopath in Montréal`;
+export const alt = en.meta.titleDefault;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -22,35 +23,17 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 28 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 999,
-              background: "#a9c0b0",
-              display: "flex",
-            }}
-          />
+          <div style={{ width: 48, height: 48, borderRadius: 999, background: "#a9c0b0", display: "flex" }} />
           <span style={{ letterSpacing: 2, textTransform: "uppercase", fontSize: 22, color: "#a9c0b0" }}>
             {site.name}
           </span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              fontSize: 84,
-              lineHeight: 1.02,
-              letterSpacing: -2,
-            }}
-          >
-            <span>Train the body.</span>
-            <span style={{ color: "#a9c0b0", fontStyle: "italic" }}>Nourish the roots.</span>
+          <div style={{ display: "flex", flexDirection: "column", fontSize: 84, lineHeight: 1.02, letterSpacing: -2 }}>
+            <span>{en.og.line1}</span>
+            <span style={{ color: "#a9c0b0", fontStyle: "italic" }}>{en.og.line2}</span>
           </div>
-          <div style={{ fontSize: 30, color: "#d8c9b2" }}>
-            Personal trainer & naturopath · Montréal
-          </div>
+          <div style={{ fontSize: 30, color: "#d8c9b2" }}>{en.og.sub}</div>
         </div>
       </div>
     ),

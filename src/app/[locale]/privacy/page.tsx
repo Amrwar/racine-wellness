@@ -1,0 +1,65 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getDictionary } from "@/i18n";
+import { isLocale } from "@/i18n/config";
+import { site } from "@/lib/site";
+import { Container, PageHero } from "@/components/ui";
+import { alternatesFor } from "../layout";
+
+export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const m = getDictionary(locale).meta.pages.privacy;
+  return {
+    title: m.title,
+    description: m.description,
+    alternates: alternatesFor("/privacy"),
+    robots: { index: false },
+  };
+}
+
+function withEmail(text: string) {
+  const [before, after] = text.split("{email}");
+  if (after === undefined) return text;
+  return (
+    <>
+      {before}
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      {after}
+    </>
+  );
+}
+
+export default async function PrivacyPage({ params }: PageProps<"/[locale]/privacy">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const t = getDictionary(locale);
+  const p = t.privacy;
+
+  return (
+    <>
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.updated} />
+      <section className="py-20 sm:py-28">
+        <Container>
+          <div className="prose-site max-w-3xl">
+            <p>{p.intro}</p>
+            {p.sections.map((s) => (
+              <div key={s.title}>
+                <h2>{s.title}</h2>
+                {"items" in s && s.items ? (
+                  <ul>
+                    {s.items.map((i) => (
+                      <li key={i}>{i}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{withEmail(s.text ?? "")}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+    </>
+  );
+}
