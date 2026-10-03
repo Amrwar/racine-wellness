@@ -25,7 +25,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-60"
+          className="object-cover object-[70%_0%] opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/70 via-forest-deep/40 to-forest-deep" />
         <div className="absolute inset-0 bg-gradient-to-r from-forest-deep/80 via-transparent to-transparent" />
@@ -64,11 +64,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Intro / philosophy ---------- */}
-      <section className="py-24 sm:py-32">
+      <section id="approach" className="scroll-mt-20 py-24 sm:py-32">
         <Container>
           <div className="grid items-center gap-16 lg:grid-cols-12">
             <div className="relative lg:col-span-5">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] shadow-soft">
+              <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-soft">
                 <Image
                   src={images.intro}
                   alt=""
@@ -77,7 +77,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute -bottom-8 -right-4 max-w-[260px] rounded-3xl bg-forest p-6 text-cream shadow-soft sm:-right-10">
+              <div className="absolute -bottom-8 -left-4 max-w-[260px] rounded-3xl bg-forest p-6 text-cream shadow-soft sm:-left-10">
                 <p className="font-display text-lg leading-snug">{t.home.quote}</p>
                 <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-sage">{site.owner}</p>
               </div>
@@ -108,7 +108,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Services ---------- */}
-      <section className="bg-sand/50 py-24 sm:py-32">
+      <section id="services" className="scroll-mt-20 bg-sand/50 py-24 sm:py-32">
         <Container>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeader

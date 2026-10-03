@@ -48,7 +48,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
             <Container>
               <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
                 <div className={`lg:col-span-6 ${flip ? "lg:order-2" : ""}`}>
-                  <div className="relative aspect-[5/4] overflow-hidden rounded-[2.5rem] shadow-soft">
+                  <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-soft">
                     <Image
                       src={s.image}
                       alt={s.title}
@@ -56,7 +56,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
                       sizes="(min-width: 1024px) 50vw, 100vw"
                       className="object-cover"
                     />
-                    <span className="absolute left-6 top-6 grid h-14 w-14 place-items-center rounded-2xl bg-cream/90 text-forest backdrop-blur">
+                    <span className="absolute bottom-6 left-6 grid h-14 w-14 place-items-center rounded-2xl bg-cream/90 text-forest backdrop-blur">
                       <Icon className="h-7 w-7" />
                     </span>
                   </div>
