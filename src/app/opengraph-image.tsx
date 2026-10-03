@@ -36,9 +36,16 @@ export default function OpenGraphImage() {
           </span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div style={{ fontSize: 84, lineHeight: 1.02, letterSpacing: -2 }}>
-            Train the body.
-            <br />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              fontSize: 84,
+              lineHeight: 1.02,
+              letterSpacing: -2,
+            }}
+          >
+            <span>Train the body.</span>
             <span style={{ color: "#a9c0b0", fontStyle: "italic" }}>Nourish the roots.</span>
           </div>
           <div style={{ fontSize: 30, color: "#d8c9b2" }}>
