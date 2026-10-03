@@ -1,0 +1,57 @@
+[
+  {
+    "slug": "5-minute-morning-mobility",
+    "title": "5-Minute Morning Mobility Routine",
+    "description": "Start your day with this quick full-body mobility flow to loosen hips, spine and shoulders. No equipment needed.",
+    "category": "Mobility",
+    "duration": "5:12",
+    "date": "2026-09-28",
+    "source": { "type": "youtube", "id": "g_tea8ZNk5A" },
+    "featured": true
+  },
+  {
+    "slug": "perfect-your-squat",
+    "title": "Perfect Your Squat: 3 Common Mistakes",
+    "description": "Fix knee cave, heel lift and a collapsing chest with simple cues you can use in your next session.",
+    "category": "Strength",
+    "duration": "8:40",
+    "date": "2026-09-14",
+    "source": { "type": "youtube", "id": "ultWZbUMPL8" }
+  },
+  {
+    "slug": "anti-inflammatory-breakfast",
+    "title": "My Go-To Anti-Inflammatory Breakfast",
+    "description": "A 10-minute breakfast packed with protein, fibre and omega-3s to steady your energy until lunch.",
+    "category": "Nutrition",
+    "duration": "6:05",
+    "date": "2026-08-30",
+    "source": { "type": "youtube", "id": "IODxDxX7oi4" }
+  },
+  {
+    "slug": "sleep-better-naturally",
+    "title": "Sleep Better Naturally: A Naturopath's Evening Routine",
+    "description": "Light, magnesium, breathing and timing. The four levers that make the biggest difference to deep sleep.",
+    "category": "Naturopathy",
+    "duration": "11:22",
+    "date": "2026-08-12",
+    "source": { "type": "youtube", "id": "nm1TxQj9IsQ" }
+  },
+  {
+    "slug": "home-dumbbell-workout",
+    "title": "25-Minute Full-Body Dumbbell Workout",
+    "description": "A complete strength session you can do at home with a single pair of dumbbells. Follow along in real time.",
+    "category": "Workouts",
+    "duration": "25:00",
+    "date": "2026-07-25",
+    "source": { "type": "youtube", "id": "UBMk30rjy0o" }
+  },
+  {
+    "slug": "stress-and-cortisol",
+    "title": "Stress, Cortisol and Stubborn Belly Fat",
+    "description": "Why chronic stress blocks fat loss, and the practical steps I use with clients to bring cortisol back into rhythm.",
+    "category": "Naturopathy",
+    "duration": "9:48",
+    "date": "2026-07-02",
+    "source": { "type": "youtube", "id": "WuyPuH9ojCE" }
+  }
+]
