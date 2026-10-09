@@ -35,9 +35,9 @@ export function Button({
     lg: "px-7 py-3.5 text-base",
   };
   const variants = {
-    brand: "bg-brand text-navy-deep hover:brightness-105 hover:shadow-lg hover:shadow-blue/20",
-    navy: "bg-navy text-white hover:bg-navy-deep",
-    "outline-light": "border border-white/40 text-white hover:border-white hover:bg-white/10",
+    brand: "bg-blue-dark text-white shadow-lg shadow-blue/25 hover:-translate-y-0.5 hover:bg-[#00649f] hover:shadow-xl hover:shadow-blue/30",
+    navy: "bg-ink text-white hover:bg-navy-deep",
+    "outline-light": "border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/20",
   };
   return (
     <Link href={href} className={`${base} ${sizes[size]} ${variants[variant]} ${className}`} {...rest}>
@@ -87,18 +87,25 @@ export function SectionHeader({
   eyebrow,
   title,
   lead,
+  light = false,
   className = "",
 }: {
   eyebrow: string;
   title: ReactNode;
   lead?: ReactNode;
+  /** White text, for sections on a dark photo. */
+  light?: boolean;
   className?: string;
 }) {
   return (
     <div className={`max-w-2xl ${className}`}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">{title}</h2>
-      {lead && <p className="mt-4 text-lg leading-relaxed text-muted">{lead}</p>}
+      <Eyebrow light={light}>{eyebrow}</Eyebrow>
+      <h2 className={`text-3xl font-semibold tracking-tight sm:text-4xl ${light ? "text-white" : "text-navy"}`}>
+        {title}
+      </h2>
+      {lead && (
+        <p className={`mt-4 text-lg leading-relaxed ${light ? "text-white/75" : "text-muted"}`}>{lead}</p>
+      )}
     </div>
   );
 }

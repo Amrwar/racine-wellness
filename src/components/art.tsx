@@ -147,59 +147,6 @@ export function Capsule({ id, tone = "brand", className = "", style }: ShapeProp
 
 const wrap = "pointer-events-none absolute inset-0 -z-10 overflow-hidden";
 
-export function ServicesArt() {
-  return (
-    <div className={wrap} aria-hidden>
-      <Torus
-        id="svc-torus"
-        className="animate-float-slow absolute -right-56 -top-24 w-[380px] rotate-[14deg] opacity-25 sm:-right-48 sm:-top-10 sm:w-[560px] sm:opacity-30"
-      />
-      <Orb id="svc-orb-a" tone="green" className="animate-float absolute -left-16 top-[45%] w-44 opacity-40" />
-      <Orb id="svc-orb-b" tone="blue" className="absolute -bottom-24 right-[20%] w-72 opacity-20 blur-2xl" />
-      <Orb
-        id="svc-orb-c"
-        tone="blue"
-        className="animate-float absolute right-[30%] top-24 hidden w-10 opacity-60 lg:block"
-        style={{ animationDelay: "-4s" }}
-      />
-    </div>
-  );
-}
-
-export function AboutArt() {
-  return (
-    <div className={wrap} aria-hidden>
-      <Orb id="about-orb-a" tone="brand" className="animate-float absolute -left-10 top-10 w-40 opacity-70 sm:w-52" />
-      <Capsule
-        id="about-capsule-a"
-        tone="brand"
-        className="animate-float-slow absolute -right-16 bottom-16 w-80 -rotate-[24deg] opacity-40"
-      />
-      <Capsule
-        id="about-capsule-b"
-        tone="blue"
-        className="animate-float absolute -right-6 bottom-56 hidden w-40 -rotate-[24deg] opacity-30 lg:block"
-        style={{ animationDelay: "-5s" }}
-      />
-      <Orb id="about-orb-b" tone="green" className="absolute right-[25%] -top-20 w-72 opacity-25 blur-2xl" />
-    </div>
-  );
-}
-
-export function ContactArt() {
-  return (
-    <div className={wrap} aria-hidden>
-      <Torus
-        id="contact-torus"
-        tone="blue"
-        className="animate-float-slow absolute -bottom-32 -left-48 w-[560px] rotate-[22deg] opacity-25"
-      />
-      <Orb id="contact-orb-a" tone="green" className="animate-float absolute -right-12 -top-6 w-24 opacity-50 sm:top-16 sm:w-36" />
-      <Orb id="contact-orb-b" tone="blue" className="absolute -right-20 bottom-0 w-80 opacity-20 blur-2xl" />
-    </div>
-  );
-}
-
 export function PageHeaderArt() {
   return (
     <div className={wrap} aria-hidden>
