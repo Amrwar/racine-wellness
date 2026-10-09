@@ -16,12 +16,15 @@ export const site = {
   },
 };
 
-/** In-page sections of the one-page site, in nav order. */
-export const navSections = [
-  { key: "services", id: "services" },
-  { key: "about", id: "about" },
-  { key: "contact", id: "contact" },
+/** Navigation, in order: home-page sections (`section`) and separate pages (`page`). */
+export const navItems = [
+  { key: "services", section: "services" },
+  { key: "about", section: "about" },
+  { key: "blog", page: "/blog" },
+  { key: "contact", section: "contact" },
 ] as const;
+
+export type NavItem = (typeof navItems)[number];
 
 export const images = {
   /** Ziad's treatment photo, cleaned and graded by design/hero-massage.py. */

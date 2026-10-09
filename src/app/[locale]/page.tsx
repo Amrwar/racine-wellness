@@ -1,10 +1,13 @@
 import Image, { getImageProps } from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
-import { isLocale, sectionHref } from "@/i18n/config";
+import { isLocale, localePath, sectionHref } from "@/i18n/config";
 import { site, images } from "@/lib/site";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
+import { PostCard } from "@/components/blog";
+import { getPosts } from "@/lib/blog";
 import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -119,6 +122,30 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               ))}
             </ul>
           </div>
+        </Container>
+      </section>
+
+      {/* ---------- Latest from the blog ---------- */}
+      <section className="bg-white py-20 sm:py-28">
+        <Container>
+          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+            <SectionHeader eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
+            <Link
+              href={localePath(locale, "/blog")}
+              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-blue-dark"
+            >
+              {t.blog.viewAll} <Arrow />
+            </Link>
+          </div>
+          <ul className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            {getPosts()
+              .slice(0, 3)
+              .map((post) => (
+                <li key={post.slug}>
+                  <PostCard post={post} locale={locale} t={t.blog} />
+                </li>
+              ))}
+          </ul>
         </Container>
       </section>
 

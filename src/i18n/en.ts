@@ -3,6 +3,7 @@ export const en = {
   nav: {
     services: "Services",
     about: "About",
+    blog: "Blog",
     contact: "Contact",
   },
   header: {
@@ -28,6 +29,11 @@ export const en = {
       "active aging",
       "youth fitness",
     ],
+    blog: {
+      title: "Blog",
+      description:
+        "Practical articles on massage therapy, recovery, posture and mobility from Ziad Bik, registered massage therapist and personal trainer in Saint-Laurent, Montréal.",
+    },
     privacy: {
       title: "Privacy Policy",
       description: "How HealthyZone collects, uses and protects your personal information.",
@@ -149,6 +155,30 @@ export const en = {
       interest: "Please choose what you're interested in.",
       message: "Tell us a little more (at least 10 characters).",
     },
+  },
+
+  blog: {
+    eyebrow: "The HealthyZone blog",
+    title: "Notes on moving and feeling better",
+    lead: "Practical, no-nonsense articles on massage therapy, recovery, posture and mobility, written by Ziad.",
+    featured: "Featured",
+    readArticle: "Read article",
+    minRead: "{n} min read",
+    by: "By",
+    author: "Ziad Bik",
+    authorRole: "Registered Massage Therapist · Personal Trainer",
+    authorBio:
+      "Ziad is a registered massage therapist (RMQ) and personal trainer in Saint-Laurent. He treats clients at home, at work and at the gym across Montréal, in French and English.",
+    backToBlog: "All articles",
+    related: "Keep reading",
+    latestEyebrow: "From the blog",
+    latestTitle: "Tips for a body that feels better",
+    viewAll: "View all articles",
+    ctaTitle: "Ready to feel the difference?",
+    ctaText: "Book a session at home, at work or at the gym. We'll start with your goals and build from there.",
+    ctaButton: "Book a session",
+    disclaimer:
+      "This article is for general information and isn't a substitute for medical advice. If you have pain, an injury or a health condition, consult a qualified health professional.",
   },
 
   footer: {

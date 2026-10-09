@@ -31,6 +31,9 @@ export function Footer({ t }: { t: Dictionary }) {
             © {new Date().getFullYear()} {site.name}. {t.footer.rights}
           </p>
           <div className="flex items-center gap-5">
+            <LLink href="/blog" className="hover:text-white">
+              {t.nav.blog}
+            </LLink>
             <LLink href="/privacy" className="hover:text-white">
               {t.footer.privacy}
             </LLink>

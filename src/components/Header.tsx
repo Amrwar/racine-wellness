@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navSections } from "@/lib/site";
+import { navItems, type NavItem } from "@/lib/site";
 import { localePath, sectionHref, splitLocale, type Locale } from "@/i18n/config";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
@@ -18,6 +18,10 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
   const otherLocale: Locale = locale === "en" ? "fr" : "en";
   const switchHref = localePath(otherLocale, barePath);
   const close = () => setOpen(false);
+  const hrefFor = (item: NavItem) =>
+    "page" in item ? localePath(locale, item.page) : sectionHref(locale, item.section);
+  const isActive = (item: NavItem) =>
+    "page" in item && (barePath === item.page || barePath.startsWith(item.page + "/"));
 
   const langSwitch = (
     <Link
@@ -37,14 +41,17 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
         <Logo label={t.header.home} />
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {navSections.map((s) => (
-            <a
-              key={s.id}
-              href={sectionHref(locale, s.id)}
-              className="text-sm font-medium text-white/80 transition hover:text-white"
+          {navItems.map((item) => (
+            <Link
+              key={item.key}
+              href={hrefFor(item)}
+              aria-current={isActive(item) ? "page" : undefined}
+              className={`text-sm font-medium transition hover:text-white ${
+                isActive(item) ? "text-white underline decoration-green decoration-2 underline-offset-8" : "text-white/80"
+              }`}
             >
-              {t.nav[s.key]}
-            </a>
+              {t.nav[item.key]}
+            </Link>
           ))}
         </nav>
 
@@ -76,15 +83,16 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
         hidden={!open}
         className="border-t border-white/10 px-5 pb-6 md:hidden"
       >
-        {navSections.map((s) => (
-          <a
-            key={s.id}
-            href={sectionHref(locale, s.id)}
+        {navItems.map((item) => (
+          <Link
+            key={item.key}
+            href={hrefFor(item)}
             onClick={close}
+            aria-current={isActive(item) ? "page" : undefined}
             className="block border-b border-white/10 py-4 text-lg font-medium text-white"
           >
-            {t.nav[s.key]}
-          </a>
+            {t.nav[item.key]}
+          </Link>
         ))}
         <Button href={sectionHref(locale, "contact")} size="lg" className="mt-6 w-full" onClick={close}>
           {t.header.book}

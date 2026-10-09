@@ -4,6 +4,7 @@ export const fr: Dictionary = {
   nav: {
     services: "Services",
     about: "À propos",
+    blog: "Blogue",
     contact: "Contact",
   },
   header: {
@@ -29,6 +30,11 @@ export const fr: Dictionary = {
       "vieillissement actif",
       "conditionnement physique jeunesse",
     ],
+    blog: {
+      title: "Blogue",
+      description:
+        "Articles pratiques sur la massothérapie, la récupération, la posture et la mobilité par Ziad Bik, massothérapeute agréé et entraîneur personnel à Saint-Laurent, Montréal.",
+    },
     privacy: {
       title: "Politique de confidentialité",
       description: "Comment HealthyZone recueille, utilise et protège vos renseignements personnels.",
@@ -150,6 +156,30 @@ export const fr: Dictionary = {
       interest: "Veuillez choisir ce qui vous intéresse.",
       message: "Dites-nous en un peu plus (au moins 10 caractères).",
     },
+  },
+
+  blog: {
+    eyebrow: "Le blogue HealthyZone",
+    title: "Pour mieux bouger et se sentir mieux",
+    lead: "Des articles pratiques et sans détour sur la massothérapie, la récupération, la posture et la mobilité, écrits par Ziad.",
+    featured: "À la une",
+    readArticle: "Lire l'article",
+    minRead: "{n} min de lecture",
+    by: "Par",
+    author: "Ziad Bik",
+    authorRole: "Massothérapeute agréé · Entraîneur personnel",
+    authorBio:
+      "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel à Saint-Laurent. Il traite ses clients à domicile, au travail et au gym partout à Montréal, en français et en anglais.",
+    backToBlog: "Tous les articles",
+    related: "À lire aussi",
+    latestEyebrow: "Du blogue",
+    latestTitle: "Des conseils pour un corps qui se sent mieux",
+    viewAll: "Voir tous les articles",
+    ctaTitle: "Prêt à sentir la différence?",
+    ctaText: "Réservez une séance à domicile, au travail ou au gym. On commence par vos objectifs et on bâtit à partir de là.",
+    ctaButton: "Prendre rendez-vous",
+    disclaimer:
+      "Cet article est fourni à titre informatif et ne remplace pas un avis médical. En cas de douleur, de blessure ou de problème de santé, consultez un professionnel de la santé qualifié.",
   },
 
   footer: {
