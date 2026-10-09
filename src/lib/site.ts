@@ -24,10 +24,11 @@ export const navSections = [
 ] as const;
 
 export const images = {
-  /** 3D renders of hot massage stones; re-render from design/hero-stones-scene.html. */
+  /** Ziad's treatment photo, cleaned and graded by design/hero-massage.py. */
   hero: {
-    wide: { src: "/images/hero-stones-wide.webp", width: 2400, height: 1200 },
-    tall: { src: "/images/hero-stones-tall.webp", width: 1200, height: 2000 },
+    wide: { src: "/images/hero-massage-wide.webp", width: 2400, height: 1200 },
+    square: { src: "/images/hero-massage-square.webp", width: 1200, height: 1200 },
   },
+
   portrait: "/images/portrait.jpg",
 };

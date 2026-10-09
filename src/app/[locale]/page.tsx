@@ -15,14 +15,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
-      {/* ---------- Hero: full-bleed 3D render, text over the dark side ---------- */}
-      <section className="relative isolate -mt-18 overflow-hidden bg-[#01070f] pt-18 text-white md:bg-navy-deep">
+      {/* ---------- Hero: Ziad at work on a grey studio wall; text on the plain wall ---------- */}
+      {/* Phones/tablets: the photo on top, fading into the text below. Desktop: full-bleed. */}
+      <section className="relative isolate -mt-18 overflow-hidden bg-[#1a1b1d] pt-18 text-white">
         <HeroImage alt={t.hero.imageAlt} />
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-gradient-to-b from-[#000c17]/90 via-[#000c17]/45 to-transparent lg:bg-gradient-to-r lg:from-[#000c17]/85 lg:via-[#000c17]/35 lg:to-transparent"
+          className="absolute inset-x-0 top-18 -z-10 h-[78vw] bg-gradient-to-b from-transparent from-40% to-[#1a1b1d] lg:bottom-0 lg:h-auto lg:bg-gradient-to-r lg:from-black/65 lg:from-0% lg:via-black/20 lg:to-transparent"
         />
-        <Container className="flex min-h-[calc(100svh-4.5rem)] flex-col justify-start pb-[min(80vw,22rem)] pt-16 sm:pt-24 md:pb-16 lg:max-h-[56rem] lg:justify-center lg:py-24">
+        <Container className="flex flex-col pb-16 pt-[calc(78vw-3rem)] lg:min-h-[calc(100svh-4.5rem)] lg:max-h-[56rem] lg:justify-center lg:py-24">
           <div className="max-w-xl">
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
@@ -156,23 +157,23 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   );
 }
 
-/** Full-bleed hero render: a tall crop for phones, the wide one from tablet up. */
+/** Hero photo: the square shot for phones and tablets, the wide (extended wall) version on desktop. */
 function HeroImage({ alt }: { alt: string }) {
   const common = { alt, sizes: "100vw", loading: "eager", fetchPriority: "high" } as const;
   const {
     props: { srcSet: wide },
   } = getImageProps({ ...common, ...images.hero.wide });
   const {
-    props: { srcSet: tall, ...rest },
-  } = getImageProps({ ...common, ...images.hero.tall });
+    props: { srcSet: square, ...rest },
+  } = getImageProps({ ...common, ...images.hero.square });
   return (
     <picture>
-      <source media="(min-width: 768px)" srcSet={wide} />
+      <source media="(min-width: 1024px)" srcSet={wide} />
       <img
         {...rest}
         alt={alt}
-        srcSet={tall}
-        className="absolute inset-x-0 bottom-0 -z-10 h-auto w-full md:inset-0 md:h-full md:object-cover"
+        srcSet={square}
+        className="absolute inset-x-0 top-18 -z-10 h-[78vw] w-full object-cover object-top lg:bottom-0 lg:h-[calc(100%-4.5rem)] lg:object-right"
       />
     </picture>
   );
