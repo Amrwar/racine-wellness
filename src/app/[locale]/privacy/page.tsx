@@ -4,6 +4,7 @@ import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { site } from "@/lib/site";
 import { Container, Eyebrow } from "@/components/ui";
+import { PageHeaderArt } from "@/components/art";
 import { alternatesFor } from "../layout";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
@@ -38,7 +39,8 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
 
   return (
     <>
-      <section className="bg-navy py-16 text-white sm:py-20">
+      <section className="relative isolate overflow-hidden bg-navy py-16 text-white sm:py-20">
+        <PageHeaderArt />
         <Container>
           <Eyebrow light>{p.eyebrow}</Eyebrow>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{p.title}</h1>

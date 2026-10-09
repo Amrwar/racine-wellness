@@ -6,6 +6,7 @@ import { site, images } from "@/lib/site";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
+import { AboutArt, ContactArt, HeroArt, ServicesArt } from "@/components/art";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -15,7 +16,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section className="bg-navy text-white">
+      <section className="relative isolate overflow-hidden bg-navy text-white">
+        <HeroArt />
         <Container className="grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div>
             <Eyebrow light className="animate-fade-up">
@@ -70,7 +72,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Services ---------- */}
-      <section id="services" className="py-20 sm:py-24">
+      <section id="services" className="relative isolate overflow-hidden py-20 sm:py-24">
+        <ServicesArt />
         <Container>
           <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +82,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               return (
                 <li
                   key={s.title}
-                  className="rounded-2xl border border-mist/70 bg-white p-7 transition hover:-translate-y-0.5 hover:border-blue/40 hover:shadow-card"
+                  className="rounded-2xl border border-mist/70 bg-white/80 p-7 backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-blue/40 hover:shadow-card"
                 >
                   <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy text-green">
                     <Icon className="h-7 w-7" strokeWidth={1.75} />
@@ -94,7 +97,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- About ---------- */}
-      <section id="about" className="bg-surface py-20 sm:py-24">
+      <section id="about" className="relative isolate overflow-hidden bg-surface py-20 sm:py-24">
+        <AboutArt />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <div className="relative mx-auto aspect-[4/5] max-w-sm overflow-hidden rounded-3xl shadow-card lg:max-w-none">
@@ -127,7 +131,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Contact ---------- */}
-      <section id="contact" className="py-20 sm:py-24">
+      <section id="contact" className="relative isolate overflow-hidden py-20 sm:py-24">
+        <ContactArt />
         <Container className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <SectionHeader eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} />
@@ -150,7 +155,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-mist/70 bg-white p-6 shadow-card sm:p-10">
+            <div className="rounded-3xl border border-mist/70 bg-white/90 p-6 shadow-card backdrop-blur-sm sm:p-10">
               <h3 className="mb-6 text-xl font-semibold text-navy">{t.contact.formTitle}</h3>
               <ContactForm t={t.form} />
             </div>
