@@ -1,81 +1,60 @@
 @import "tailwindcss";
 
+/*
+ * HealthyZone brand palette (from the logo):
+ *   navy  #004575 · blue #009ffb · green #00ee81 · mist #d9d9d9
+ * Blue and green are bright accents: use them on navy, or as fills behind navy text.
+ * On white, use navy for text and blue-dark for links.
+ */
 @theme {
-  --color-cream: #f7f3ec;
-  --color-sand: #e9dfcf;
-  --color-sand-dark: #d8c9b2;
-  --color-forest: #1e3a2c;
-  --color-forest-deep: #142a1f;
-  --color-moss: #3e6b50;
-  --color-sage: #a9c0b0;
-  --color-clay: #c2663f;
-  --color-clay-dark: #a3522f;
-  --color-ink: #1b1a17;
-  --color-stone: #5f5b53;
+  --color-navy: #004575;
+  --color-navy-deep: #00304f;
+  --color-blue: #009ffb;
+  --color-blue-dark: #0077c0;
+  --color-green: #00ee81;
+  --color-mist: #d9d9d9;
+  --color-surface: #f3f6f9;
+  --color-ink: #0d2a40;
+  --color-muted: #4b6072;
+  --color-danger: #c0392b;
 
-  --font-display: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-soft: 0 10px 40px -12px rgb(30 58 44 / 0.18);
-  --shadow-card: 0 1px 2px rgb(27 26 23 / 0.04), 0 12px 32px -16px rgb(27 26 23 / 0.18);
+  --shadow-card: 0 1px 2px rgb(0 48 79 / 0.05), 0 12px 32px -18px rgb(0 48 79 / 0.25);
 
-  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-float: float 8s ease-in-out infinite;
-  --animate-marquee: marquee 40s linear infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(18px); }
+    from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-14px) rotate(2deg); }
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
   }
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 
 body {
-  background: var(--color-cream);
+  background: #ffffff;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: var(--color-sage); color: var(--color-forest-deep); }
+::selection { background: var(--color-green); color: var(--color-navy-deep); }
 
-.font-display { font-family: var(--font-display); }
-
-.grain::before {
-  content: "";
-  position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  opacity: 0.07; mix-blend-mode: multiply;
-}
+/* Blue-to-green brand gradient, as in the logo. */
+.bg-brand { background-image: linear-gradient(90deg, var(--color-blue), var(--color-green)); }
 
 .delay-1 { animation-delay: 0.1s; }
 .delay-2 { animation-delay: 0.2s; }
 .delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
 
-.prose-site p { margin-bottom: 1.1rem; line-height: 1.8; color: var(--color-stone); }
-.prose-site h2 { font-family: var(--font-display); font-size: 1.75rem; color: var(--color-forest); margin: 2.25rem 0 0.75rem; font-weight: 500; }
-.prose-site ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1.1rem; color: var(--color-stone); line-height: 1.75; }
-.prose-site a { color: var(--color-clay); text-decoration: underline; text-underline-offset: 3px; }
-
-details > summary { list-style: none; cursor: pointer; }
-details > summary::-webkit-details-marker { display: none; }
-details[open] .chev { transform: rotate(45deg); }
-
-.line-clamp-2 {
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
+.prose-site p { margin-bottom: 1.1rem; line-height: 1.8; color: var(--color-muted); }
+.prose-site h2 { font-size: 1.4rem; font-weight: 600; color: var(--color-navy); margin: 2.25rem 0 0.75rem; }
+.prose-site ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1.1rem; color: var(--color-muted); line-height: 1.75; }
+.prose-site a { color: var(--color-blue-dark); text-decoration: underline; text-underline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

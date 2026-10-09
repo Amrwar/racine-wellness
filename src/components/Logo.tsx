@@ -1,29 +1,16 @@
 import { LLink } from "@/i18n/LocaleProvider";
 import { site } from "@/lib/site";
 
-export function Logo({ light = false, label }: { light?: boolean; label: string }) {
+/** HealthyZone wordmark. Designed for navy backgrounds, like the business card. */
+export function Logo({ label, className = "" }: { label: string; className?: string }) {
   return (
     <LLink
       href="/"
-      className={`group inline-flex items-center gap-2.5 ${light ? "text-cream" : "text-forest"}`}
       aria-label={label}
+      className={`inline-flex items-baseline text-2xl font-bold tracking-[-0.03em] ${className}`}
     >
-      <span
-        className={`grid h-9 w-9 place-items-center rounded-full ${
-          light ? "bg-cream/10 text-sage" : "bg-forest text-sage"
-        } transition-transform duration-500 group-hover:rotate-12`}
-      >
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M12 21V9" />
-          <path d="M12 9c0-4 3-6 7-6-.5 4.5-3 6.5-7 6Z" />
-          <path d="M12 13c0-3-2.5-5-6-5 .5 3.5 2.5 5 6 5Z" />
-          <path d="M8 21c1-2 2.5-3 4-3s3 1 4 3" />
-        </svg>
-      </span>
-      <span className="font-display text-xl font-semibold tracking-tight">
-        {site.brand.first}
-        <span className={light ? "text-sage" : "text-clay"}>{site.brand.second}</span>
-      </span>
+      <span className="text-blue">{site.brand.first}</span>
+      <span className="text-green">{site.brand.second}</span>
     </LLink>
   );
 }

@@ -18,33 +18,6 @@ export function Dumbbell(p: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Leaf(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...base} {...p}>
-      <path d="M4 20c0-9 5-15 16-16-.5 10-6 16-14.5 16" />
-      <path d="M4 20c3-4 7-7.5 12-10" />
-    </svg>
-  );
-}
-
-export function Bowl(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...base} {...p}>
-      <path d="M3 11h18c0 5-4 9-9 9s-9-4-9-9Z" />
-      <path d="M8 7c0-2 1.5-2 1.5-4M12 7c0-2 1.5-2 1.5-4M16 7c0-2 1.5-2 1.5-4" />
-    </svg>
-  );
-}
-
-export function Laptop(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...base} {...p}>
-      <rect x="4" y="5" width="16" height="11" rx="1.5" />
-      <path d="M2 19h20" />
-    </svg>
-  );
-}
-
 export function Hands(p: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...p}>
@@ -52,14 +25,6 @@ export function Hands(p: SVGProps<SVGSVGElement>) {
       <path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V11" />
       <path d="M13 10.5V6a1.5 1.5 0 0 1 3 0v6" />
       <path d="M16 12V8.5a1.5 1.5 0 0 1 3 0V14c0 4-2.5 7-6.5 7S6 18.5 4.5 15.5L3 12.5a1.4 1.4 0 0 1 2.4-1.4L7 13" />
-    </svg>
-  );
-}
-
-export function Play(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-      <path d="M8 5.5v13l11-6.5-11-6.5Z" />
     </svg>
   );
 }
@@ -90,15 +55,6 @@ export function Mail(p: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Clock(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...base} {...p}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </svg>
-  );
-}
-
 export function Instagram(p: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...p}>
@@ -109,29 +65,49 @@ export function Instagram(p: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Youtube(p: SVGProps<SVGSVGElement>) {
+export function Posture(p: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...p}>
-      <rect x="2.5" y="6" width="19" height="12" rx="3.5" />
-      <path d="m10 9.5 5 2.5-5 2.5z" fill="currentColor" />
+      <circle cx="12" cy="4" r="1.8" />
+      <path d="M12 7v13" />
+      <path d="M9.5 9.5h5M10 13h4M10.5 16.5h3" />
     </svg>
   );
 }
 
-export function Facebook(p: SVGProps<SVGSVGElement>) {
+export function Mobility(p: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...p}>
-      <path d="M14 8h2.5V5H14a3.5 3.5 0 0 0-3.5 3.5V11H8v3h2.5v7h3v-7H16l.5-3h-3V8.5A.5.5 0 0 1 14 8Z" />
+      <path d="M20 12a8 8 0 0 1-14 5.3" />
+      <path d="M4 12a8 8 0 0 1 14-5.3" />
+      <path d="M18.5 3v4h-4M5.5 21v-4h4" />
     </svg>
   );
 }
 
-export function Quote(p: SVGProps<SVGSVGElement>) {
+export function Heart(p: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-      <path d="M7.5 6C4.9 6 3 8.1 3 10.8c0 2.4 1.6 4.2 3.9 4.2.4 0 .7 0 1-.1C7.4 17 6 18.2 4.3 18.7l.5 1.3C8.7 19 11 16.2 11 11.9 11 8.3 9.6 6 7.5 6Zm10 0C14.9 6 13 8.1 13 10.8c0 2.4 1.6 4.2 3.9 4.2.4 0 .7 0 1-.1-.5 2.1-1.9 3.3-3.6 3.8l.5 1.3c3.9-1 6.2-3.8 6.2-8.1C21 8.3 19.6 6 17.5 6Z" />
+    <svg {...base} {...p}>
+      <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />
+      <path d="M7.5 12h2.5l1.5-2.5 2 4 1.5-1.5h1.5" />
     </svg>
   );
 }
 
-export const serviceIcons = { hands: Hands, dumbbell: Dumbbell, leaf: Leaf, bowl: Bowl, laptop: Laptop };
+export function Youth(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...p}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m12 7.5 2.4 1.8-.9 2.9h-3l-.9-2.9L12 7.5ZM9.6 9.3 5.5 8.5M14.4 9.3l4.1-.8M10.5 12.2 8.5 16M13.5 12.2l2 3.8" />
+    </svg>
+  );
+}
+
+export const serviceIcons = {
+  hands: Hands,
+  posture: Posture,
+  mobility: Mobility,
+  strength: Dumbbell,
+  heart: Heart,
+  youth: Youth,
+};

@@ -1,28 +1,24 @@
 "use client";
 
 import { getDictionary } from "@/i18n";
+import { localePath } from "@/i18n/config";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { Arrow, Button, Container, Eyebrow, Heading, Lead } from "@/components/ui";
+import { Arrow, Button, Container, Eyebrow } from "@/components/ui";
 
 export default function NotFound() {
   const locale = useLocale();
   const t = getDictionary(locale);
 
   return (
-    <section className="flex min-h-[80svh] items-center pt-24">
+    <section className="flex min-h-[70svh] items-center py-20">
       <Container>
         <div className="max-w-2xl">
           <Eyebrow>404</Eyebrow>
-          <Heading as="h1">{t.notFound.title}</Heading>
-          <Lead className="mt-6">{t.notFound.lead}</Lead>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Button href="/">
-              {t.common.backHome} <Arrow />
-            </Button>
-            <Button href="/contact" variant="ghost">
-              {t.common.contactUs}
-            </Button>
-          </div>
+          <h1 className="text-4xl font-semibold tracking-tight text-navy sm:text-5xl">{t.notFound.title}</h1>
+          <p className="mt-5 text-lg text-muted">{t.notFound.lead}</p>
+          <Button href={localePath(locale, "/")} variant="navy" size="lg" className="mt-9">
+            {t.notFound.backHome} <Arrow />
+          </Button>
         </div>
       </Container>
     </section>

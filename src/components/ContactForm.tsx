@@ -9,7 +9,7 @@ import { Arrow } from "./ui";
 const initial: ContactState = { status: "idle" };
 
 const field =
-  "w-full rounded-2xl border bg-white/70 px-4 py-3.5 text-ink placeholder:text-stone/50 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-clay/60";
+  "w-full rounded-xl border bg-surface px-4 py-3 text-ink placeholder:text-muted/60 transition focus:border-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue/30";
 
 export function ContactForm({ t }: { t: Dictionary["form"] }) {
   const locale = useLocale();
@@ -20,15 +20,15 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
     return (
       <div
         role="status"
-        className="animate-fade-up rounded-3xl border border-sage/60 bg-white/70 p-10 text-center"
+        className="animate-fade-up rounded-2xl bg-surface p-10 text-center"
       >
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-forest text-sage">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-navy text-green">
           <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="m5 12.5 4.5 4.5L19 7.5" />
           </svg>
         </div>
-        <h3 className="mt-6 font-display text-2xl font-medium text-forest">{t.successTitle}</h3>
-        <p className="mt-3 text-stone">{state.message}</p>
+        <h3 className="mt-6 text-2xl font-semibold text-navy">{t.successTitle}</h3>
+        <p className="mt-3 text-muted">{state.message}</p>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
             name="name"
             autoComplete="name"
             required
-            className={`${field} ${e.name ? "border-clay" : "border-sand-dark"}`}
+            className={`${field} ${e.name ? "border-danger" : "border-mist"}`}
             placeholder={t.namePlaceholder}
           />
         </Field>
@@ -55,7 +55,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
             type="email"
             autoComplete="email"
             required
-            className={`${field} ${e.email ? "border-clay" : "border-sand-dark"}`}
+            className={`${field} ${e.email ? "border-danger" : "border-mist"}`}
             placeholder={t.emailPlaceholder}
           />
         </Field>
@@ -68,7 +68,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
             name="phone"
             type="tel"
             autoComplete="tel"
-            className={`${field} border-sand-dark`}
+            className={`${field} border-mist`}
             placeholder={t.phonePlaceholder}
           />
         </Field>
@@ -78,7 +78,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
             name="interest"
             required
             defaultValue=""
-            className={`${field} appearance-none ${e.interest ? "border-clay" : "border-sand-dark"}`}
+            className={`${field} appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%20fill='none'%20stroke='%23004575'%20stroke-width='1.75'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m6%208%204%204%204-4'/%3E%3C/svg%3E")] bg-[length:1.25rem] bg-[right_0.9rem_center] bg-no-repeat pr-10 ${e.interest ? "border-danger" : "border-mist"}`}
           >
             <option value="" disabled>
               {t.choose}
@@ -96,7 +96,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           name="message"
           rows={5}
           required
-          className={`${field} resize-y ${e.message ? "border-clay" : "border-sand-dark"}`}
+          className={`${field} resize-y ${e.message ? "border-danger" : "border-mist"}`}
           placeholder={t.messagePlaceholder}
         />
       </Field>
@@ -108,17 +108,17 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
       </div>
 
       {state.status === "error" && !Object.keys(e).length && (
-        <p role="alert" className="rounded-2xl bg-clay/10 px-4 py-3 text-sm text-clay-dark">
+        <p role="alert" className="rounded-2xl bg-danger/10 px-4 py-3 text-sm text-danger">
           {state.message}
         </p>
       )}
 
       <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-relaxed text-stone/80">{t.consent}</p>
+        <p className="text-xs leading-relaxed text-muted">{t.consent}</p>
         <button
           type="submit"
           disabled={pending}
-          className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream transition hover:-translate-y-0.5 hover:bg-forest-deep hover:shadow-soft disabled:cursor-wait disabled:opacity-60"
+          className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-semibold text-navy-deep transition hover:brightness-105 hover:shadow-lg hover:shadow-blue/20 disabled:cursor-wait disabled:opacity-60"
         >
           {pending ? t.sending : t.submit}
           {!pending && <Arrow />}
@@ -141,12 +141,12 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold text-forest">
+      <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium text-navy">
         {label}
       </label>
       {children}
       {error && (
-        <p className="mt-1.5 text-xs font-medium text-clay-dark" role="alert">
+        <p className="mt-1.5 text-xs font-medium text-danger" role="alert">
           {error}
         </p>
       )}

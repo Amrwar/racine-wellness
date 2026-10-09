@@ -15,25 +15,30 @@ export default function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          padding: 72,
-          background: "linear-gradient(135deg, #142a1f 0%, #1e3a2c 60%, #3e6b50 100%)",
-          color: "#f7f3ec",
-          fontFamily: "Georgia, serif",
+          justifyContent: "center",
+          padding: 80,
+          background: "#004575",
+          color: "#ffffff",
+          fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 28 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 999, background: "#a9c0b0", display: "flex" }} />
-          <span style={{ letterSpacing: 2, textTransform: "uppercase", fontSize: 22, color: "#a9c0b0" }}>
-            {site.name}
-          </span>
+        <div style={{ display: "flex", fontSize: 96, fontWeight: 700, letterSpacing: -3 }}>
+          <span style={{ color: "#009ffb" }}>{site.brand.first}</span>
+          <span style={{ color: "#00ee81" }}>{site.brand.second}</span>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div style={{ display: "flex", flexDirection: "column", fontSize: 84, lineHeight: 1.02, letterSpacing: -2 }}>
-            <span>{en.og.line1}</span>
-            <span style={{ color: "#a9c0b0", fontStyle: "italic" }}>{en.og.line2}</span>
-          </div>
-          <div style={{ fontSize: 30, color: "#d8c9b2" }}>{en.og.sub}</div>
+        <div style={{ display: "flex", marginTop: 16, fontSize: 40, color: "#d9d9d9" }}>{en.tagline}</div>
+        <div
+          style={{
+            display: "flex",
+            marginTop: 48,
+            width: 240,
+            height: 8,
+            borderRadius: 999,
+            background: "linear-gradient(90deg, #009ffb, #00ee81)",
+          }}
+        />
+        <div style={{ display: "flex", marginTop: 48, fontSize: 30, color: "#d9d9d9" }}>
+          {en.og.sub} · {site.phone}
         </div>
       </div>
     ),

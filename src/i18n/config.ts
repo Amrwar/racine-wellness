@@ -15,6 +15,11 @@ export function localePath(locale: Locale, path: string) {
   return clean === "/" ? `/${locale}` : `/${locale}${clean}`;
 }
 
+/** Link to a section of the home page, e.g. sectionHref("fr", "contact") → "/fr#contact". */
+export function sectionHref(locale: Locale, id: string) {
+  return `${localePath(locale, "/")}#${id}`;
+}
+
 /** Strip a locale prefix from a pathname, returning the bare path and detected locale. */
 export function splitLocale(pathname: string): { locale: Locale; path: string } {
   const [, first, ...rest] = pathname.split("/");

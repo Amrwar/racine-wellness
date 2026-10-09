@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,16 +9,10 @@ import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import "../globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
-  display: "swap",
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -71,28 +65,15 @@ function businessJsonLd(locale: Locale) {
     description: t.meta.description,
     url: `${site.url}${localePath(locale, "/")}`,
     inLanguage: htmlLang[locale],
-    telephone: site.phone,
+    telephone: site.phoneHref.replace("tel:", ""),
     email: site.email,
     image: `${site.url}/opengraph-image`,
-    priceRange: "$$",
     address: {
       "@type": "PostalAddress",
-      streetAddress: site.address.street,
       addressLocality: site.address.city,
       addressRegion: site.address.region,
-      postalCode: site.address.postal,
       addressCountry: site.address.country,
     },
-    geo: { "@type": "GeoCoordinates", ...site.geo },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "06:00",
-        closes: "20:00",
-      },
-      { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "08:00", closes: "14:00" },
-    ],
     founder: { "@type": "Person", name: site.owner, jobTitle: t.credentialsLine },
     areaServed: "Montréal, QC",
     sameAs: Object.values(site.socials),
@@ -105,12 +86,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const t = getDictionary(locale);
 
   return (
-    <html lang={htmlLang[locale]} className={`${fraunces.variable} ${manrope.variable} h-full`}>
+    <html lang={htmlLang[locale]} className={`${poppins.variable} h-full`}>
       <body className="flex min-h-full flex-col">
         <LocaleProvider locale={locale}>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-forest focus:px-4 focus:py-2 focus:text-cream"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-navy focus:px-4 focus:py-2 focus:text-white"
           >
             {t.header.skip}
           </a>

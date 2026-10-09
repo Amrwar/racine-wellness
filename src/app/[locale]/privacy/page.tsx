@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { site } from "@/lib/site";
-import { Container, PageHero } from "@/components/ui";
+import { Container, Eyebrow } from "@/components/ui";
 import { alternatesFor } from "../layout";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const m = getDictionary(locale).meta.pages.privacy;
+  const m = getDictionary(locale).meta.privacy;
   return {
     title: m.title,
     description: m.description,
@@ -38,8 +38,14 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
 
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.updated} />
-      <section className="py-20 sm:py-28">
+      <section className="bg-navy py-16 text-white sm:py-20">
+        <Container>
+          <Eyebrow light>{p.eyebrow}</Eyebrow>
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{p.title}</h1>
+          <p className="mt-4 text-mist">{p.updated}</p>
+        </Container>
+      </section>
+      <section className="py-16 sm:py-20">
         <Container>
           <div className="prose-site max-w-3xl">
             <p>{p.intro}</p>
