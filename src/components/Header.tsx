@@ -32,7 +32,7 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-navy">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-navy-deep/90 backdrop-blur-md">
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Logo label={t.header.home} />
 
@@ -74,7 +74,7 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
         id="mobile-menu"
         aria-label="Mobile"
         hidden={!open}
-        className="border-t border-white/10 bg-navy px-5 pb-6 md:hidden"
+        className="border-t border-white/10 px-5 pb-6 md:hidden"
       >
         {navSections.map((s) => (
           <a

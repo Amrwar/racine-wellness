@@ -1,0 +1,428 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>HealthyZone hero render</title>
+<style>
+  html, body { margin: 0; background: #111; }
+  canvas { display: block; width: 100vw; height: auto; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+
+const P = new URLSearchParams(location.search);
+// ?tall renders the portrait (phone) version: stones low in frame, empty navy space above for text.
+const TALL = P.has("tall");
+const W = TALL ? 1200 : 2400, H = TALL ? 2000 : 1200;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const NAVY_DEEP = new THREE.Color("#00182a");
+const scene = new THREE.Scene();
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+/** Studio lighting for reflections: a big soft top box plus brand-coloured strip lights. */
+function studioEnv() {
+  const s = new THREE.Scene();
+  s.background = new THREE.Color("#02101c");
+  const box = (w, h, color, k, pos, look) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+    m.material.color.set(color).multiplyScalar(k);
+    m.position.set(...pos);
+    m.lookAt(...look);
+    s.add(m);
+  };
+  box(10, 6, "#ffffff", 2.2, [-1, 8, 3], [0, 0, 0]);       // overhead softbox
+  box(2, 10, "#009ffb", 3.0, [8, 2, -3], [0, 1, 0]);        // blue strip, back right
+  box(2, 10, "#00ee81", 1.6, [-8, 2, -4], [0, 1, 0]);       // green strip, back left
+  box(12, 3, "#0b3a5c", 1.0, [0, 1, 9], [0, 1, 0]);         // faint navy front fill
+  return pmrem.fromScene(s, 0.02).texture;
+}
+scene.environment = studioEnv();
+
+const camera = new THREE.PerspectiveCamera(TALL ? 34 : 23, W / H, 0.1, 100);
+if (TALL) {
+  camera.position.set(2.55, 2.3, 12.5);
+  camera.lookAt(2.55, 2.85, 0);
+} else {
+  camera.position.set(0.0, 1.9, 12.5);
+  camera.lookAt(0.6, 1.45, 0);
+}
+
+/* ---------- Background: soft navy glow behind the subject, near-black edges ---------- */
+const bg = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 30),
+  new THREE.ShaderMaterial({
+    depthWrite: false,
+    uniforms: {},
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `
+      varying vec2 vUv;
+      void main(){
+        vec2 c = ${TALL ? "vec2(0.64, 0.42)" : "vec2(0.64, 0.47)"};
+        vec2 d = (vUv - c) * vec2(2.0, 1.0);
+        float g = smoothstep(0.62, 0.0, length(d));
+        // linear-space navy: core ~ #004575, fading to near black at the edges
+        vec3 edge = vec3(0.0, 0.004, 0.012);
+        vec3 mid  = vec3(0.0, 0.025, 0.075);
+        vec3 core = vec3(0.0, 0.065, 0.19);
+        vec3 col = mix(edge, mid, g);
+        col = mix(col, core, pow(g, 3.0) * 0.8);
+        col *= mix(0.35, 1.0, smoothstep(0.25, 0.5, vUv.y)); // darker below the horizon
+        gl_FragColor = vec4(col, 1.0);
+        #include <colorspace_fragment>
+      }`,
+  }),
+);
+bg.position.set(1.5, 2, -12);
+scene.add(bg);
+
+/* ---------- Noise helpers ---------- */
+function rand(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function noise3(x, y, z, r) {
+  return (
+    Math.sin(x * 1.7 + r[0]) * Math.sin(y * 2.1 + r[1]) * Math.sin(z * 1.3 + r[2]) +
+    0.5 * Math.sin(x * 3.1 + r[3]) * Math.sin(z * 2.7 + r[4])
+  );
+}
+
+/* Fine grain texture for the stone surface (bump + roughness variation). */
+function grainTexture(seed, size = 512) {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const g = c.getContext("2d");
+  const img = g.createImageData(size, size);
+  const r = rand(seed);
+  for (let i = 0; i < size * size; i++) {
+    const v = 110 + r() * 40 + (r() > 0.995 ? 80 : 0);
+    img.data.set([v, v, v, 255], i * 4);
+  }
+  g.putImageData(img, 0, 0);
+  g.filter = "blur(1px)";
+  g.drawImage(c, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(4, 2);
+  return t;
+}
+
+const grain = grainTexture(7);
+
+function stoneMaterial(color) {
+  return new THREE.MeshPhysicalMaterial({
+    color,
+    roughness: 0.62,
+    roughnessMap: grain,
+    bumpMap: grain,
+    bumpScale: 1.2,
+    clearcoat: 0.55,
+    clearcoatRoughness: 0.22,
+    envMapIntensity: 1.0,
+  });
+}
+
+/** Smooth river/massage stone: flattened sphere with gentle organic displacement. */
+function makeStone({ rx, ry: ry0, rz, seed, color = "#1c2a36" }) {
+  const ry = ry0 * 1.3;
+  let geo = new THREE.SphereGeometry(1, 160, 96);
+  geo.deleteAttribute("normal");
+  geo.deleteAttribute("uv");
+  geo = mergeVertices(geo);
+  const r = rand(seed);
+  const ph = [r() * 6, r() * 6, r() * 6, r() * 6, r() * 6];
+  const p = geo.attributes.position;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const n = noise3(v.x, v.y, v.z, ph);
+    v.multiplyScalar(1 + n * 0.05);
+    v.y *= 1 + 0.18 * v.x;            // one end slightly thicker, like a real pebble
+    // flatten the top/bottom a touch more than an ellipsoid, like a worn river stone
+    v.y *= 1 - 0.12 * Math.pow(Math.abs(v.y), 3);
+    p.setXYZ(i, v.x * rx, v.y * ry, v.z * rz);
+  }
+  geo.computeVertexNormals();
+  // spherical UVs for the grain texture
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i).normalize();
+    uv[i * 2] = 0.5 + Math.atan2(v.z, v.x) / (2 * Math.PI);
+    uv[i * 2 + 1] = 0.5 + Math.asin(v.y) / Math.PI;
+  }
+  geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  const m = new THREE.Mesh(geo, stoneMaterial(color));
+  m.castShadow = m.receiveShadow = true;
+  m.userData.ry = ry;
+  return m;
+}
+
+/* ---------- The stone stack ---------- */
+const subject = new THREE.Group();
+subject.position.set(2.55, 0, 0);
+scene.add(subject);
+
+const stackSpec = [
+  { rx: 1.25, ry: 0.36, rz: 0.95, seed: 11, tilt: [0.02, 0.3, -0.03], color: "#262e35" },
+  { rx: 1.0, ry: 0.32, rz: 0.78, seed: 23, tilt: [-0.04, 1.4, 0.05], color: "#2d353c" },
+  { rx: 0.8, ry: 0.28, rz: 0.64, seed: 37, tilt: [0.05, 2.2, -0.04], color: "#22292f" },
+  { rx: 0.6, ry: 0.23, rz: 0.5, seed: 41, tilt: [-0.03, 0.8, 0.06], color: "#30383f" },
+];
+let y = 0;
+const stack = [];
+stackSpec.forEach((s, i) => {
+  const st = makeStone(s);
+  y += st.userData.ry * (i === 0 ? 1 : 0.8);
+  st.position.set((i % 2 ? -0.04 : 0.05) * i, y, (i % 2 ? 0.03 : -0.02) * i);
+  st.rotation.set(...s.tilt);
+  y += st.userData.ry * 0.8;
+  subject.add(st);
+  stack.push(st);
+});
+
+/* Loose stones on the surface */
+const loose = [
+  { rx: 0.62, ry: 0.22, rz: 0.48, seed: 61, pos: [-1.45, 0.28, 1.15], rot: [0, 0.6, 0.02] },
+  { rx: 0.4, ry: 0.16, rz: 0.32, seed: 71, pos: [-0.55, 0.21, 1.8], rot: [0, -0.4, 0] },
+  { rx: 0.8, ry: 0.26, rz: 0.6, seed: 83, pos: [1.9, 0.34, -2.4], rot: [0, 1.1, 0] },
+];
+loose.forEach((s) => {
+  const st = makeStone({ ...s, color: "#283038" });
+  st.position.set(...s.pos);
+  st.rotation.set(...s.rot);
+  subject.add(st);
+});
+
+/* Soft contact shadows where stones touch the surface */
+function blobTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 256;
+  const g = c.getContext("2d");
+  const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, "rgba(0,0,0,0.9)");
+  gr.addColorStop(0.45, "rgba(0,0,0,0.55)");
+  gr.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 256, 256);
+  return new THREE.CanvasTexture(c);
+}
+const blob = new THREE.MeshBasicMaterial({ map: blobTexture(), transparent: true, depthWrite: false });
+for (const st of [stack[0], ...subject.children.filter((c) => c.userData.ry && !stack.includes(c))]) {
+  const box = new THREE.Box3().setFromObject(st);
+  const sz = box.getSize(new THREE.Vector3());
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(sz.x * 1.25, sz.z * 1.25), blob);
+  m.rotation.x = -Math.PI / 2;
+  m.position.set(st.position.x, 0.004, st.position.z);
+  m.renderOrder = 2;
+  subject.add(m);
+}
+
+/* ---------- Eucalyptus sprig ---------- */
+function eucalyptus(seed) {
+  const g = new THREE.Group();
+  const r = rand(seed);
+  const pts = [];
+  for (let i = 0; i <= 8; i++) {
+    const t = i / 8;
+    pts.push(new THREE.Vector3(t * 3.2, 0.06 + Math.sin(t * 3) * 0.05, Math.sin(t * 2.2) * 0.35));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const stemMat = new THREE.MeshPhysicalMaterial({ color: "#5f7d74", roughness: 0.6 });
+  const stem = new THREE.Mesh(new THREE.TubeGeometry(curve, 80, 0.018, 8), stemMat);
+  stem.castShadow = true;
+  g.add(stem);
+
+  const leafShape = new THREE.Shape();
+  leafShape.absellipse(0, 0, 0.26, 0.22, 0, Math.PI * 2);
+  const leafGeo = new THREE.ShapeGeometry(leafShape, 48);
+  // cup each leaf slightly so it catches light like a real eucalyptus leaf
+  const lp = leafGeo.attributes.position;
+  for (let i = 0; i < lp.count; i++) {
+    const x = lp.getX(i), yy = lp.getY(i);
+    lp.setZ(i, (x * x + yy * yy) * 0.55);
+  }
+  leafGeo.computeVertexNormals();
+  const leafMat = new THREE.MeshPhysicalMaterial({
+    color: "#2f5c51",
+    roughness: 0.55,
+    sheen: 0.35,
+    sheenColor: new THREE.Color("#9fd8c6"),
+    sheenRoughness: 0.6,
+    side: THREE.DoubleSide,
+  });
+  for (let i = 0; i < 9; i++) {
+    const t = 0.08 + i * 0.105;
+    const pos = curve.getPoint(t);
+    const tan = curve.getTangent(t);
+    for (const side of [-1, 1]) {
+      const leaf = new THREE.Mesh(leafGeo, leafMat);
+      const sc = 0.65 + (1 - t) * 0.55 + r() * 0.1;
+      leaf.scale.setScalar(sc);
+      const off = new THREE.Vector3(-tan.z, 0, tan.x).normalize().multiplyScalar(side * 0.2 * sc);
+      leaf.position.copy(pos).add(off);
+      leaf.position.y += 0.05 + r() * 0.06;
+      leaf.rotation.set(-Math.PI / 2 + (r() - 0.5) * 0.5, (r() - 0.5) * 0.4, side * 0.3 + (r() - 0.5) * 0.4);
+      leaf.castShadow = leaf.receiveShadow = true;
+      g.add(leaf);
+    }
+  }
+  return g;
+}
+const sprig = eucalyptus(5);
+sprig.position.set(-1.7, 0, -1.6);
+sprig.rotation.y = -0.35;
+// sprig removed: cleaner composition
+
+/* ---------- Water droplets on the stones ---------- */
+const dropMat = new THREE.MeshPhysicalMaterial({
+  color: "#ffffff",
+  roughness: 0.02,
+  transmission: 1,
+  thickness: 0.05,
+  ior: 1.33,
+  clearcoat: 1,
+  envMapIntensity: 2.2,
+});
+subject.updateMatrixWorld(true);
+const ray = new THREE.Raycaster();
+const dr = rand(99);
+const targets = subject.children.filter((c) => c.userData.ry); // stones only
+for (let i = 0; i < 70; i++) {
+  const t = targets[Math.floor(dr() * targets.length)];
+  const box = new THREE.Box3().setFromObject(t);
+  const x = THREE.MathUtils.lerp(box.min.x, box.max.x, 0.15 + dr() * 0.7);
+  const z = THREE.MathUtils.lerp(box.min.z, box.max.z, 0.15 + dr() * 0.7);
+  ray.set(new THREE.Vector3(x, 10, z), new THREE.Vector3(0, -1, 0));
+  const hit = ray.intersectObject(t)[0];
+  if (!hit) continue;
+  const s = 0.012 + Math.pow(dr(), 3) * 0.05;
+  const d = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), dropMat);
+  d.scale.set(s, s * 0.55, s);
+  const n = hit.face.normal.clone().transformDirection(t.matrixWorld);
+  d.position.copy(hit.point).addScaledVector(n, s * 0.3);
+  d.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
+  scene.add(d);
+}
+
+/* ---------- Wet surface with a soft reflection ---------- */
+const reflection = subject.clone(true);
+reflection.scale.y = -1;
+reflection.position.y = -0.002;
+reflection.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.material = o.material.clone(); o.material.side = THREE.DoubleSide; } });
+scene.add(reflection);
+
+function radialAlpha() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 512;
+  const g = c.getContext("2d");
+  const gr = g.createRadialGradient(256, 256, 30, 256, 256, 256);
+  gr.addColorStop(0, "#fff");
+  gr.addColorStop(0.55, "#bbb");
+  gr.addColorStop(1, "#000");
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 512, 512);
+  return new THREE.CanvasTexture(c);
+}
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(24, 24),
+  new THREE.MeshPhysicalMaterial({
+    color: "#03182a",
+    roughness: 0.6,
+    clearcoat: 0.5,
+    clearcoatRoughness: 0.35,
+    transparent: true,
+    opacity: 0.9,
+    alphaMap: radialAlpha(),
+    envMapIntensity: 0.4,
+  }),
+);
+floor.rotation.x = -Math.PI / 2;
+floor.position.x = 2.55;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/* ---------- Lighting ---------- */
+scene.add(new THREE.HemisphereLight("#7fb8e6", "#001020", 0.15));
+
+const key = new THREE.DirectionalLight("#fff3e6", 1.4);
+key.position.set(-4, 7, 5);
+key.target = subject;
+key.castShadow = true;
+key.shadow.mapSize.set(4096, 4096);
+key.shadow.radius = 14;
+key.shadow.blurSamples = 24;
+key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 25 });
+scene.add(key);
+
+const rimBlue = new THREE.SpotLight("#009ffb", 70, 30, 0.5, 1.0, 1.6);
+rimBlue.position.set(5.5, 4.5, -5);
+rimBlue.target = subject;
+scene.add(rimBlue);
+
+const rimGreen = new THREE.SpotLight("#00ee81", 30, 30, 0.45, 1.0, 1.6);
+rimGreen.position.set(-3.5, 3, -5.5);
+rimGreen.target = subject;
+scene.add(rimGreen);
+
+const fill = new THREE.PointLight("#5fbfff", 2, 12, 1.5);
+fill.position.set(3.5, 1.2, 4);
+scene.add(fill);
+
+/* ---------- Render + grade (vignette, grain) ---------- */
+const rt = new THREE.WebGLRenderTarget(W, H, { samples: 8, type: THREE.HalfFloatType });
+const composer = new EffectComposer(renderer, rt);
+composer.setPixelRatio(1);
+composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+const focus = camera.position.distanceTo(new THREE.Vector3(2.55, 1.2, 0.3));
+composer.addPass(new BokehPass(scene, camera, { focus, aperture: +(P.get("ap") || 0.0007), maxblur: 0.007 }));
+composer.addPass(new OutputPass());
+composer.render();
+
+const out = document.createElement("canvas");
+out.width = W; out.height = H;
+const g2 = out.getContext("2d");
+g2.drawImage(renderer.domElement, 0, 0);
+const vig = g2.createRadialGradient(W * 0.6, H * 0.5, H * 0.3, W * 0.55, H * 0.5, W * 0.75);
+vig.addColorStop(0, "rgba(0,10,20,0)");
+vig.addColorStop(1, "rgba(0,8,16,0.55)");
+g2.fillStyle = vig;
+g2.fillRect(0, 0, W, H);
+const gi = g2.getImageData(0, 0, W, H);
+const gr = rand(3);
+for (let i = 0; i < gi.data.length; i += 4) {
+  const n = (gr() - 0.5) * 7;
+  gi.data[i] += n; gi.data[i + 1] += n; gi.data[i + 2] += n;
+}
+g2.putImageData(gi, 0, 0);
+renderer.domElement.replaceWith(out);
+
+window.save = async (name, q = 0.9) => {
+  const url = out.toDataURL("image/webp", q);
+  return (await fetch("/save?name=" + name, { method: "POST", body: url })).text();
+};
+window.ready = true;
+</script>
+</body>
+</html>

@@ -39,7 +39,7 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
 
   return (
     <>
-      <section className="relative isolate overflow-hidden bg-navy py-16 text-white sm:py-20">
+      <section className="relative isolate -mt-18 overflow-hidden bg-navy pb-16 pt-34 text-white sm:pb-20 sm:pt-38">
         <PageHeaderArt />
         <Container>
           <Eyebrow light>{p.eyebrow}</Eyebrow>

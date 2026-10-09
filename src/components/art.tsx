@@ -147,32 +147,6 @@ export function Capsule({ id, tone = "brand", className = "", style }: ShapeProp
 
 const wrap = "pointer-events-none absolute inset-0 -z-10 overflow-hidden";
 
-export function HeroArt() {
-  return (
-    <div className={wrap} aria-hidden>
-      <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_85%_10%,rgb(0_159_251/0.28),transparent_70%),radial-gradient(45%_60%_at_0%_100%,rgb(0_238_129/0.14),transparent_70%)]" />
-      <Torus
-        id="hero-torus"
-        className="animate-float-slow absolute -right-52 -top-36 w-[380px] rotate-[-18deg] opacity-60 sm:-right-24 sm:-top-24 sm:w-[640px] sm:opacity-90 lg:-right-16"
-      />
-      <Orb id="hero-orb-a" tone="green" className="animate-float absolute -bottom-16 -left-14 w-56 sm:w-72" />
-      <Orb
-        id="hero-orb-b"
-        tone="blue"
-        className="animate-float absolute left-[46%] top-16 hidden w-14 lg:block"
-        style={{ animationDelay: "-3s" }}
-      />
-      <Orb id="hero-orb-c" tone="blue" className="absolute -left-24 top-10 w-80 opacity-40 blur-2xl" />
-      <Capsule
-        id="hero-capsule"
-        tone="navy"
-        className="animate-float-slow absolute bottom-10 right-[38%] hidden w-44 rotate-[28deg] opacity-80 lg:block"
-        style={{ animationDelay: "-6s" }}
-      />
-    </div>
-  );
-}
-
 export function ServicesArt() {
   return (
     <div className={wrap} aria-hidden>

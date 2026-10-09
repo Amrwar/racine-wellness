@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale, sectionHref } from "@/i18n/config";
@@ -6,7 +6,7 @@ import { site, images } from "@/lib/site";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
-import { AboutArt, ContactArt, HeroArt, ServicesArt } from "@/components/art";
+import { AboutArt, ContactArt, ServicesArt } from "@/components/art";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -15,21 +15,25 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
-      {/* ---------- Hero ---------- */}
-      <section className="relative isolate overflow-hidden bg-navy text-white">
-        <HeroArt />
-        <Container className="grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
-          <div>
+      {/* ---------- Hero: full-bleed 3D render, text over the dark side ---------- */}
+      <section className="relative isolate -mt-18 overflow-hidden bg-[#01070f] pt-18 text-white md:bg-navy-deep">
+        <HeroImage alt={t.hero.imageAlt} />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-gradient-to-b from-[#000c17]/90 via-[#000c17]/45 to-transparent lg:bg-gradient-to-r lg:from-[#000c17]/85 lg:via-[#000c17]/35 lg:to-transparent"
+        />
+        <Container className="flex min-h-[calc(100svh-4.5rem)] flex-col justify-start pb-[min(80vw,22rem)] pt-16 sm:pt-24 md:pb-16 lg:max-h-[56rem] lg:justify-center lg:py-24">
+          <div className="max-w-xl">
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
             </Eyebrow>
-            <h1 className="animate-fade-up delay-1 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="animate-fade-up delay-1 text-[2.6rem] font-medium leading-[1.08] tracking-[-0.03em] sm:text-6xl lg:text-7xl">
               {t.hero.title}
             </h1>
-            <p className="animate-fade-up delay-2 mt-6 max-w-xl text-lg leading-relaxed text-mist">
+            <p className="animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80">
               {t.hero.lead}
             </p>
-            <div className="animate-fade-up delay-3 mt-9 flex flex-wrap gap-3">
+            <div className="animate-fade-up delay-3 mt-10 flex flex-wrap gap-3">
               <Button href={sectionHref(locale, "contact")} size="lg">
                 {t.hero.book} <Arrow />
               </Button>
@@ -37,20 +41,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 <Phone className="h-5 w-5" /> {t.hero.call}
               </Button>
             </div>
-          </div>
-
-          <div className="animate-fade-up delay-2 relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="relative aspect-square overflow-hidden rounded-3xl ring-1 ring-white/10">
-              <Image
-                src={images.hero}
-                alt={t.hero.imageAlt}
-                fill
-                priority
-                sizes="(min-width: 1024px) 50vw, 90vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="bg-brand absolute -bottom-3 left-8 right-8 h-1.5 rounded-full" aria-hidden />
           </div>
         </Container>
       </section>
@@ -163,6 +153,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Container>
       </section>
     </>
+  );
+}
+
+/** Full-bleed hero render: a tall crop for phones, the wide one from tablet up. */
+function HeroImage({ alt }: { alt: string }) {
+  const common = { alt, sizes: "100vw", loading: "eager", fetchPriority: "high" } as const;
+  const {
+    props: { srcSet: wide },
+  } = getImageProps({ ...common, ...images.hero.wide });
+  const {
+    props: { srcSet: tall, ...rest },
+  } = getImageProps({ ...common, ...images.hero.tall });
+  return (
+    <picture>
+      <source media="(min-width: 768px)" srcSet={wide} />
+      <img
+        {...rest}
+        alt={alt}
+        srcSet={tall}
+        className="absolute inset-x-0 bottom-0 -z-10 h-auto w-full md:inset-0 md:h-full md:object-cover"
+      />
+    </picture>
   );
 }
 

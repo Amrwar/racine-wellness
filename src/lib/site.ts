@@ -24,6 +24,10 @@ export const navSections = [
 ] as const;
 
 export const images = {
-  hero: "/images/massage.jpg",
+  /** 3D renders of hot massage stones; re-render from design/hero-stones-scene.html. */
+  hero: {
+    wide: { src: "/images/hero-stones-wide.webp", width: 2400, height: 1200 },
+    tall: { src: "/images/hero-stones-tall.webp", width: 1200, height: 2000 },
+  },
   portrait: "/images/portrait.jpg",
 };
