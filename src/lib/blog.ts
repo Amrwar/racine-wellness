@@ -197,7 +197,7 @@ export const posts: Post[] = [
           items: [
             "A professional, padded massage table and face cradle.",
             "Clean sheets, towels and a blanket for every client.",
-            "Unscented or lightly scented oils and lotions, with options for sensitive skin.",
+            "Professional-grade oils and lotions, unscented or lightly scented, suitable for all skin types.",
           ],
         },
         { type: "h2", text: "What you need" },
@@ -248,7 +248,7 @@ export const posts: Post[] = [
           items: [
             "Une table de massage professionnelle rembourrée, avec appui-tête.",
             "Des draps, serviettes et une couverture propres pour chaque client.",
-            "Des huiles et lotions non parfumées ou légèrement parfumées, avec des options pour peaux sensibles.",
+            "Des huiles et lotions de qualité professionnelle, non parfumées ou légèrement parfumées, adaptées à tous les types de peau.",
           ],
         },
         { type: "h2", text: "Ce dont vous avez besoin" },
