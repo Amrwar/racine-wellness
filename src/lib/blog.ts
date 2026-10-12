@@ -495,7 +495,11 @@ export const posts: Post[] = [
         { type: "h2", text: "How we work on posture" },
         {
           type: "p",
-          text: "A posture assessment looks at how you stand, sit and move, from the feet up. From there, we combine massage to release the areas that are overworked with targeted exercises to strengthen the ones that aren't doing enough. That combination is what makes changes last.",
+          text: "A posture assessment evaluates how you stand, sit and move, from the feet up. Based on the findings, treatment combines massage therapy to release overworked areas with targeted exercises to strengthen those that are underactive.",
+        },
+        {
+          type: "p",
+          text: "To support lasting results, you also receive a personalized training program. Corrective exercises can be followed on their own or integrated into your existing fitness routine, so that posture work becomes part of how you already train rather than an additional commitment.",
         },
         {
           type: "quote",
@@ -539,7 +543,11 @@ export const posts: Post[] = [
         { type: "h2", text: "Comment on travaille la posture" },
         {
           type: "p",
-          text: "Une évaluation posturale regarde comment vous vous tenez, vous assoyez et bougez, à partir des pieds. Ensuite, on combine le massage pour relâcher les zones surutilisées et des exercices ciblés pour renforcer celles qui n'en font pas assez. C'est cette combinaison qui fait durer les changements.",
+          text: "Une évaluation posturale analyse la façon dont vous vous tenez, vous assoyez et bougez, à partir des pieds. Selon les résultats, le traitement combine la massothérapie pour relâcher les zones surutilisées et des exercices ciblés pour renforcer celles qui sont sous-sollicitées.",
+        },
+        {
+          type: "p",
+          text: "Pour des résultats durables, vous recevez également un programme d'entraînement personnalisé. Les exercices correctifs peuvent être réalisés seuls ou intégrés à votre routine de conditionnement physique actuelle, afin que le travail postural fasse partie de votre entraînement plutôt que de s'y ajouter.",
         },
         {
           type: "quote",
