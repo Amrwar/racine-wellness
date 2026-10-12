@@ -164,7 +164,7 @@ export const en = {
     readArticle: "Read article",
     minRead: "{n} min read",
     by: "By",
-    author: "Ziad Bik",
+    author: "Ziad",
     authorRole: "Registered Massage Therapist · Personal Trainer",
     authorBio:
       "Ziad is a registered massage therapist (RMQ) and personal trainer in Montréal. He treats clients at home, at work and at the gym across the city.",

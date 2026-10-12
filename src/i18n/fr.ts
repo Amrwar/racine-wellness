@@ -165,7 +165,7 @@ export const fr: Dictionary = {
     readArticle: "Lire l'article",
     minRead: "{n} min de lecture",
     by: "Par",
-    author: "Ziad Bik",
+    author: "Ziad",
     authorRole: "Massothérapeute agréé · Entraîneur personnel",
     authorBio:
       "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel à Montréal. Il traite ses clients à domicile, au travail et au gym partout dans la ville.",
