@@ -303,9 +303,9 @@ export const posts: Post[] = [
         {
           type: "list",
           items: [
-            "Maintenance: every two to four weeks during a training block keeps small restrictions from building up.",
-            "Before an event: a lighter session a few days before, never a deep one the day before.",
-            "After an event: wait 24 to 48 hours, then focus on gentle work to help you feel normal again.",
+            "Maintenance: regular sessions throughout a training period help prevent the build-up of muscle tension and restrictions.",
+            "Before an event: a lighter, preparatory session supports circulation and mobility without causing fatigue, with timing planned around your competition schedule.",
+            "After an event: a recovery-focused session helps reduce muscle soreness and restore normal function, adapted to how your body has responded to the effort.",
           ],
         },
         {
@@ -342,9 +342,9 @@ export const posts: Post[] = [
         {
           type: "list",
           items: [
-            "Entretien : toutes les deux à quatre semaines pendant un bloc d'entraînement, pour éviter que les petites restrictions s'accumulent.",
-            "Avant une compétition : une séance légère quelques jours avant, jamais un massage profond la veille.",
-            "Après une compétition : attendez 24 à 48 heures, puis privilégiez un travail doux pour retrouver vos sensations.",
+            "Entretien : des séances régulières tout au long d'une période d'entraînement aident à prévenir l'accumulation de tensions et de restrictions musculaires.",
+            "Avant une compétition : une séance préparatoire plus légère favorise la circulation et la mobilité sans provoquer de fatigue, planifiée selon votre calendrier de compétition.",
+            "Après une compétition : une séance axée sur la récupération aide à réduire les courbatures et à rétablir le fonctionnement normal des muscles, adaptée à la façon dont votre corps a réagi à l'effort.",
           ],
         },
         {
