@@ -87,7 +87,7 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/blog/
                 alt=""
                 width={56}
                 height={56}
-                className="h-12 w-12 rounded-full object-cover object-top ring-2 ring-white"
+                className="h-12 w-12 rounded-full object-cover object-[50%_25%] ring-2 ring-white"
               />
               <div>
                 <p className="font-semibold text-navy">{t.blog.author}</p>

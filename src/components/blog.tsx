@@ -217,7 +217,7 @@ export function AuthorCard({ t }: { t: BlogT }) {
         alt={t.author}
         width={96}
         height={96}
-        className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-4 ring-white"
+        className="h-20 w-20 shrink-0 rounded-full object-cover object-[50%_25%] ring-4 ring-white"
       />
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-dark">{t.by}</p>
