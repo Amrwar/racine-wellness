@@ -65,7 +65,7 @@ export const en = {
       {
         icon: "hands" as const,
         title: "Massage Therapy",
-        text: "Therapeutic massage to relieve pain and tension, speed up recovery and help you relax. Insurance receipts provided.",
+        text: "Therapeutic massage to relieve pain and tension, speed up recovery, improve blood circulation and help you relax. Insurance receipts provided.",
       },
       {
         icon: "posture" as const,

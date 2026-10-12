@@ -66,7 +66,7 @@ export const fr: Dictionary = {
       {
         icon: "hands" as const,
         title: "Massothérapie",
-        text: "Massage thérapeutique pour soulager la douleur et les tensions, accélérer la récupération et vous détendre. Reçus pour assurances fournis.",
+        text: "Massage thérapeutique pour soulager la douleur et les tensions, accélérer la récupération, améliorer la circulation sanguine et vous détendre. Reçus pour assurances fournis.",
       },
       {
         icon: "posture" as const,
