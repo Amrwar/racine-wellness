@@ -103,7 +103,7 @@ export const posts: Post[] = [
         { type: "h2", text: "What about soreness afterwards?" },
         {
           type: "p",
-          text: "Some mild tenderness for a day or two after deep work is common, a bit like after a good workout. Drinking water, gentle movement and a warm shower usually help. Sharp pain is never the goal: tell your therapist during the session so pressure can be adjusted.",
+          text: "Some mild tenderness for a day or two after deep work is common, a bit like after a good workout. Drinking water, gentle movement and a warm shower usually help. Open communication with your therapist throughout the session ensures the pressure remains at a level that suits you.",
         },
         {
           type: "quote",
@@ -157,7 +157,7 @@ export const posts: Post[] = [
         { type: "h2", text: "Et les courbatures après?" },
         {
           type: "p",
-          text: "Une légère sensibilité pendant un jour ou deux après un travail en profondeur est fréquente, un peu comme après un bon entraînement. Boire de l'eau, bouger doucement et prendre une douche chaude aident généralement. Une douleur vive n'est jamais l'objectif : dites-le pendant la séance pour que la pression soit ajustée.",
+          text: "Une légère sensibilité pendant un jour ou deux après un travail en profondeur est fréquente, un peu comme après un bon entraînement. Boire de l'eau, bouger doucement et prendre une douche chaude aident généralement. Une bonne communication avec votre massothérapeute tout au long de la séance permet de maintenir une pression qui vous convient.",
         },
         {
           type: "quote",
