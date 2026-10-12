@@ -91,7 +91,7 @@ export const posts: Post[] = [
         {
           type: "list",
           items: [
-            "Choose Swedish if your priority is relaxation, stress relief or better sleep.",
+            "Choose Swedish if your priority is relaxation, stress relief, better sleep or improved blood circulation.",
             "Choose deep tissue for persistent tension, stiffness or a specific area that bothers you.",
             "Not sure? Many sessions combine both: relaxing strokes to warm up, then focused work where it's needed.",
           ],
@@ -141,7 +141,7 @@ export const posts: Post[] = [
         {
           type: "list",
           items: [
-            "Choisissez le suédois si votre priorité est la détente, la gestion du stress ou le sommeil.",
+            "Choisissez le suédois si votre priorité est la détente, la gestion du stress, le sommeil ou une meilleure circulation sanguine.",
             "Choisissez le profond pour des tensions persistantes, de la raideur ou une zone précise qui vous dérange.",
             "Vous hésitez? Plusieurs séances combinent les deux : des mouvements relaxants pour réchauffer, puis un travail ciblé là où c'est nécessaire.",
           ],
