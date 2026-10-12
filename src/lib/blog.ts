@@ -86,13 +86,17 @@ export const posts: Post[] = [
         { type: "h2", text: "Deep tissue massage: work where it's stuck" },
         {
           type: "p",
-          text: "Deep tissue massage uses slow, sustained pressure to reach the deeper layers of muscle and the surrounding fascia. It is directed at specific areas of chronic tension or restricted movement, such as the upper back, neck, hips and lower back, and pressure is increased progressively according to the client's tolerance. Research supports this approach for persistent pain: in a 2014 randomized trial of 59 adults with chronic low back pain, published in The Scientific World Journal, two weeks of deep tissue massage significantly reduced pain and disability, with results comparable to deep tissue massage combined with anti-inflammatory medication.",
+          text: "Deep tissue massage uses slow, sustained pressure to reach the deeper layers of muscle and the surrounding fascia. It is directed at specific areas of chronic tension or restricted movement, such as the upper back, neck, hips, lower back and legs, and pressure is increased progressively according to the client's tolerance. Research supports this approach for persistent pain: in a 2014 randomized trial of 59 adults with chronic low back pain, published in The Scientific World Journal, two weeks of deep tissue massage significantly reduced pain and disability, with results comparable to deep tissue massage combined with anti-inflammatory medication.",
+        },
+        {
+          type: "p",
+          text: "Athletes are among those who benefit most. Intense training places repeated load on the muscles, and recovery between sessions is essential to performance and injury prevention. A 2018 meta-analysis of 99 studies, published in Frontiers in Physiology, found massage to be the most effective recovery technique for reducing delayed-onset muscle soreness and perceived fatigue after exercise.",
         },
         {
           type: "list",
           items: [
             "Swedish massage is best suited to relaxation, stress relief, sleep quality and blood circulation.",
-            "Deep tissue massage is best suited to chronic muscle tension, stiffness and localized pain.",
+            "Deep tissue massage is best suited to chronic muscle tension, stiffness, localized pain and athletic recovery.",
             "Many sessions combine both: Swedish techniques to prepare the tissue, followed by targeted deep tissue work where it is needed.",
           ],
         },
@@ -136,13 +140,17 @@ export const posts: Post[] = [
         { type: "h2", text: "Le massage profond : travailler là où ça bloque" },
         {
           type: "p",
-          text: "Le massage profond utilise une pression lente et soutenue pour atteindre les couches profondes des muscles et le fascia qui les entoure. Il cible des zones précises de tension chronique ou de mobilité réduite, comme le haut du dos, le cou, les hanches et le bas du dos, et la pression est augmentée progressivement selon la tolérance du client. La recherche appuie cette approche pour les douleurs persistantes : dans un essai randomisé publié en 2014 dans The Scientific World Journal, auprès de 59 adultes souffrant de lombalgie chronique, deux semaines de massage profond ont réduit de façon significative la douleur et l'incapacité, avec des résultats comparables à ceux du massage profond combiné à un anti-inflammatoire.",
+          text: "Le massage profond utilise une pression lente et soutenue pour atteindre les couches profondes des muscles et le fascia qui les entoure. Il cible des zones précises de tension chronique ou de mobilité réduite, comme le haut du dos, le cou, les hanches, le bas du dos et les jambes, et la pression est augmentée progressivement selon la tolérance du client. La recherche appuie cette approche pour les douleurs persistantes : dans un essai randomisé publié en 2014 dans The Scientific World Journal, auprès de 59 adultes souffrant de lombalgie chronique, deux semaines de massage profond ont réduit de façon significative la douleur et l'incapacité, avec des résultats comparables à ceux du massage profond combiné à un anti-inflammatoire.",
+        },
+        {
+          type: "p",
+          text: "Les athlètes comptent parmi ceux qui en bénéficient le plus. L'entraînement intensif impose une charge répétée aux muscles, et la récupération entre les séances est essentielle à la performance et à la prévention des blessures. Une méta-analyse de 99 études publiée en 2018 dans Frontiers in Physiology a conclu que le massage est la technique de récupération la plus efficace pour réduire les courbatures et la fatigue perçue après l'effort.",
         },
         {
           type: "list",
           items: [
             "Le massage suédois convient particulièrement à la détente, à la gestion du stress, à la qualité du sommeil et à la circulation sanguine.",
-            "Le massage profond convient particulièrement aux tensions musculaires chroniques, à la raideur et aux douleurs localisées.",
+            "Le massage profond convient particulièrement aux tensions musculaires chroniques, à la raideur, aux douleurs localisées et à la récupération sportive.",
             "Plusieurs séances combinent les deux : des techniques suédoises pour préparer les tissus, suivies d'un travail profond ciblé là où c'est nécessaire.",
           ],
         },
