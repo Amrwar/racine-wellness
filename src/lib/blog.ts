@@ -86,14 +86,14 @@ export const posts: Post[] = [
         { type: "h2", text: "Deep tissue massage: work where it's stuck" },
         {
           type: "p",
-          text: "Deep tissue work is slower and more specific. Pressure is applied gradually to reach deeper layers of muscle and fascia, often around areas that feel tight, restricted or painful: the upper back, neck, hips or lower back. It is not about pressing as hard as possible; good deep tissue work stays within a level of intensity you can breathe through.",
+          text: "Deep tissue massage uses slow, sustained pressure to reach the deeper layers of muscle and the surrounding fascia. It is directed at specific areas of chronic tension or restricted movement, such as the upper back, neck, hips and lower back, and pressure is increased progressively according to the client's tolerance. Research supports this approach for persistent pain: in a 2014 randomized trial of 59 adults with chronic low back pain, published in The Scientific World Journal, two weeks of deep tissue massage significantly reduced pain and disability, with results comparable to deep tissue massage combined with anti-inflammatory medication.",
         },
         {
           type: "list",
           items: [
-            "Choose Swedish if your priority is relaxation, stress relief, better sleep or improved blood circulation.",
-            "Choose deep tissue for persistent tension, stiffness or a specific area that bothers you.",
-            "Not sure? Many sessions combine both: relaxing strokes to warm up, then focused work where it's needed.",
+            "Swedish massage is best suited to relaxation, stress relief, sleep quality and blood circulation.",
+            "Deep tissue massage is best suited to chronic muscle tension, stiffness and localized pain.",
+            "Many sessions combine both: Swedish techniques to prepare the tissue, followed by targeted deep tissue work where it is needed.",
           ],
         },
         { type: "h2", text: "What about soreness afterwards?" },
@@ -136,14 +136,14 @@ export const posts: Post[] = [
         { type: "h2", text: "Le massage profond : travailler là où ça bloque" },
         {
           type: "p",
-          text: "Le travail en profondeur est plus lent et plus ciblé. La pression est appliquée graduellement pour atteindre les couches profondes des muscles et du fascia, souvent dans les zones tendues ou douloureuses : haut du dos, cou, hanches ou bas du dos. Il ne s'agit pas d'appuyer le plus fort possible; un bon massage profond reste à une intensité qui vous permet de respirer calmement.",
+          text: "Le massage profond utilise une pression lente et soutenue pour atteindre les couches profondes des muscles et le fascia qui les entoure. Il cible des zones précises de tension chronique ou de mobilité réduite, comme le haut du dos, le cou, les hanches et le bas du dos, et la pression est augmentée progressivement selon la tolérance du client. La recherche appuie cette approche pour les douleurs persistantes : dans un essai randomisé publié en 2014 dans The Scientific World Journal, auprès de 59 adultes souffrant de lombalgie chronique, deux semaines de massage profond ont réduit de façon significative la douleur et l'incapacité, avec des résultats comparables à ceux du massage profond combiné à un anti-inflammatoire.",
         },
         {
           type: "list",
           items: [
-            "Choisissez le suédois si votre priorité est la détente, la gestion du stress, le sommeil ou une meilleure circulation sanguine.",
-            "Choisissez le profond pour des tensions persistantes, de la raideur ou une zone précise qui vous dérange.",
-            "Vous hésitez? Plusieurs séances combinent les deux : des mouvements relaxants pour réchauffer, puis un travail ciblé là où c'est nécessaire.",
+            "Le massage suédois convient particulièrement à la détente, à la gestion du stress, à la qualité du sommeil et à la circulation sanguine.",
+            "Le massage profond convient particulièrement aux tensions musculaires chroniques, à la raideur et aux douleurs localisées.",
+            "Plusieurs séances combinent les deux : des techniques suédoises pour préparer les tissus, suivies d'un travail profond ciblé là où c'est nécessaire.",
           ],
         },
         { type: "h2", text: "Et les courbatures après?" },
