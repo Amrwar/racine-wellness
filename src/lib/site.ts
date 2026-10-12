@@ -4,8 +4,8 @@ export const site = {
   owner: "Ziad Bik",
   url: "https://healthyzone.vercel.app",
   email: "info@healthyzone.ca",
-  phone: "(438) 274-5500",
-  phoneHref: "tel:+14382745500",
+  phone: "(438) 225-8859",
+  phoneHref: "tel:+14382258859",
   address: {
     city: "Saint-Laurent",
     region: "QC",
