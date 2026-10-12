@@ -200,11 +200,6 @@ export const posts: Post[] = [
           type: "p",
           text: "Just a quiet room with enough space to walk around a table, roughly two by three metres, and a nearby outlet if you'd like the table warmer. Dim the lights if you can, silence your phone, and that's it. Set-up and packing take about ten minutes and aren't counted in your treatment time.",
         },
-        { type: "h2", text: "At the office or the gym" },
-        {
-          type: "p",
-          text: "Workplace sessions are a simple way to help a team manage stress and desk-related tension, and they fit easily into a lunch hour. At the gym, a session right after training or on a rest day helps recovery without an extra trip.",
-        },
         {
           type: "quote",
           text: "The best place to relax is the one you don't have to leave.",
@@ -239,11 +234,6 @@ export const posts: Post[] = [
         {
           type: "p",
           text: "Simplement une pièce calme avec assez d'espace pour circuler autour d'une table, environ deux mètres sur trois, et une prise de courant à proximité si vous souhaitez le chauffe-table. Tamisez la lumière si possible, mettez votre téléphone en silencieux, et c'est tout. L'installation et le rangement prennent une dizaine de minutes et ne sont pas comptés dans votre temps de traitement.",
-        },
-        { type: "h2", text: "Au bureau ou au gym" },
-        {
-          type: "p",
-          text: "Les séances en entreprise sont une façon simple d'aider une équipe à gérer le stress et les tensions liées au travail de bureau, et elles s'intègrent facilement à une heure de dîner. Au gym, une séance juste après l'entraînement ou un jour de repos aide à la récupération sans déplacement supplémentaire.",
         },
         {
           type: "quote",
