@@ -100,7 +100,7 @@ export const fr: Dictionary = {
     eyebrow: "À propos",
     title: "Bonjour, je suis Ziad",
     text1:
-      "Je suis massothérapeute agréé et entraîneur personnel à Saint-Laurent. J'aide les gens à soulager leurs douleurs, corriger leur posture et rester forts et actifs, peu importe leur âge.",
+      "Je suis massothérapeute agréé et entraîneur personnel à Montréal. J'aide les gens à soulager leurs douleurs, corriger leur posture et rester forts et actifs, peu importe leur âge.",
     text2:
       "Je me déplace avec tout le nécessaire pour le traitement ou l'entraînement, à domicile, au bureau ou à votre gym, et je bâtis chaque plan selon votre corps et votre horaire.",
     portraitAlt: "Portrait de Ziad, massothérapeute et entraîneur personnel",
@@ -108,7 +108,6 @@ export const fr: Dictionary = {
       "Massothérapeute agréé · membre RMQ",
       "Entraîneur personnel certifié",
       "Service mobile partout à Montréal",
-      "Service en français et en anglais",
     ],
   },
 
