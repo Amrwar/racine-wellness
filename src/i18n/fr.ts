@@ -128,7 +128,7 @@ export const fr: Dictionary = {
     email: "Courriel",
     emailPlaceholder: "vous@exemple.com",
     phone: "Téléphone (facultatif)",
-    phonePlaceholder: "438 225 8859",
+    phonePlaceholder: "+1 438 225 8859",
     interest: "Je m'intéresse à",
     choose: "Choisir une option",
     interests: [
