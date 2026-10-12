@@ -167,7 +167,7 @@ export const en = {
     author: "Ziad Bik",
     authorRole: "Registered Massage Therapist · Personal Trainer",
     authorBio:
-      "Ziad is a registered massage therapist (RMQ) and personal trainer in Saint-Laurent. He treats clients at home, at work and at the gym across Montréal, in French and English.",
+      "Ziad is a registered massage therapist (RMQ) and personal trainer in Montréal. He treats clients at home, at work and at the gym across the city.",
     backToBlog: "All articles",
     related: "Keep reading",
     latestEyebrow: "From the blog",

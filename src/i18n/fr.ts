@@ -168,7 +168,7 @@ export const fr: Dictionary = {
     author: "Ziad Bik",
     authorRole: "Massothérapeute agréé · Entraîneur personnel",
     authorBio:
-      "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel à Saint-Laurent. Il traite ses clients à domicile, au travail et au gym partout à Montréal, en français et en anglais.",
+      "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel à Montréal. Il traite ses clients à domicile, au travail et au gym partout dans la ville.",
     backToBlog: "Tous les articles",
     related: "À lire aussi",
     latestEyebrow: "Du blogue",
