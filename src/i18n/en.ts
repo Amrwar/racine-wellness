@@ -128,7 +128,7 @@ export const en = {
     email: "Email",
     emailPlaceholder: "you@example.com",
     phone: "Phone (optional)",
-    phonePlaceholder: "438 555 0142",
+    phonePlaceholder: "438 225 8859",
     interest: "I'm interested in",
     choose: "Choose an option",
     interests: [
