@@ -75,7 +75,7 @@ export const posts: Post[] = [
         { type: "h2", text: "Swedish massage: calm the system" },
         {
           type: "p",
-          text: "Swedish massage uses long, flowing strokes, kneading and gentle rhythm. Its main goal is to help the nervous system shift out of “go mode”. Many clients use it to manage stress, improve sleep quality or simply reset after a demanding week.",
+          text: "Swedish massage uses long, flowing strokes, kneading and gentle rhythm. Its main goal is to help the nervous system shift out of “go mode”, and it also improves blood circulation. Many clients use it to manage stress, improve sleep quality or simply reset after a demanding week.",
         },
         {
           type: "image",
@@ -125,7 +125,7 @@ export const posts: Post[] = [
         { type: "h2", text: "Le massage suédois : apaiser le système" },
         {
           type: "p",
-          text: "Le massage suédois utilise de longs mouvements fluides, du pétrissage et un rythme doux. Son objectif principal est d'aider le système nerveux à sortir du « mode alerte ». Plusieurs clients l'utilisent pour gérer le stress, mieux dormir ou simplement décompresser après une semaine chargée.",
+          text: "Le massage suédois utilise de longs mouvements fluides, du pétrissage et un rythme doux. Son objectif principal est d'aider le système nerveux à sortir du « mode alerte », tout en améliorant la circulation sanguine. Plusieurs clients l'utilisent pour gérer le stress, mieux dormir ou simplement décompresser après une semaine chargée.",
         },
         {
           type: "image",
