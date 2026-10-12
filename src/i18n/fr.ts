@@ -98,12 +98,12 @@ export const fr: Dictionary = {
 
   about: {
     eyebrow: "À propos",
-    title: "Bonjour, je suis Ziad Bik",
+    title: "Bonjour, je suis Ziad",
     text1:
       "Je suis massothérapeute agréé et entraîneur personnel à Saint-Laurent. J'aide les gens à soulager leurs douleurs, corriger leur posture et rester forts et actifs, peu importe leur âge.",
     text2:
       "Je me déplace avec tout le nécessaire pour le traitement ou l'entraînement, à domicile, au bureau ou à votre gym, et je bâtis chaque plan selon votre corps et votre horaire.",
-    portraitAlt: "Portrait de Ziad Bik, massothérapeute et entraîneur personnel",
+    portraitAlt: "Portrait de Ziad, massothérapeute et entraîneur personnel",
     credentials: [
       "Massothérapeute agréé · membre RMQ",
       "Entraîneur personnel certifié",

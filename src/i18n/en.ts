@@ -97,12 +97,12 @@ export const en = {
 
   about: {
     eyebrow: "About",
-    title: "Hi, I'm Ziad Bik",
+    title: "Hi, I'm Ziad",
     text1:
       "I'm a registered massage therapist and personal trainer based in Saint-Laurent. I help people relieve pain, correct their posture and stay strong and active, whatever their age.",
     text2:
       "I come to you with everything needed for treatment or training, at home, at the office or at your gym, and I build each plan around your body and your schedule.",
-    portraitAlt: "Portrait of Ziad Bik, massage therapist and personal trainer",
+    portraitAlt: "Portrait of Ziad, massage therapist and personal trainer",
     credentials: [
       "Registered Massage Therapist · RMQ member",
       "Certified Personal Trainer",
