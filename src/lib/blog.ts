@@ -186,6 +186,11 @@ export const posts: Post[] = [
           type: "p",
           text: "One of the biggest benefits of massage is the calm you feel afterwards, and it disappears quickly when you have to drive home through traffic. That's why most HealthyZone sessions happen where you already are: at home, at the office or at your gym, anywhere in Montréal.",
         },
+        { type: "h2", text: "Before the session" },
+        {
+          type: "p",
+          text: "Take a warm shower beforehand. The heat helps your muscles relax, so the treatment can work more effectively from the very start.",
+        },
         { type: "h2", text: "What I bring" },
         {
           type: "list",
@@ -199,6 +204,17 @@ export const posts: Post[] = [
         {
           type: "p",
           text: "Just a quiet room with enough space to walk around a table, roughly two by three metres, and a nearby outlet if you'd like the table warmer. Dim the lights if you can, silence your phone, and that's it. Set-up and packing take about ten minutes and aren't counted in your treatment time.",
+        },
+        { type: "h2", text: "After the session" },
+        {
+          type: "list",
+          items: [
+            "Take your time getting up and avoid moving quickly.",
+            "Drink more water than usual for the rest of the day.",
+            "Have something to eat.",
+            "If you'd like to shower, wait a couple of hours to avoid cramps.",
+            "Take a short walk if possible.",
+          ],
         },
         {
           type: "quote",
@@ -221,6 +237,11 @@ export const posts: Post[] = [
           type: "p",
           text: "L'un des grands bienfaits du massage, c'est le calme qu'on ressent ensuite, et il disparaît vite quand il faut rentrer dans le trafic. C'est pourquoi la plupart des séances HealthyZone ont lieu là où vous êtes déjà : à la maison, au bureau ou au gym, partout à Montréal.",
         },
+        { type: "h2", text: "Avant la séance" },
+        {
+          type: "p",
+          text: "Prenez une douche chaude avant la séance. La chaleur aide vos muscles à se détendre, ce qui permet au traitement d'agir plus efficacement dès le départ.",
+        },
         { type: "h2", text: "Ce que j'apporte" },
         {
           type: "list",
@@ -234,6 +255,17 @@ export const posts: Post[] = [
         {
           type: "p",
           text: "Simplement une pièce calme avec assez d'espace pour circuler autour d'une table, environ deux mètres sur trois, et une prise de courant à proximité si vous souhaitez le chauffe-table. Tamisez la lumière si possible, mettez votre téléphone en silencieux, et c'est tout. L'installation et le rangement prennent une dizaine de minutes et ne sont pas comptés dans votre temps de traitement.",
+        },
+        { type: "h2", text: "Après la séance" },
+        {
+          type: "list",
+          items: [
+            "Prenez votre temps pour vous lever et évitez les mouvements brusques.",
+            "Buvez plus d'eau que d'habitude pour le reste de la journée.",
+            "Prenez le temps de manger.",
+            "Si vous souhaitez prendre une douche, attendez quelques heures pour éviter les crampes.",
+            "Faites une courte marche si possible.",
+          ],
         },
         {
           type: "quote",
@@ -609,12 +641,7 @@ export const posts: Post[] = [
           type: "p",
           text: "Booking your first massage can come with a few questions: what do I wear, what will you ask me, will it hurt? Knowing what happens makes it much easier to relax, so here's how a typical HealthyZone session works.",
         },
-        { type: "h2", text: "1. Before the session" },
-        {
-          type: "p",
-          text: "Take a warm shower beforehand. The heat helps your muscles relax, so the treatment can work more effectively from the very start.",
-        },
-        { type: "h2", text: "2. A short conversation" },
+        { type: "h2", text: "1. A short conversation" },
         {
           type: "p",
           text: "We start with a quick health questionnaire and a conversation about why you came in: pain, stress, recovery, posture or simply relaxation. I'll ask about past injuries, medical conditions and medications, so the treatment is safe and adapted to you.",
@@ -625,7 +652,7 @@ export const posts: Post[] = [
           alt: "Ziad in the HealthyZone treatment room",
           caption: "Every session begins with a conversation about your goals.",
         },
-        { type: "h2", text: "3. During the session: your comfort comes first" },
+        { type: "h2", text: "2. Your comfort comes first" },
         {
           type: "list",
           items: [
@@ -640,20 +667,10 @@ export const posts: Post[] = [
           alt: "Professional massage table set up in the treatment room",
           caption: "Mobile sessions bring the same professional table to your home or office.",
         },
-        { type: "h2", text: "4. After the session" },
-        {
-          type: "list",
-          items: [
-            "Take your time getting up and avoid moving quickly.",
-            "Drink more water than usual for the rest of the day.",
-            "Have something to eat.",
-            "If you'd like to shower, wait a couple of hours to avoid cramps.",
-            "Take a short walk if possible.",
-          ],
-        },
+        { type: "h2", text: "3. After the session" },
         {
           type: "p",
-          text: "If useful, I'll suggest a couple of simple stretches or exercises. You'll receive a receipt you can submit to your insurance plan; check your coverage for massage therapy before your visit.",
+          text: "Take a moment before getting up, drink some water, and notice how you feel over the next day. If useful, I'll suggest a couple of simple stretches or exercises. You'll receive a receipt you can submit to your insurance plan; check your coverage for massage therapy before your visit.",
         },
         {
           type: "quote",
@@ -676,12 +693,7 @@ export const posts: Post[] = [
           type: "p",
           text: "Réserver un premier massage peut soulever quelques questions : quoi porter, quelles questions me seront posées, est-ce que ça fera mal? Savoir ce qui se passe aide beaucoup à se détendre. Voici comment se déroule une séance typique chez HealthyZone.",
         },
-        { type: "h2", text: "1. Avant la séance" },
-        {
-          type: "p",
-          text: "Prenez une douche chaude avant la séance. La chaleur aide vos muscles à se détendre, ce qui permet au traitement d'agir plus efficacement dès le départ.",
-        },
-        { type: "h2", text: "2. Une courte discussion" },
+        { type: "h2", text: "1. Une courte discussion" },
         {
           type: "p",
           text: "On commence par un bref questionnaire de santé et une discussion sur la raison de votre visite : douleur, stress, récupération, posture ou simple détente. Je vous questionne sur vos blessures passées, vos conditions médicales et vos médicaments, pour que le traitement soit sécuritaire et adapté.",
@@ -692,7 +704,7 @@ export const posts: Post[] = [
           alt: "Ziad dans la salle de traitement HealthyZone",
           caption: "Chaque séance commence par une discussion sur vos objectifs.",
         },
-        { type: "h2", text: "3. Pendant la séance : votre confort avant tout" },
+        { type: "h2", text: "2. Votre confort avant tout" },
         {
           type: "list",
           items: [
@@ -707,20 +719,10 @@ export const posts: Post[] = [
           alt: "Table de massage professionnelle installée dans la salle de traitement",
           caption: "Les séances mobiles apportent la même table professionnelle chez vous ou au bureau.",
         },
-        { type: "h2", text: "4. Après la séance" },
-        {
-          type: "list",
-          items: [
-            "Prenez votre temps pour vous lever et évitez les mouvements brusques.",
-            "Buvez plus d'eau que d'habitude pour le reste de la journée.",
-            "Prenez le temps de manger.",
-            "Si vous souhaitez prendre une douche, attendez quelques heures pour éviter les crampes.",
-            "Faites une courte marche si possible.",
-          ],
-        },
+        { type: "h2", text: "3. Après la séance" },
         {
           type: "p",
-          text: "Au besoin, je vous suggère quelques étirements ou exercices simples. Vous recevez un reçu à soumettre à votre assurance; vérifiez votre couverture en massothérapie avant votre visite.",
+          text: "Prenez un moment avant de vous lever, buvez un peu d'eau et observez comment vous vous sentez le lendemain. Au besoin, je vous suggère quelques étirements ou exercices simples. Vous recevez un reçu à soumettre à votre assurance; vérifiez votre couverture en massothérapie avant votre visite.",
         },
         {
           type: "quote",
