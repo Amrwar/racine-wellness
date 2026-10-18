@@ -36,7 +36,7 @@ export const images = {
   portrait: "/images/portrait.jpg",
   /** Section backgrounds, built by design/section-photos.py. */
   sections: {
-    services: "/images/section-training.webp",
+    services: "/images/section-trees.webp",
     about: "/images/section-community.webp",
     contact: "/images/section-room.webp",
   },
