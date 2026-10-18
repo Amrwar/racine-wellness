@@ -126,13 +126,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Latest from the blog ---------- */}
-      <section className="bg-white py-20 sm:py-28">
+      <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
+        <SectionPhoto src={images.sections.blog} className="object-[50%_60%]" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/85 via-ink/65 to-ink/85" />
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-            <SectionHeader eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
+            <SectionHeader light eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
             <Link
               href={localePath(locale, "/blog")}
-              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-blue-dark"
+              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-green hover:text-white"
             >
               {t.blog.viewAll} <Arrow />
             </Link>

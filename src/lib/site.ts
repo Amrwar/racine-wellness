@@ -38,6 +38,7 @@ export const images = {
   sections: {
     services: "/images/section-trees.webp",
     about: "/images/section-river.webp",
+    blog: "/images/section-riverbank.webp",
     contact: "/images/section-room.webp",
   },
 };
