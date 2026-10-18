@@ -92,7 +92,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- About ---------- */}
       <section id="about" className="relative isolate overflow-hidden bg-surface py-20 sm:py-28">
-        <SectionPhoto src={images.sections.about} className="object-[50%_30%] blur-[2px]" />
+        <SectionPhoto src={images.sections.about} className="object-[50%_55%] blur-[2px]" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-surface/95 via-surface/85 to-surface/70" />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
