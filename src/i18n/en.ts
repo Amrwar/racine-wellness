@@ -51,11 +51,32 @@ export const en = {
   },
 
   trust: [
-    "Registered massage therapist",
+    "Registered therapist",
     "Insurance receipts",
     "Home & office visits",
     "Français · English",
   ],
+  /** Points in the navy bands between home-page sections, by the section that follows. */
+  breaks: {
+    about: [
+      "Clinical assessment",
+      "Personalized plans",
+      "All ages & levels",
+      "Equipment provided",
+    ],
+    blog: [
+      "Practical advice",
+      "Recovery & self-care",
+      "Treatments explained",
+      "Written by Ziad",
+    ],
+    contact: [
+      "Book by phone or email",
+      "Home, office or gym",
+      "Across Montréal",
+      "Insurance receipts",
+    ],
+  },
 
   services: {
     eyebrow: "Services",

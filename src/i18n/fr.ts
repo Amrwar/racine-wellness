@@ -57,6 +57,26 @@ export const fr: Dictionary = {
     "À domicile ou au bureau",
     "Français · English",
   ],
+  breaks: {
+    about: [
+      "Évaluation clinique",
+      "Plans personnalisés",
+      "Tous âges, tous niveaux",
+      "Équipement fourni",
+    ],
+    blog: [
+      "Conseils pratiques",
+      "Récupération et soins",
+      "Traitements expliqués",
+      "Rédigé par Ziad",
+    ],
+    contact: [
+      "Téléphone ou courriel",
+      "Domicile, bureau ou gym",
+      "Partout à Montréal",
+      "Reçus d'assurance",
+    ],
+  },
 
   services: {
     eyebrow: "Services",

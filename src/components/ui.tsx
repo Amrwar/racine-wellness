@@ -120,12 +120,22 @@ export function SectionDivider() {
   );
 }
 
-/** Slim navy band between two dark photo sections, matching the trust strip under the hero. */
-export function SectionBreak() {
+/** Navy band between home-page sections, with short points separated by hairlines. */
+export function SectionBreak({ items }: { items: readonly string[] }) {
   return (
-    <div aria-hidden className="relative h-12 border-b border-white/10 bg-navy sm:h-14">
+    <section className="relative border-y border-white/10 bg-navy">
       <SectionDivider />
-    </div>
+      <Container>
+        <ul className="grid grid-cols-2 gap-y-5 py-7 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white/80 sm:text-xs lg:grid-cols-4 lg:divide-x lg:divide-white/15 lg:py-8">
+          {items.map((item) => (
+            <li key={item} className="flex items-center justify-center gap-2.5 px-3 text-center lg:px-4">
+              <Check className="h-4 w-4 text-green" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
   );
 }
 
