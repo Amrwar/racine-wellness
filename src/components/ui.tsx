@@ -110,6 +110,25 @@ export function SectionHeader({
   );
 }
 
+/** Top edge of a navy band: a hairline that fades out at the edges, with a short brand-coloured accent in the middle. */
+export function SectionDivider() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10">
+      <div className="h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      <div className="absolute left-1/2 top-0 h-[3px] w-16 -translate-x-1/2 -translate-y-px rounded-full bg-gradient-to-r from-blue to-green shadow-[0_0_12px_rgba(0,238,129,0.45)]" />
+    </div>
+  );
+}
+
+/** Slim navy band between two dark photo sections, matching the trust strip under the hero. */
+export function SectionBreak() {
+  return (
+    <div aria-hidden className="relative h-12 border-b border-white/10 bg-navy sm:h-14">
+      <SectionDivider />
+    </div>
+  );
+}
+
 export function Check({ className = "" }: { className?: string }) {
   return (
     <svg

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale, localePath, sectionHref } from "@/i18n/config";
 import { site, images } from "@/lib/site";
-import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
+import { Arrow, Button, Check, Container, Eyebrow, SectionBreak, SectionDivider, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/blog";
@@ -49,14 +49,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Trust strip ---------- */}
-      <section className="border-b border-mist/60 bg-surface">
+      <section className="relative border-b border-white/10 bg-navy">
+        <SectionDivider />
         <Container>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-4 py-6 text-sm font-medium text-navy lg:grid-cols-4">
+          <ul className="grid grid-cols-2 gap-y-5 py-7 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-xs lg:grid-cols-4 lg:divide-x lg:divide-white/15 lg:py-8">
             {t.trust.map((item) => (
-              <li key={item} className="flex items-center gap-2.5">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green/20 text-navy">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
+              <li key={item} className="flex items-center justify-center gap-2.5 px-3 text-center lg:px-4 xl:whitespace-nowrap">
+                <Check className="h-4 w-4 text-green" />
                 {item}
               </li>
             ))}
@@ -89,6 +88,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
         </Container>
       </section>
+
+      <SectionBreak />
 
       {/* ---------- About ---------- */}
       <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
@@ -125,6 +126,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Container>
       </section>
 
+      <SectionBreak />
+
       {/* ---------- Latest from the blog ---------- */}
       <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
         <SectionPhoto src={images.sections.blog} className="object-[50%_60%]" />
@@ -150,6 +153,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
         </Container>
       </section>
+
+      <SectionBreak />
 
       {/* ---------- Contact ---------- */}
       <section id="contact" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
