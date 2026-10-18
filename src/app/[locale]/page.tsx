@@ -64,9 +64,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- Services ---------- */}
-      <section id="services" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
+      <section id="services" className="relative isolate overflow-hidden bg-black py-20 sm:py-28">
         <SectionPhoto src={images.sections.services} className="object-center" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/90 via-ink/80 to-ink/95" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-black/85 via-black/70 to-black/90" />
         <Container>
           <SectionHeader light eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
