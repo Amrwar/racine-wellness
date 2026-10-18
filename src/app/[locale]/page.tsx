@@ -91,12 +91,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* ---------- About ---------- */}
-      <section id="about" className="relative isolate overflow-hidden bg-surface py-20 sm:py-28">
+      <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
         <SectionPhoto src={images.sections.about} className="object-[50%_55%] blur-[2px]" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-surface/95 via-surface/85 to-surface/70" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/95 via-ink/85 to-ink/70" />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <div className="relative mx-auto aspect-[4/5] max-w-sm overflow-hidden rounded-3xl shadow-2xl shadow-ink/25 ring-4 ring-white lg:max-w-none">
+            <div className="relative mx-auto aspect-[4/5] max-w-sm overflow-hidden rounded-3xl shadow-2xl shadow-black/40 ring-1 ring-white/15 lg:max-w-none">
               <Image
                 src={images.portrait}
                 alt={t.about.portraitAlt}
@@ -107,14 +107,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </div>
           </div>
           <div className="lg:col-span-7">
-            <SectionHeader eyebrow={t.about.eyebrow} title={t.about.title} />
-            <p className="mt-2 text-sm font-semibold text-blue-dark">{t.credentialsLine}</p>
-            <p className="mt-6 text-lg leading-relaxed text-ink/80">{t.about.text1}</p>
-            <p className="mt-4 text-lg leading-relaxed text-ink/80">{t.about.text2}</p>
+            <SectionHeader light eyebrow={t.about.eyebrow} title={t.about.title} />
+            <p className="mt-2 text-sm font-semibold text-blue">{t.credentialsLine}</p>
+            <p className="mt-6 text-lg leading-relaxed text-white/80">{t.about.text1}</p>
+            <p className="mt-4 text-lg leading-relaxed text-white/80">{t.about.text2}</p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {t.about.credentials.map((c) => (
-                <li key={c} className="flex items-start gap-3 text-navy">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-navy text-green">
+                <li key={c} className="flex items-start gap-3 text-white">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/10 text-green ring-1 ring-white/15">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                   {c}
