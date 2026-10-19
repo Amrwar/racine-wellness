@@ -80,8 +80,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <SectionBreak items={t.breaks.about} />
 
       {/* ---------- About ---------- */}
-      <section id="about" className="relative isolate overflow-hidden bg-white py-20 sm:py-28">
-        <SectionPhoto src={images.sections.about} className="object-[50%_70%]" />
+      <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
+        <SectionPhoto src={images.sections.about} className="object-[50%_40%]" />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <div className="relative mx-auto max-w-sm lg:max-w-none">
@@ -96,14 +96,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </div>
             </div>
           </div>
-          <div className="lg:col-span-7">
-            <SectionHeader eyebrow={t.about.eyebrow} title={t.about.title} />
-            <p className="mt-2 text-sm font-semibold text-blue-dark">{t.credentialsLine}</p>
-            <p className="mt-6 text-lg leading-relaxed text-ink/85">{t.about.text1}</p>
-            <p className="mt-4 text-lg leading-relaxed text-ink/85">{t.about.text2}</p>
+          <div className="lg:col-span-7 [text-shadow:0_1px_10px_rgba(0,30,50,0.55)]">
+            <SectionHeader light eyebrow={t.about.eyebrow} title={t.about.title} />
+            <p className="mt-2 text-sm font-semibold text-white">{t.credentialsLine}</p>
+            <p className="mt-6 text-lg leading-relaxed text-white/90">{t.about.text1}</p>
+            <p className="mt-4 text-lg leading-relaxed text-white/90">{t.about.text2}</p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {t.about.credentials.map((c) => (
-                <li key={c} className="flex items-start gap-3 font-medium text-navy">
+                <li key={c} className="flex items-start gap-3 font-medium text-white">
                   <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-navy text-green">
                     <Check className="h-3.5 w-3.5" />
                   </span>
@@ -119,13 +119,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- Latest from the blog ---------- */}
       <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.blog} className="object-[50%_40%]" />
+        <SectionPhoto src={images.sections.blog} className="object-[50%_70%]" />
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-            <SectionHeader light eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
+            <SectionHeader eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
             <Link
               href={localePath(locale, "/blog")}
-              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-white hover:text-green"
+              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-navy hover:text-blue-dark"
             >
               {t.blog.viewAll} <Arrow />
             </Link>
