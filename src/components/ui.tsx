@@ -110,31 +110,6 @@ export function SectionHeader({
   );
 }
 
-/** White band between home-page sections, with short points separated by hairlines and a brand-coloured accent on top. */
-export function SectionBreak({ items }: { items: readonly string[] }) {
-  return (
-    <section className="relative bg-white">
-      <div aria-hidden className="absolute left-1/2 top-0 h-[3px] w-16 -translate-x-1/2 rounded-b-full bg-gradient-to-r from-blue to-green" />
-      <Container>
-        <ul
-          className={`grid gap-y-2.5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-navy sm:text-xs lg:divide-x lg:divide-navy/10 lg:py-3.5 ${
-            items.length === 3 ? "grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-navy/10" : "grid-cols-2 lg:grid-cols-4"
-          }`}
-        >
-          {items.map((item) => (
-            <li key={item} className="flex items-center justify-center gap-2.5 px-3 text-center lg:px-4">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-green/25">
-                <Check className="h-3 w-3" />
-              </span>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </Container>
-    </section>
-  );
-}
-
 export function Check({ className = "" }: { className?: string }) {
   return (
     <svg

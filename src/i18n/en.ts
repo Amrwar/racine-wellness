@@ -50,33 +50,6 @@ export const en = {
     imageAlt: "Ziad giving a back massage to a client on a treatment table",
   },
 
-  trust: [
-    "Registered therapist",
-    "Insurance receipts",
-    "Home & office visits",
-  ],
-  /** Points in the navy bands between home-page sections, by the section that follows. */
-  breaks: {
-    about: [
-      "Clinical assessment",
-      "Personalized plans",
-      "All ages & levels",
-      "Equipment provided",
-    ],
-    blog: [
-      "Practical advice",
-      "Recovery & self-care",
-      "Treatments explained",
-      "Written by Ziad",
-    ],
-    contact: [
-      "Book by phone or email",
-      "Home, office or gym",
-      "Greater Montréal",
-      "Insurance receipts",
-    ],
-  },
-
   services: {
     eyebrow: "Services",
     title: "Care tailored to your body",

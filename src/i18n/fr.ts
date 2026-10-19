@@ -51,32 +51,6 @@ export const fr: Dictionary = {
     imageAlt: "Ziad donnant un massage du dos à un client sur une table de traitement",
   },
 
-  trust: [
-    "Massothérapeute agréé",
-    "Reçus pour assurances",
-    "À domicile ou au bureau",
-  ],
-  breaks: {
-    about: [
-      "Évaluation clinique",
-      "Plans personnalisés",
-      "Tous âges, tous niveaux",
-      "Équipement fourni",
-    ],
-    blog: [
-      "Conseils pratiques",
-      "Récupération et soins",
-      "Traitements expliqués",
-      "Rédigé par Ziad",
-    ],
-    contact: [
-      "Téléphone ou courriel",
-      "Domicile, bureau ou gym",
-      "Grand Montréal",
-      "Reçus d'assurance",
-    ],
-  },
-
   services: {
     eyebrow: "Services",
     title: "Des soins adaptés à votre corps",

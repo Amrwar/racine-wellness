@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale, localePath, sectionHref } from "@/i18n/config";
 import { site, images } from "@/lib/site";
-import { Arrow, Button, Check, Container, Eyebrow, SectionBreak, SectionHeader } from "@/components/ui";
+import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/blog";
@@ -48,9 +48,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Container>
       </section>
 
-      {/* ---------- Trust strip ---------- */}
-      <SectionBreak items={t.trust} />
-
       {/* ---------- Services ---------- */}
       <section id="services" className="relative isolate overflow-hidden bg-white py-20 sm:py-28">
         <SectionPhoto src={images.sections.services} className="object-center" />
@@ -80,8 +77,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
         </Container>
       </section>
-
-      <SectionBreak items={t.breaks.about} />
 
       {/* ---------- About ---------- */}
       <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
@@ -119,8 +114,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Container>
       </section>
 
-      <SectionBreak items={t.breaks.blog} />
-
       {/* ---------- Latest from the blog ---------- */}
       <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
         <SectionPhoto src={images.sections.blog} className="object-[50%_70%]" />
@@ -145,8 +138,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
         </Container>
       </section>
-
-      <SectionBreak items={t.breaks.contact} />
 
       {/* ---------- Contact ---------- */}
       <section id="contact" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
