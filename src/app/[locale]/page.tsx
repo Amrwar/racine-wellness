@@ -54,11 +54,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* ---------- Services ---------- */}
       <section id="services" className="relative isolate overflow-hidden bg-white py-20 sm:py-28">
         <SectionPhoto src={images.sections.services} className="object-center" />
+        {/* White fade at the top only, behind the heading; the photo shows untouched below */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 -z-10 h-96 bg-gradient-to-b from-white from-30% via-white/70 to-transparent sm:h-[26rem]"
+        />
         <Container>
-          {/* Frosted panel keeps the heading readable over the branches */}
-          <div className="inline-block rounded-2xl bg-white/85 px-6 py-6 shadow-xl shadow-ink/10 ring-1 ring-mist/70 backdrop-blur-md sm:px-8">
-            <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
-          </div>
+          <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {t.services.items.map((s) => {
               const Icon = serviceIcons[s.icon];
