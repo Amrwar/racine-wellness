@@ -47,6 +47,8 @@ const P = {
   sports: img("sports-massage", 1600, 1600),
   anatomySketch: img("anatomy-sketch", 1060, 1060),
   anatomyStudy: img("anatomy-study", 816, 1200),
+  anatomySide: img("anatomy-side", 578, 981),
+  anatomyBack: img("anatomy-back", 471, 800),
   postureChain: img("posture-chain", 898, 439),
   footImbalance: img("foot-imbalance", 816, 1200),
   shoulderRom: img("shoulder-rom", 816, 1200),
@@ -56,6 +58,100 @@ const P = {
 };
 
 export const posts: Post[] = [
+  {
+    slug: "massage-mobility-healthy-aging",
+    date: "2026-10-18",
+    readMinutes: 2,
+    cover: P.studioTableSide,
+    en: {
+      title: "Can regular massage help you move better as you age?",
+      excerpt: "Discover how massage may support muscle comfort, mobility and healthy aging.",
+      category: "Active aging",
+      coverAlt: "Massage table prepared for a session in the HealthyZone studio",
+      body: [
+        {
+          type: "p",
+          text: "As we age, muscle stiffness and discomfort can make everyday activities such as walking, climbing stairs or getting up from a chair feel more difficult.",
+        },
+        {
+          type: "p",
+          text: "Research suggests that massage may help reduce certain types of pain and muscle tension, improve relaxation and support physical comfort. When movement feels more comfortable, daily activities may become easier.",
+        },
+        { type: "h2", text: "Can massage improve walking?" },
+        {
+          type: "p",
+          text: "Recently, one of our 69-year-old clients shared that he noticed he could walk faster after receiving regular weekly massage sessions.",
+        },
+        {
+          type: "p",
+          text: "While this is an encouraging personal experience, walking ability also depends on strength, balance, physical activity and overall health. More research is needed to determine whether massage directly improves walking speed in older adults.",
+        },
+        { type: "h2", text: "Massage as part of healthy aging" },
+        { type: "p", text: "Massage may complement other healthy habits, including:" },
+        {
+          type: "list",
+          items: [
+            "Regular walking and physical activity.",
+            "Strength and balance exercises.",
+            "Adequate rest and recovery.",
+            "Professional guidance when mobility concerns arise.",
+          ],
+        },
+        {
+          type: "p",
+          text: "At HealthyZone, our goal is to help you move better, feel stronger and live freely. Regular massage, tailored to your individual needs, may be one useful part of maintaining comfort and an active lifestyle as you age.",
+        },
+        {
+          type: "quote",
+          text: "Educational note: Massage complements, but does not replace, appropriate medical care or a healthy lifestyle.",
+        },
+      ],
+    },
+    fr: {
+      title: "Le massage régulier peut-il vous aider à mieux bouger en vieillissant?",
+      excerpt: "Découvrez comment le massage peut favoriser le confort musculaire, la mobilité et un vieillissement en santé.",
+      category: "Vieillissement actif",
+      coverAlt: "Table de massage préparée pour une séance au studio HealthyZone",
+      body: [
+        {
+          type: "p",
+          text: "Avec l'âge, la raideur et l'inconfort musculaires peuvent rendre plus difficiles des activités quotidiennes comme marcher, monter les escaliers ou se lever d'une chaise.",
+        },
+        {
+          type: "p",
+          text: "La recherche suggère que le massage peut aider à réduire certains types de douleur et de tension musculaire, à favoriser la détente et à soutenir le confort physique. Lorsque le mouvement devient plus confortable, les activités quotidiennes peuvent devenir plus faciles.",
+        },
+        { type: "h2", text: "Le massage peut-il améliorer la marche?" },
+        {
+          type: "p",
+          text: "Récemment, l'un de nos clients de 69 ans nous a confié avoir remarqué qu'il marchait plus vite après avoir reçu des séances de massage hebdomadaires régulières.",
+        },
+        {
+          type: "p",
+          text: "Bien qu'il s'agisse d'une expérience personnelle encourageante, la capacité de marcher dépend aussi de la force, de l'équilibre, de l'activité physique et de l'état de santé général. D'autres recherches sont nécessaires pour déterminer si le massage améliore directement la vitesse de marche chez les personnes âgées.",
+        },
+        { type: "h2", text: "Le massage, un allié du vieillissement en santé" },
+        { type: "p", text: "Le massage peut compléter d'autres saines habitudes, notamment :" },
+        {
+          type: "list",
+          items: [
+            "La marche et l'activité physique régulières.",
+            "Des exercices de force et d'équilibre.",
+            "Un repos et une récupération suffisants.",
+            "Un accompagnement professionnel lorsque des problèmes de mobilité apparaissent.",
+          ],
+        },
+        {
+          type: "p",
+          text: "Chez HealthyZone, notre objectif est de vous aider à mieux bouger, à vous sentir plus fort et à vivre librement. Un massage régulier, adapté à vos besoins, peut contribuer à maintenir votre confort et un mode de vie actif en vieillissant.",
+        },
+        {
+          type: "quote",
+          text: "Note éducative : le massage complète, sans les remplacer, des soins médicaux appropriés et un mode de vie sain.",
+        },
+      ],
+    },
+  },
   {
     slug: "deep-tissue-vs-swedish-massage",
     date: "2026-10-06",
@@ -87,6 +183,13 @@ export const posts: Post[] = [
         {
           type: "p",
           text: "Deep tissue massage uses slow, sustained pressure to reach the deeper layers of muscle and the surrounding fascia. It is directed at specific areas of chronic tension or restricted movement, such as the upper back, neck, hips, lower back and legs, and pressure is increased progressively according to the client's tolerance. Research supports this approach for persistent pain: in a 2014 randomized trial of 59 adults with chronic low back pain, published in The Scientific World Journal, two weeks of deep tissue massage significantly reduced pain and disability, with results comparable to deep tissue massage combined with anti-inflammatory medication.",
+        },
+        {
+          type: "image",
+          photo: P.anatomyBack,
+          alt: "Pencil study of the back muscles, from the neck and shoulders down to the hips",
+          caption: "Deep tissue work targets the layered muscles of the back, neck and hips.",
+          diagram: true,
         },
         {
           type: "p",
@@ -141,6 +244,13 @@ export const posts: Post[] = [
         {
           type: "p",
           text: "Le massage profond utilise une pression lente et soutenue pour atteindre les couches profondes des muscles et le fascia qui les entoure. Il cible des zones précises de tension chronique ou de mobilité réduite, comme le haut du dos, le cou, les hanches, le bas du dos et les jambes, et la pression est augmentée progressivement selon la tolérance du client. La recherche appuie cette approche pour les douleurs persistantes : dans un essai randomisé publié en 2014 dans The Scientific World Journal, auprès de 59 adultes souffrant de lombalgie chronique, deux semaines de massage profond ont réduit de façon significative la douleur et l'incapacité, avec des résultats comparables à ceux du massage profond combiné à un anti-inflammatoire.",
+        },
+        {
+          type: "image",
+          photo: P.anatomyBack,
+          alt: "Étude au crayon des muscles du dos, du cou et des épaules jusqu'aux hanches",
+          caption: "Le massage profond cible les couches musculaires du dos, du cou et des hanches.",
+          diagram: true,
         },
         {
           type: "p",
@@ -492,6 +602,13 @@ export const posts: Post[] = [
             "Move your feet and ankles: walking barefoot at home and calf mobility count too.",
           ],
         },
+        {
+          type: "image",
+          photo: P.anatomySide,
+          alt: "Pencil study of the neck, shoulder and chest muscles seen from the side",
+          caption: "Seen from the side, the neck, shoulders and chest work together to hold the head upright.",
+          diagram: true,
+        },
         { type: "h2", text: "How we work on posture" },
         {
           type: "p",
@@ -539,6 +656,13 @@ export const posts: Post[] = [
             "Renforcez l'arrière du corps : le haut du dos, les fessiers et le tronc vous soutiennent bien mieux que la volonté.",
             "Bougez les pieds et les chevilles : marcher pieds nus à la maison et la mobilité des mollets comptent aussi.",
           ],
+        },
+        {
+          type: "image",
+          photo: P.anatomySide,
+          alt: "Étude au crayon des muscles du cou, des épaules et de la poitrine, vue de profil",
+          caption: "De profil, le cou, les épaules et la poitrine travaillent ensemble pour garder la tête droite.",
+          diagram: true,
         },
         { type: "h2", text: "Comment on travaille la posture" },
         {

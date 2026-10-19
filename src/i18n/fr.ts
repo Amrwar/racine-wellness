@@ -146,11 +146,11 @@ export const fr: Dictionary = {
   form: {
     name: "Nom complet",
     namePlaceholder: "Marie Tremblay",
-    email: "Courriel",
+    email: "Courriel (facultatif)",
     emailPlaceholder: "vous@exemple.com",
-    phone: "Téléphone (facultatif)",
+    phone: "Téléphone",
     phonePlaceholder: "+1 438 225 8859",
-    message: "Message",
+    message: "Message (facultatif)",
     messagePlaceholder: "Comment puis-je vous aider? Parlez-moi de vos objectifs ou de vos douleurs.",
     receipt: "J'aimerais un reçu d'assurance",
     receiptNote: "Reçus d'assurance disponibles",
@@ -160,11 +160,12 @@ export const fr: Dictionary = {
     successTitle: "Message reçu",
     success: "Merci {name}! Votre message est en route. Attendez-vous à une réponse d'ici un jour ouvrable.",
     fixFields: "Veuillez corriger les champs en surbrillance.",
+    required: "obligatoire",
     failed: "Une erreur est survenue lors de l'envoi. Veuillez écrire directement à {email}.",
     errors: {
       name: "Veuillez entrer votre nom.",
+      phone: "Veuillez entrer un numéro de téléphone valide.",
       email: "Veuillez entrer une adresse courriel valide.",
-      message: "Dites-nous en un peu plus (au moins 10 caractères).",
     },
   },
 

@@ -38,7 +38,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
       <input type="hidden" name="locale" value={locale} />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label={t.name} htmlFor="name" error={e.name}>
+        <Field label={t.name} htmlFor="name" error={e.name} required={t.required}>
           <input
             id="name"
             name="name"
@@ -48,27 +48,27 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
             placeholder={t.namePlaceholder}
           />
         </Field>
-        <Field label={t.email} htmlFor="email" error={e.email}>
+        <Field label={t.phone} htmlFor="phone" error={e.phone} required={t.required}>
           <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
+            id="phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
             required
-            className={`${field} ${e.email ? "border-danger" : "border-mist"}`}
-            placeholder={t.emailPlaceholder}
+            className={`${field} ${e.phone ? "border-danger" : "border-mist"}`}
+            placeholder={t.phonePlaceholder}
           />
         </Field>
       </div>
 
-      <Field label={t.phone} htmlFor="phone" error={e.phone}>
+      <Field label={t.email} htmlFor="email" error={e.email}>
         <input
-          id="phone"
-          name="phone"
-          type="tel"
-          autoComplete="tel"
-          className={`${field} border-mist`}
-          placeholder={t.phonePlaceholder}
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          className={`${field} ${e.email ? "border-danger" : "border-mist"}`}
+          placeholder={t.emailPlaceholder}
         />
       </Field>
 
@@ -77,7 +77,6 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           id="message"
           name="message"
           rows={5}
-          required
           className={`${field} resize-y ${e.message ? "border-danger" : "border-mist"}`}
           placeholder={t.messagePlaceholder}
         />
@@ -131,17 +130,28 @@ function Field({
   label,
   htmlFor,
   error,
+  required,
   children,
 }: {
   label: string;
   htmlFor: string;
   error?: string;
+  /** Screen-reader text for the star shown on required fields. */
+  required?: string;
   children: React.ReactNode;
 }) {
   return (
     <div>
       <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium text-navy">
         {label}
+        {required && (
+          <>
+            <span aria-hidden className="ml-0.5 text-danger">
+              *
+            </span>
+            <span className="sr-only"> ({required})</span>
+          </>
+        )}
       </label>
       {children}
       {error && (

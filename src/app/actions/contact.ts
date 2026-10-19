@@ -37,8 +37,8 @@ export async function sendContact(
 
   const errors: ContactState["errors"] = {};
   if (name.length < 2) errors.name = t.errors.name;
-  if (!EMAIL_RE.test(email)) errors.email = t.errors.email;
-  if (message.length < 10) errors.message = t.errors.message;
+  if (phone.replace(/\D/g, "").length < 10) errors.phone = t.errors.phone;
+  if (email && !EMAIL_RE.test(email)) errors.email = t.errors.email;
 
   if (Object.keys(errors).length) {
     return { status: "error", message: t.fixFields, errors };
@@ -47,12 +47,12 @@ export async function sendContact(
   const subject = `New enquiry from ${name} [${locale.toUpperCase()}]`;
   const text = [
     `Name: ${name}`,
-    `Email: ${email}`,
-    `Phone: ${phone || "—"}`,
+    `Phone: ${phone}`,
+    `Email: ${email || "—"}`,
     `Insurance receipt: ${wantsReceipt ? "Yes" : "No"}`,
     `Language: ${locale === "fr" ? "Français" : "English"}`,
     "",
-    message,
+    message || "(No message)",
   ].join("\n");
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -67,7 +67,7 @@ export async function sendContact(
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ from, to: [to], reply_to: email, subject, text }),
+        body: JSON.stringify({ from, to: [to], ...(email && { reply_to: email }), subject, text }),
       });
       if (!res.ok) {
         console.error("Resend error", res.status, await res.text());

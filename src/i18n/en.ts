@@ -146,11 +146,11 @@ export const en = {
   form: {
     name: "Full name",
     namePlaceholder: "Marie Tremblay",
-    email: "Email",
+    email: "Email (optional)",
     emailPlaceholder: "you@example.com",
-    phone: "Phone (optional)",
+    phone: "Phone",
     phonePlaceholder: "+1 438 225 8859",
-    message: "Message",
+    message: "Message (optional)",
     messagePlaceholder: "How can I help? Tell me about your goals or any pain you're dealing with.",
     receipt: "I'd like an insurance receipt",
     receiptNote: "Insurance receipts available",
@@ -160,11 +160,12 @@ export const en = {
     successTitle: "Message received",
     success: "Thanks {name}! Your message is on its way. Expect a reply within one business day.",
     fixFields: "Please fix the highlighted fields.",
+    required: "required",
     failed: "Something went wrong sending your message. Please email {email} directly.",
     errors: {
       name: "Please enter your name.",
+      phone: "Please enter a valid phone number.",
       email: "Please enter a valid email address.",
-      message: "Tell us a little more (at least 10 characters).",
     },
   },
 

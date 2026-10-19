@@ -116,7 +116,7 @@ export function SectionBreak({ items }: { items: readonly string[] }) {
     <section className="relative bg-white">
       <div aria-hidden className="absolute left-1/2 top-0 h-[3px] w-16 -translate-x-1/2 rounded-b-full bg-gradient-to-r from-blue to-green" />
       <Container>
-        <ul className="grid grid-cols-2 gap-y-5 py-7 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-navy sm:text-xs lg:grid-cols-4 lg:divide-x lg:divide-navy/10 lg:py-8">
+        <ul className="grid grid-cols-2 gap-y-2.5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-navy sm:text-xs lg:grid-cols-4 lg:divide-x lg:divide-navy/10 lg:py-3.5">
           {items.map((item) => (
             <li key={item} className="flex items-center justify-center gap-2.5 px-3 text-center lg:px-4">
               <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-green/25">
