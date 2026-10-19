@@ -55,6 +55,15 @@ export function Mail(p: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function Receipt(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...p}>
+      <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
+      <path d="M9 8h6M9 12h6M9 16h3" />
+    </svg>
+  );
+}
+
 export function Instagram(p: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...p}>

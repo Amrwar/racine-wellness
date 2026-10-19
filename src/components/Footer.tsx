@@ -21,7 +21,7 @@ export function Footer({ t }: { t: Dictionary }) {
               {site.email}
             </a>
             <p>
-              {site.address.city}, {site.address.region}
+              {t.contact.office}
             </p>
           </div>
         </div>

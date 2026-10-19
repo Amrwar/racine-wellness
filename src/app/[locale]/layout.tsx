@@ -75,7 +75,7 @@ function businessJsonLd(locale: Locale) {
       addressCountry: site.address.country,
     },
     founder: { "@type": "Person", name: site.owner, jobTitle: t.credentialsLine },
-    areaServed: "Montréal, QC",
+    areaServed: "Greater Montréal, QC",
     sameAs: Object.values(site.socials),
   };
 }

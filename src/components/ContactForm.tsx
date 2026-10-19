@@ -61,34 +61,16 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
         </Field>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label={t.phone} htmlFor="phone" error={e.phone}>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            className={`${field} border-mist`}
-            placeholder={t.phonePlaceholder}
-          />
-        </Field>
-        <Field label={t.interest} htmlFor="interest" error={e.interest}>
-          <select
-            id="interest"
-            name="interest"
-            required
-            defaultValue=""
-            className={`${field} appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%20fill='none'%20stroke='%23004575'%20stroke-width='1.75'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m6%208%204%204%204-4'/%3E%3C/svg%3E")] bg-[length:1.25rem] bg-[right_0.9rem_center] bg-no-repeat pr-10 ${e.interest ? "border-danger" : "border-mist"}`}
-          >
-            <option value="" disabled>
-              {t.choose}
-            </option>
-            {t.interests.map((i) => (
-              <option key={i}>{i}</option>
-            ))}
-          </select>
-        </Field>
-      </div>
+      <Field label={t.phone} htmlFor="phone" error={e.phone}>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          className={`${field} border-mist`}
+          placeholder={t.phonePlaceholder}
+        />
+      </Field>
 
       <Field label={t.message} htmlFor="message" error={e.message}>
         <textarea
@@ -100,6 +82,23 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           placeholder={t.messagePlaceholder}
         />
       </Field>
+
+      <label
+        htmlFor="receipt"
+        className="flex cursor-pointer items-center gap-3 rounded-xl border border-mist bg-surface px-4 py-3 transition has-[:checked]:border-blue has-[:checked]:bg-blue/5"
+      >
+        <input
+          id="receipt"
+          name="receipt"
+          type="checkbox"
+          value="yes"
+          className="h-5 w-5 shrink-0 cursor-pointer rounded accent-navy"
+        />
+        <span>
+          <span className="block text-sm font-medium text-navy">{t.receipt}</span>
+          <span className="block text-xs text-muted">{t.receiptNote}</span>
+        </span>
+      </label>
 
       {/* Honeypot */}
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>

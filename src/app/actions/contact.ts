@@ -7,7 +7,7 @@ import { isLocale } from "@/i18n/config";
 export type ContactState = {
   status: "idle" | "success" | "error";
   message?: string;
-  errors?: Partial<Record<"name" | "email" | "phone" | "interest" | "message", string>>;
+  errors?: Partial<Record<"name" | "email" | "phone" | "message", string>>;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,25 +32,24 @@ export async function sendContact(
   const name = clean(formData.get("name"), 120);
   const email = clean(formData.get("email"), 200);
   const phone = clean(formData.get("phone"), 40);
-  const interest = clean(formData.get("interest"), 80);
+  const wantsReceipt = formData.get("receipt") === "yes";
   const message = clean(formData.get("message"), 3000);
 
   const errors: ContactState["errors"] = {};
   if (name.length < 2) errors.name = t.errors.name;
   if (!EMAIL_RE.test(email)) errors.email = t.errors.email;
-  if (!interest) errors.interest = t.errors.interest;
   if (message.length < 10) errors.message = t.errors.message;
 
   if (Object.keys(errors).length) {
     return { status: "error", message: t.fixFields, errors };
   }
 
-  const subject = `New enquiry from ${name} · ${interest} [${locale.toUpperCase()}]`;
+  const subject = `New enquiry from ${name} [${locale.toUpperCase()}]`;
   const text = [
     `Name: ${name}`,
     `Email: ${email}`,
     `Phone: ${phone || "—"}`,
-    `Interest: ${interest}`,
+    `Insurance receipt: ${wantsReceipt ? "Yes" : "No"}`,
     `Language: ${locale === "fr" ? "Français" : "English"}`,
     "",
     message,

@@ -184,7 +184,7 @@ export const posts: Post[] = [
       body: [
         {
           type: "p",
-          text: "One of the biggest benefits of massage is the calm you feel afterwards, and it disappears quickly when you have to drive home through traffic. That's why most HealthyZone sessions happen where you already are: at home, at the office or at your gym, anywhere in Montréal.",
+          text: "One of the biggest benefits of massage is the calm you feel afterwards, and it disappears quickly when you have to drive home through traffic. That's why most HealthyZone sessions happen where you already are: at home, at the office or at your gym, anywhere in Greater Montréal.",
         },
         { type: "h2", text: "Before the session" },
         {
@@ -235,7 +235,7 @@ export const posts: Post[] = [
       body: [
         {
           type: "p",
-          text: "L'un des grands bienfaits du massage, c'est le calme qu'on ressent ensuite, et il disparaît vite quand il faut rentrer dans le trafic. C'est pourquoi la plupart des séances HealthyZone ont lieu là où vous êtes déjà : à la maison, au bureau ou au gym, partout à Montréal.",
+          text: "L'un des grands bienfaits du massage, c'est le calme qu'on ressent ensuite, et il disparaît vite quand il faut rentrer dans le trafic. C'est pourquoi la plupart des séances HealthyZone ont lieu là où vous êtes déjà : à la maison, au bureau ou au gym, partout dans le Grand Montréal.",
         },
         { type: "h2", text: "Avant la séance" },
         {

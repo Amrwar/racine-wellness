@@ -16,34 +16,34 @@ export const fr: Dictionary = {
     skip: "Aller au contenu",
     home: "Accueil HealthyZone",
   },
-  tagline: "Massothérapie & Santé Active",
+  tagline: "Massothérapie & Entraînement en santé active",
   credentialsLine: "Massothérapeute agréé · Entraîneur personnel",
   meta: {
-    titleDefault: "HealthyZone · Massothérapie et santé active à Saint-Laurent, Montréal",
+    titleDefault: "HealthyZone · Massothérapie et entraînement en santé active dans l'Ouest-de-l'Île, Montréal",
     description:
-      "Massothérapie personnalisée, correction posturale, mobilité et entraînement en force avec Ziad Bik, massothérapeute agréé et entraîneur personnel. À domicile ou au travail, à Saint-Laurent et partout à Montréal.",
+      "Massothérapie personnalisée, correction posturale, mobilité et entraînement en force avec Ziad Bik, massothérapeute agréé et entraîneur personnel. Basé à Saint-Jean, dans l'Ouest-de-l'Île, avec des séances mobiles dans tout le Grand Montréal.",
     keywords: [
-      "massothérapeute Saint-Laurent",
+      "massothérapeute Ouest-de-l'Île",
       "massothérapie à domicile Montréal",
       "correction posturale Montréal",
-      "entraîneur personnel Saint-Laurent",
+      "entraîneur personnel Ouest-de-l'Île",
       "vieillissement actif",
       "conditionnement physique jeunesse",
     ],
     blog: {
       title: "Blogue",
       description:
-        "Articles pratiques sur la massothérapie, la récupération, la posture et la mobilité par Ziad Bik, massothérapeute agréé et entraîneur personnel à Saint-Laurent, Montréal.",
+        "Articles pratiques sur la massothérapie, la récupération, la posture et la mobilité par Ziad Bik, massothérapeute agréé et entraîneur personnel dans l'Ouest-de-l'Île, Montréal.",
     },
     privacy: {
       title: "Politique de confidentialité",
       description: "Comment HealthyZone recueille, utilise et protège vos renseignements personnels.",
     },
   },
-  og: { line1: "Santé active personnalisée.", sub: "Massothérapie et entraînement · Saint-Laurent, QC" },
+  og: { line1: "Santé active personnalisée.", sub: "Massothérapie et entraînement · Ouest-de-l'Île, QC" },
 
   hero: {
-    eyebrow: "Saint-Laurent · Montréal",
+    eyebrow: "Ouest-de-l'Île · Grand Montréal",
     title: "Sentez-vous mieux. Bougez mieux. Restez actif.",
     lead: "Profitez d'une expérience unique et personnalisée adaptée à vos besoins, que ce soit à domicile ou au travail. Massothérapie et santé active avec Ziad Bik.",
     call: "Appelez-nous",
@@ -73,7 +73,7 @@ export const fr: Dictionary = {
     contact: [
       "Téléphone ou courriel",
       "Domicile, bureau ou gym",
-      "Partout à Montréal",
+      "Grand Montréal",
       "Reçus d'assurance",
     ],
   },
@@ -120,14 +120,14 @@ export const fr: Dictionary = {
     eyebrow: "À propos",
     title: "Bonjour, je suis Ziad",
     text1:
-      "Je suis massothérapeute agréé et entraîneur personnel à Montréal. J'aide les gens à soulager leurs douleurs, corriger leur posture et rester forts et actifs, peu importe leur âge.",
+      "Je suis massothérapeute agréé et entraîneur personnel dans l'Ouest-de-l'Île de Montréal. J'aide les gens à soulager leurs douleurs, corriger leur posture et rester forts et actifs, peu importe leur âge.",
     text2:
       "Je me déplace avec tout le nécessaire pour le traitement ou l'entraînement, à domicile, au bureau ou à votre gym, et je bâtis chaque plan selon votre corps et votre horaire.",
     portraitAlt: "Portrait de Ziad, massothérapeute et entraîneur personnel",
     credentials: [
       "Massothérapeute agréé · membre RMQ",
       "Entraîneur personnel certifié",
-      "Service mobile partout à Montréal",
+      "Service mobile dans le Grand Montréal",
     ],
   },
 
@@ -137,8 +137,9 @@ export const fr: Dictionary = {
     lead: "Envoyez-moi un message et je vous répondrai d'ici un jour ouvrable.",
     phone: "Téléphone",
     email: "Courriel",
-    area: "Secteur",
-    areaNote: "Service mobile à domicile ou au travail",
+    area: "Bureau",
+    office: "Saint-Jean, Ouest-de-l'Île",
+    areaNote: "Service mobile dans le Grand Montréal",
     formTitle: "Envoyer un message",
   },
 
@@ -149,19 +150,10 @@ export const fr: Dictionary = {
     emailPlaceholder: "vous@exemple.com",
     phone: "Téléphone (facultatif)",
     phonePlaceholder: "+1 438 225 8859",
-    interest: "Je m'intéresse à",
-    choose: "Choisir une option",
-    interests: [
-      "Massothérapie",
-      "Correction posturale",
-      "Mobilité",
-      "Entraînement en force",
-      "Vieillissement actif",
-      "Conditionnement jeunesse",
-      "Autre chose",
-    ],
     message: "Message",
     messagePlaceholder: "Comment puis-je vous aider? Parlez-moi de vos objectifs ou de vos douleurs.",
+    receipt: "J'aimerais un reçu d'assurance",
+    receiptNote: "Reçus d'assurance disponibles",
     consent: "En soumettant ce formulaire, vous acceptez d'être contacté au sujet de votre demande. Vos renseignements ne sont jamais partagés.",
     submit: "Envoyer le message",
     sending: "Envoi en cours…",
@@ -172,7 +164,6 @@ export const fr: Dictionary = {
     errors: {
       name: "Veuillez entrer votre nom.",
       email: "Veuillez entrer une adresse courriel valide.",
-      interest: "Veuillez choisir ce qui vous intéresse.",
       message: "Dites-nous en un peu plus (au moins 10 caractères).",
     },
   },
@@ -188,7 +179,7 @@ export const fr: Dictionary = {
     author: "Ziad",
     authorRole: "Massothérapeute agréé · Entraîneur personnel",
     authorBio:
-      "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel à Montréal. Il traite ses clients à domicile, au travail et au gym partout dans la ville.",
+      "Ziad est massothérapeute agréé (RMQ) et entraîneur personnel dans l'Ouest-de-l'Île de Montréal. Il traite ses clients à domicile, au travail et au gym dans tout le Grand Montréal.",
     backToBlog: "Tous les articles",
     related: "À lire aussi",
     latestEyebrow: "Du blogue",

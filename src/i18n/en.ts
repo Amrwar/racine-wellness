@@ -15,34 +15,34 @@ export const en = {
     skip: "Skip to content",
     home: "HealthyZone home",
   },
-  tagline: "Massage Therapy & Active Health",
+  tagline: "Massage Therapy & Active Health Training",
   credentialsLine: "Registered Massage Therapist · Personal Trainer",
   meta: {
-    titleDefault: "HealthyZone · Massage Therapy & Active Health in Saint-Laurent, Montréal",
+    titleDefault: "HealthyZone · Massage Therapy & Active Health Training in the West Island, Montréal",
     description:
-      "Personalized massage therapy, posture correction, mobility and strength training with Ziad Bik, registered massage therapist and personal trainer. At home or at work in Saint-Laurent and across Montréal.",
+      "Personalized massage therapy, posture correction, mobility and strength training with Ziad Bik, registered massage therapist and personal trainer. Based in Saint-Jean, West Island, with mobile sessions across Greater Montréal.",
     keywords: [
-      "massage therapist Saint-Laurent",
+      "massage therapist West Island",
       "mobile massage Montreal",
       "posture correction Montreal",
-      "personal trainer Saint-Laurent",
+      "personal trainer West Island",
       "active aging",
       "youth fitness",
     ],
     blog: {
       title: "Blog",
       description:
-        "Practical articles on massage therapy, recovery, posture and mobility from Ziad Bik, registered massage therapist and personal trainer in Saint-Laurent, Montréal.",
+        "Practical articles on massage therapy, recovery, posture and mobility from Ziad Bik, registered massage therapist and personal trainer in the West Island, Montréal.",
     },
     privacy: {
       title: "Privacy Policy",
       description: "How HealthyZone collects, uses and protects your personal information.",
     },
   },
-  og: { line1: "Personalized active health.", sub: "Massage therapy & training · Saint-Laurent, QC" },
+  og: { line1: "Personalized active health.", sub: "Massage therapy & training · West Island, QC" },
 
   hero: {
-    eyebrow: "Saint-Laurent · Montréal",
+    eyebrow: "West Island · Greater Montréal",
     title: "Feel better. Move better. Stay active.",
     lead: "A unique, personalized experience adapted to your needs, at home or at work. Registered massage therapy and active-health coaching with Ziad Bik.",
     call: "Call us",
@@ -73,7 +73,7 @@ export const en = {
     contact: [
       "Book by phone or email",
       "Home, office or gym",
-      "Across Montréal",
+      "Greater Montréal",
       "Insurance receipts",
     ],
   },
@@ -120,14 +120,14 @@ export const en = {
     eyebrow: "About",
     title: "Hi, I'm Ziad",
     text1:
-      "I'm a registered massage therapist and personal trainer based in Montréal. I help people relieve pain, correct their posture and stay strong and active, whatever their age.",
+      "I'm a registered massage therapist and personal trainer based in Montréal's West Island. I help people relieve pain, correct their posture and stay strong and active, whatever their age.",
     text2:
       "I come to you with everything needed for treatment or training, at home, at the office or at your gym, and I build each plan around your body and your schedule.",
     portraitAlt: "Portrait of Ziad, massage therapist and personal trainer",
     credentials: [
       "Registered Massage Therapist · RMQ member",
       "Certified Personal Trainer",
-      "Mobile service across Montréal",
+      "Mobile service across Greater Montréal",
     ],
   },
 
@@ -137,8 +137,9 @@ export const en = {
     lead: "Send a message and I'll get back to you within one business day.",
     phone: "Phone",
     email: "Email",
-    area: "Area",
-    areaNote: "Mobile service at home or at work",
+    area: "Office",
+    office: "Saint-Jean, West Island",
+    areaNote: "Mobile service across Greater Montréal",
     formTitle: "Send a message",
   },
 
@@ -149,19 +150,10 @@ export const en = {
     emailPlaceholder: "you@example.com",
     phone: "Phone (optional)",
     phonePlaceholder: "+1 438 225 8859",
-    interest: "I'm interested in",
-    choose: "Choose an option",
-    interests: [
-      "Massage therapy",
-      "Posture correction",
-      "Mobility",
-      "Strength training",
-      "Active aging",
-      "Youth fitness",
-      "Something else",
-    ],
     message: "Message",
     messagePlaceholder: "How can I help? Tell me about your goals or any pain you're dealing with.",
+    receipt: "I'd like an insurance receipt",
+    receiptNote: "Insurance receipts available",
     consent: "By submitting, you agree to be contacted about your enquiry. Your information is never shared.",
     submit: "Send message",
     sending: "Sending…",
@@ -172,7 +164,6 @@ export const en = {
     errors: {
       name: "Please enter your name.",
       email: "Please enter a valid email address.",
-      interest: "Please choose what you're interested in.",
       message: "Tell us a little more (at least 10 characters).",
     },
   },
@@ -188,7 +179,7 @@ export const en = {
     author: "Ziad",
     authorRole: "Registered Massage Therapist · Personal Trainer",
     authorBio:
-      "Ziad is a registered massage therapist (RMQ) and personal trainer in Montréal. He treats clients at home, at work and at the gym across the city.",
+      "Ziad is a registered massage therapist (RMQ) and personal trainer in Montréal's West Island. He treats clients at home, at work and at the gym across Greater Montréal.",
     backToBlog: "All articles",
     related: "Keep reading",
     latestEyebrow: "From the blog",
