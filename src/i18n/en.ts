@@ -54,7 +54,6 @@ export const en = {
     "Registered therapist",
     "Insurance receipts",
     "Home & office visits",
-    "Français · English",
   ],
   /** Points in the navy bands between home-page sections, by the section that follows. */
   breaks: {

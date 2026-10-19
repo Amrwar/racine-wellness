@@ -55,7 +55,6 @@ export const fr: Dictionary = {
     "Massothérapeute agréé",
     "Reçus pour assurances",
     "À domicile ou au bureau",
-    "Français · English",
   ],
   breaks: {
     about: [

@@ -49,6 +49,7 @@ const P = {
   anatomyStudy: img("anatomy-study", 816, 1200),
   anatomySide: img("anatomy-side", 578, 981),
   anatomyBack: img("anatomy-back", 471, 800),
+  anatomyFullBody: img("anatomy-full-body", 1100, 1576),
   postureChain: img("posture-chain", 898, 439),
   footImbalance: img("foot-imbalance", 816, 1200),
   shoulderRom: img("shoulder-rom", 816, 1200),
@@ -62,12 +63,13 @@ export const posts: Post[] = [
     slug: "massage-mobility-healthy-aging",
     date: "2026-10-18",
     readMinutes: 2,
-    cover: P.studioTableSide,
+    cover: P.anatomyFullBody,
+    coverDiagram: true,
     en: {
       title: "Can regular massage help you move better as you age?",
       excerpt: "Discover how massage may support muscle comfort, mobility and healthy aging.",
       category: "Active aging",
-      coverAlt: "Massage table prepared for a session in the HealthyZone studio",
+      coverAlt: "Pencil study of the muscles of the body from the front and back, from the shoulders to the feet",
       body: [
         {
           type: "p",
@@ -86,7 +88,21 @@ export const posts: Post[] = [
           type: "p",
           text: "While this is an encouraging personal experience, walking ability also depends on strength, balance, physical activity and overall health. More research is needed to determine whether massage directly improves walking speed in older adults.",
         },
+        {
+          type: "image",
+          photo: P.anatomyBack,
+          alt: "Pencil study of the back muscles, from the neck and shoulders down to the hips",
+          caption: "Comfortable walking relies on the back, hips and legs working together.",
+          diagram: true,
+        },
         { type: "h2", text: "Massage as part of healthy aging" },
+        {
+          type: "image",
+          photo: P.anatomySide,
+          alt: "Pencil study of the neck, shoulder and chest muscles seen from the side",
+          caption: "Relaxed shoulders and neck make everyday movement feel easier.",
+          diagram: true,
+        },
         { type: "p", text: "Massage may complement other healthy habits, including:" },
         {
           type: "list",
@@ -111,7 +127,7 @@ export const posts: Post[] = [
       title: "Le massage régulier peut-il vous aider à mieux bouger en vieillissant?",
       excerpt: "Découvrez comment le massage peut favoriser le confort musculaire, la mobilité et un vieillissement en santé.",
       category: "Vieillissement actif",
-      coverAlt: "Table de massage préparée pour une séance au studio HealthyZone",
+      coverAlt: "Étude au crayon des muscles du corps de face et de dos, des épaules aux pieds",
       body: [
         {
           type: "p",
@@ -130,7 +146,21 @@ export const posts: Post[] = [
           type: "p",
           text: "Bien qu'il s'agisse d'une expérience personnelle encourageante, la capacité de marcher dépend aussi de la force, de l'équilibre, de l'activité physique et de l'état de santé général. D'autres recherches sont nécessaires pour déterminer si le massage améliore directement la vitesse de marche chez les personnes âgées.",
         },
+        {
+          type: "image",
+          photo: P.anatomyBack,
+          alt: "Étude au crayon des muscles du dos, du cou et des épaules jusqu'aux hanches",
+          caption: "Une marche confortable repose sur le travail conjoint du dos, des hanches et des jambes.",
+          diagram: true,
+        },
         { type: "h2", text: "Le massage, un allié du vieillissement en santé" },
+        {
+          type: "image",
+          photo: P.anatomySide,
+          alt: "Étude au crayon des muscles du cou, des épaules et de la poitrine, vue de profil",
+          caption: "Des épaules et un cou détendus rendent les mouvements quotidiens plus faciles.",
+          diagram: true,
+        },
         { type: "p", text: "Le massage peut compléter d'autres saines habitudes, notamment :" },
         {
           type: "list",
@@ -810,7 +840,7 @@ export const posts: Post[] = [
         },
         {
           type: "p",
-          text: "Sessions are available at home, at your office or at the gym, in French or English. When you're ready, send a message or call and we'll find a time that works.",
+          text: "Sessions are available at home, at your office or at the gym. When you're ready, send a message or call and we'll find a time that works.",
         },
       ],
     },
@@ -862,7 +892,7 @@ export const posts: Post[] = [
         },
         {
           type: "p",
-          text: "Les séances sont offertes à domicile, au bureau ou au gym, en français ou en anglais. Quand vous êtes prêt, envoyez un message ou appelez et on trouvera un moment qui vous convient.",
+          text: "Les séances sont offertes à domicile, au bureau ou au gym. Quand vous êtes prêt, envoyez un message ou appelez et on trouvera un moment qui vous convient.",
         },
       ],
     },
