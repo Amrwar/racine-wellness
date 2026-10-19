@@ -27,15 +27,18 @@ export const navItems = [
 export type NavItem = (typeof navItems)[number];
 
 export const images = {
-  /** Hero background: bare trees against the sky, in black and white. */
-  hero: "/images/hero-trees.webp",
+  /** Ziad's treatment photo, cleaned and graded by design/hero-massage.py. */
+  hero: {
+    wide: { src: "/images/hero-massage-wide.webp", width: 2400, height: 1200 },
+    square: { src: "/images/hero-massage-square.webp", width: 1200, height: 1200 },
+  },
 
   portrait: "/images/portrait.jpg",
   /** Section backgrounds, built by design/section-photos.py. */
   sections: {
-    services: "/images/section-beach.webp",
-    about: "/images/section-beach-bw.webp",
-    blog: "/images/section-riverbank.webp",
+    services: "/images/section-trees.webp",
+    about: "/images/section-beach.webp",
+    blog: "/images/section-beach-bw.webp",
     contact: "/images/section-room.webp",
   },
 };

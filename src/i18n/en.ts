@@ -47,6 +47,7 @@ export const en = {
     lead: "A unique, personalized experience adapted to your needs, at home or at work. Registered massage therapy and active-health coaching with Ziad Bik.",
     call: "Call us",
     book: "Book a session",
+    imageAlt: "Ziad giving a back massage to a client on a treatment table",
   },
 
   trust: [

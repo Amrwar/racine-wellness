@@ -48,6 +48,7 @@ export const fr: Dictionary = {
     lead: "Profitez d'une expérience unique et personnalisée adaptée à vos besoins, que ce soit à domicile ou au travail. Massothérapie et santé active avec Ziad Bik.",
     call: "Appelez-nous",
     book: "Prendre rendez-vous",
+    imageAlt: "Ziad donnant un massage du dos à un client sur une table de traitement",
   },
 
   trust: [
