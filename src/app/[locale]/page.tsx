@@ -1,4 +1,4 @@
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
@@ -17,15 +17,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
-      {/* ---------- Hero: Ziad at work on a grey studio wall; text on the plain wall ---------- */}
-      {/* Phones/tablets: the photo on top, fading into the text below. Desktop: full-bleed. */}
-      <section className="relative isolate -mt-18 overflow-hidden bg-[#1a1b1d] pt-18 text-white">
-        <HeroImage alt={t.hero.imageAlt} />
+      {/* ---------- Hero: black-and-white trees, darkened on the text side ---------- */}
+      <section className="relative isolate -mt-18 overflow-hidden bg-black pt-18 text-white">
+        <Image src={images.hero} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
         <div
           aria-hidden
-          className="absolute inset-x-0 top-18 -z-10 h-[78vw] bg-gradient-to-b from-transparent from-40% to-[#1a1b1d] lg:bottom-0 lg:h-auto lg:bg-gradient-to-r lg:from-black/65 lg:from-0% lg:via-black/20 lg:to-transparent"
+          className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/60 to-black/75 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/55 lg:to-black/30"
         />
-        <Container className="flex flex-col pb-16 pt-[calc(78vw-3rem)] lg:min-h-[calc(100svh-4.5rem)] lg:max-h-[56rem] lg:justify-center lg:py-24">
+        <Container className="flex flex-col py-24 sm:py-32 lg:min-h-[calc(100svh-4.5rem)] lg:max-h-[56rem] lg:justify-center lg:py-24">
           <div className="max-w-xl">
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
@@ -52,9 +51,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <SectionBreak items={t.trust} />
 
       {/* ---------- Services ---------- */}
-      <section id="services" className="relative isolate overflow-hidden bg-black py-20 sm:py-28">
-        <SectionPhoto src={images.sections.services} className="object-center" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/50 to-black/75" />
+      <section id="services" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
+        <SectionPhoto src={images.sections.services} className="object-[50%_40%]" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/80 via-ink/55 to-ink/85" />
         <Container>
           <SectionHeader light eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,7 +80,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- About ---------- */}
       <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.about} className="object-[50%_55%] blur-[2px]" />
+        <SectionPhoto src={images.sections.about} className="object-[50%_60%]" />
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/95 via-ink/85 to-ink/70" />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
@@ -186,28 +185,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 /** Full-bleed real photo behind a section; the section adds its own colour overlay on top. */
 function SectionPhoto({ src, className = "" }: { src: string; className?: string }) {
   return <Image src={src} alt="" fill sizes="100vw" className={`-z-20 object-cover ${className}`} />;
-}
-
-/** Hero photo: the square shot for phones and tablets, the wide (extended wall) version on desktop. */
-function HeroImage({ alt }: { alt: string }) {
-  const common = { alt, sizes: "100vw", loading: "eager", fetchPriority: "high" } as const;
-  const {
-    props: { srcSet: wide },
-  } = getImageProps({ ...common, ...images.hero.wide });
-  const {
-    props: { srcSet: square, ...rest },
-  } = getImageProps({ ...common, ...images.hero.square });
-  return (
-    <picture>
-      <source media="(min-width: 1024px)" srcSet={wide} />
-      <img
-        {...rest}
-        alt={alt}
-        srcSet={square}
-        className="absolute inset-x-0 top-18 -z-10 h-[78vw] w-full object-cover object-top lg:bottom-0 lg:h-[calc(100%-4.5rem)] lg:object-right"
-      />
-    </picture>
-  );
 }
 
 function Detail({
