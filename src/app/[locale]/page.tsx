@@ -80,13 +80,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <SectionBreak items={t.breaks.about} />
 
       {/* ---------- About ---------- */}
-      <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.about} className="object-[50%_40%]" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/90 via-ink/70 to-ink/55" />
+      <section id="about" className="relative isolate overflow-hidden bg-white py-20 sm:py-28">
+        <SectionPhoto src={images.sections.about} className="object-[50%_70%]" />
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <div className="relative mx-auto max-w-sm lg:max-w-none">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl shadow-black/40 ring-1 ring-white/15">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl shadow-black/25 ring-4 ring-white">
                 <Image
                   src={images.portrait}
                   alt={t.about.portraitAlt}
@@ -98,14 +97,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </div>
           </div>
           <div className="lg:col-span-7">
-            <SectionHeader light eyebrow={t.about.eyebrow} title={t.about.title} />
-            <p className="mt-2 text-sm font-semibold text-blue">{t.credentialsLine}</p>
-            <p className="mt-6 text-lg leading-relaxed text-white/80">{t.about.text1}</p>
-            <p className="mt-4 text-lg leading-relaxed text-white/80">{t.about.text2}</p>
+            <SectionHeader eyebrow={t.about.eyebrow} title={t.about.title} />
+            <p className="mt-2 text-sm font-semibold text-blue-dark">{t.credentialsLine}</p>
+            <p className="mt-6 text-lg leading-relaxed text-ink/85">{t.about.text1}</p>
+            <p className="mt-4 text-lg leading-relaxed text-ink/85">{t.about.text2}</p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {t.about.credentials.map((c) => (
-                <li key={c} className="flex items-start gap-3 text-white">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/10 text-green ring-1 ring-white/15">
+                <li key={c} className="flex items-start gap-3 font-medium text-navy">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-navy text-green">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                   {c}
@@ -120,14 +119,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- Latest from the blog ---------- */}
       <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.blog} className="object-[50%_70%]" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/85 via-ink/65 to-ink/85" />
+        <SectionPhoto src={images.sections.blog} className="object-[50%_40%]" />
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
             <SectionHeader light eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
             <Link
               href={localePath(locale, "/blog")}
-              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-green hover:text-white"
+              className="group inline-flex shrink-0 items-center gap-2 font-semibold text-white hover:text-green"
             >
               {t.blog.viewAll} <Arrow />
             </Link>
