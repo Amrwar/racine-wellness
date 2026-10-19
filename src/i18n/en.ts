@@ -128,6 +128,7 @@ export const en = {
       "Registered Massage Therapist · RMQ member",
       "Certified Personal Trainer",
       "Mobile service across Greater Montréal",
+      "Insurance receipts available",
     ],
   },
 

@@ -128,6 +128,7 @@ export const fr: Dictionary = {
       "Massothérapeute agréé · membre RMQ",
       "Entraîneur personnel certifié",
       "Service mobile dans le Grand Montréal",
+      "Reçus d'assurance disponibles",
     ],
   },
 

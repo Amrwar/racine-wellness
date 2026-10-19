@@ -8,7 +8,7 @@ import { Arrow, Button, Check, Container, Eyebrow, SectionBreak, SectionHeader }
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/blog";
-import { Mail, MapPin, Phone, Receipt, serviceIcons } from "@/components/icons";
+import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -94,13 +94,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   sizes="(min-width: 1024px) 40vw, 90vw"
                   className="object-cover object-top"
                 />
-              </div>
-              {/* Insurance receipts badge, overlapping the bottom edge of the portrait */}
-              <div className="absolute -bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-2xl bg-white py-3 pl-3 pr-5 shadow-xl shadow-black/30 lg:-right-6 lg:left-auto lg:translate-x-0">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-navy text-green">
-                  <Receipt className="h-5 w-5" />
-                </span>
-                <span className="text-sm font-semibold leading-tight text-navy">{t.form.receiptNote}</span>
               </div>
             </div>
           </div>
