@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SectionLinks } from "@/components/SectionLinks";
 import { site } from "@/lib/site";
 import { getDictionary } from "@/i18n";
 import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "@/i18n/config";
@@ -100,6 +101,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             {children}
           </main>
           <Footer t={t} />
+          <SectionLinks />
         </LocaleProvider>
         <script
           type="application/ld+json"

@@ -26,6 +26,7 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
   const langSwitch = (
     <Link
       href={switchHref}
+      scroll={false}
       hrefLang={otherLocale}
       lang={otherLocale}
       title={t.header.switchTitle}
