@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import { db, hasDatabase } from "./db";
 import { defaultAvailability, parseAvailability, type Availability, type Booking } from "./booking-data";
 import { addDays, fromMinutes, localDay, toMinutes, weekday, zonedToDate } from "./time";
+import { googleBusy } from "./google";
 
 /** Slots start on the half hour. */
 const STEP = 30;
@@ -26,12 +27,15 @@ export async function saveAvailability(a: Availability) {
 
 type Busy = { start: number; end: number };
 
-/** Pending and confirmed appointments overlapping [from, to), as epoch ms. */
+/** Pending and confirmed appointments, plus times blocked in Google Calendar, overlapping [from, to). */
 async function busyBetween(from: Date, to: Date): Promise<Busy[]> {
   const sql = await db();
-  const rows = await sql`SELECT start_at, end_at FROM bookings
-    WHERE status IN ('pending', 'confirmed') AND start_at < ${to.toISOString()} AND end_at > ${from.toISOString()}`;
-  return rows.map((r) => ({ start: new Date(r.start_at).getTime(), end: new Date(r.end_at).getTime() }));
+  const [rows, google] = await Promise.all([
+    sql`SELECT start_at, end_at FROM bookings
+      WHERE status IN ('pending', 'confirmed') AND start_at < ${to.toISOString()} AND end_at > ${from.toISOString()}`,
+    googleBusy(from, to),
+  ]);
+  return [...rows.map((r) => ({ start: new Date(r.start_at).getTime(), end: new Date(r.end_at).getTime() })), ...google];
 }
 
 function slotsForDay(a: Availability, busy: Busy[], date: string, minutes: number, now: number): string[] {

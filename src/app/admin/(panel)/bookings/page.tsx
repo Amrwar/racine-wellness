@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { calendarToken } from "@/lib/bookings";
+import { googleBusy } from "@/lib/google";
 import type { Booking } from "@/lib/booking-data";
 import { site } from "@/lib/site";
 import { addDays, isDay, localDay, localTime, weekday, zonedToDate } from "@/lib/time";
@@ -30,6 +31,7 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
     AND start_at >= ${zonedToDate(monday, "00:00").toISOString()}
     AND start_at < ${zonedToDate(addDays(monday, 7), "00:00").toISOString()}
     ORDER BY start_at`) as Booking[];
+  const blocked = await googleBusy(zonedToDate(monday, "00:00"), zonedToDate(addDays(monday, 7), "00:00"));
   const selected = typeof open === "string" ? inWeek.find((b) => String(b.id) === open) : undefined;
 
   const token = calendarToken();
@@ -85,6 +87,9 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
           <div className="grid divide-y divide-mist/60 lg:grid-cols-7 lg:divide-x lg:divide-y-0">
             {days.map((d) => {
               const items = inWeek.filter((b) => localDay(new Date(b.start_at)) === d);
+              const dayStart = zonedToDate(d, "00:00").getTime();
+              const dayEnd = zonedToDate(addDays(d, 1), "00:00").getTime();
+              const google = blocked.filter((g) => g.start < dayEnd && g.end > dayStart);
               const isToday = d === today;
               return (
                 <div key={d} className={`min-h-28 p-3 lg:min-h-80 ${isToday ? "bg-blue/5" : ""}`}>
@@ -116,7 +121,19 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
                         </Link>
                       </li>
                     ))}
-                    {items.length === 0 && <li className="text-xs text-muted/60 lg:pt-2">—</li>}
+                    {google.map((g, i) => (
+                      <li
+                        key={`g${i}`}
+                        title="Blocked by your Google Calendar"
+                        className="rounded-xl bg-[repeating-linear-gradient(135deg,#fde8e8_0,#fde8e8_6px,#fff_6px,#fff_12px)] px-3 py-2 text-xs text-[#9b1c1c] ring-1 ring-[#f5b5b5]"
+                      >
+                        <span className="block font-semibold">
+                          {g.end - g.start >= 86_400_000 - 3_600_000 ? "All day" : `${localTime(new Date(Math.max(g.start, dayStart)))}–${localTime(new Date(Math.min(g.end, dayEnd)))}`}
+                        </span>
+                        <span className="block truncate">{g.label}</span>
+                      </li>
+                    ))}
+                    {items.length === 0 && google.length === 0 && <li className="text-xs text-muted/60 lg:pt-2">—</li>}
                   </ul>
                 </div>
               );
@@ -126,6 +143,9 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
         <p className="mt-3 flex flex-wrap gap-4 text-xs text-muted">
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-navy" /> Confirmed</span>
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded border border-dashed border-blue bg-blue/10" /> Awaiting confirmation</span>
+          {blocked.length > 0 && (
+            <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-[#fde8e8] ring-1 ring-[#f5b5b5]" /> Blocked in Google Calendar</span>
+          )}
         </p>
 
         {selected && (

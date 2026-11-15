@@ -17,6 +17,8 @@ import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, wee
 import { parsePost } from "@/lib/post-data";
 import { deletePost, savePost, slugTaken } from "@/lib/posts";
 import type { Post } from "@/lib/blog";
+import { disconnectGoogle, googleBusy, saveGoogleChoices } from "@/lib/google";
+import { googleColors, type CalendarMode } from "@/lib/google-data";
 
 /* ---------------- Login ---------------- */
 
@@ -236,6 +238,12 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
         AND start_at < ${new Date(end.getTime() + buffer).toISOString()}
         AND end_at > ${new Date(start.getTime() - buffer).toISOString()}
       ORDER BY start_at`;
+    for (const g of await googleBusy(new Date(start.getTime() - buffer), new Date(end.getTime() + buffer))) {
+      const overlap = g.start < end.getTime() && g.end > start.getTime();
+      warnings.push(
+        `${overlap ? "Overlaps" : `Leaves less than ${a.bufferMinutes} min before or after`} "${g.label}" in your Google Calendar (${localTime(new Date(g.start))}–${localTime(new Date(g.end))}).`,
+      );
+    }
     for (const c of clashes) {
       const s = new Date(c.start_at);
       const overlap = s < end && new Date(c.end_at) > start;
@@ -285,6 +293,35 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
   revalidatePath("/admin", "layout");
   const monday = addDays(date, -((weekday(date) + 6) % 7));
   redirect(`/admin/bookings?week=${monday}&open=${id}#details`);
+}
+
+/* ---------------- Google Calendar ---------------- */
+
+export type GoogleState = { status: "idle" | "saved" | "error"; message?: string };
+
+export async function updateGoogle(_prev: GoogleState, formData: FormData): Promise<GoogleState> {
+  await requireAdmin();
+  try {
+    const raw = JSON.parse(String(formData.get("google") ?? "{}"));
+    const modes: CalendarMode[] = ["colors", "all", "off"];
+    const calendars = (Array.isArray(raw.calendars) ? raw.calendars : [])
+      .filter((c: { id?: unknown; mode?: unknown }) => typeof c?.id === "string" && modes.includes(c.mode as CalendarMode))
+      .map((c: { id: string; mode: CalendarMode }) => ({ id: c.id, mode: c.mode }));
+    const valid = new Set<string>(googleColors.map((c) => c.id));
+    const colors = (Array.isArray(raw.colors) ? raw.colors : []).map(String).filter((c: string) => valid.has(c));
+    await saveGoogleChoices(calendars, colors);
+  } catch (err) {
+    console.error("[admin] save google failed:", err);
+    return { status: "error", message: "Saving failed. Please try again." };
+  }
+  revalidatePath("/admin", "layout");
+  return { status: "saved" };
+}
+
+export async function removeGoogle() {
+  await requireAdmin();
+  await disconnectGoogle();
+  revalidatePath("/admin", "layout");
 }
 
 /* ---------------- Blog ---------------- */
