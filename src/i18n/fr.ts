@@ -3,6 +3,7 @@ import type { Dictionary } from "./en";
 export const fr: Dictionary = {
   nav: {
     services: "Services",
+    pricing: "Tarifs",
     about: "À propos",
     blog: "Blogue",
     contact: "Contact",
@@ -87,6 +88,37 @@ export const fr: Dictionary = {
         text: "Un entraînement supervisé qui développe de bonnes habitudes de mouvement, la coordination et la confiance chez les jeunes.",
       },
     ],
+  },
+
+  pricing: {
+    eyebrow: "Tarifs",
+    title: "Tarifs de massothérapie",
+    lead: "Choisissez le soin et la durée qui répondent le mieux à vos besoins. Un reçu pour assurances est remis pour chaque séance de massage.",
+    promo: "10 % de rabais sur votre première séance",
+    items: [
+      {
+        title: "Massage suédois de détente",
+        text: "Un massage de détente du dos, du cou, des jambes (avant et arrière), des bras et des pieds.",
+        rates: [
+          { minutes: 60, price: 100 },
+          { minutes: 90, price: 135 },
+          { minutes: 120, price: 170 },
+        ],
+      },
+      {
+        title: "Massage thérapeutique",
+        text: "Des techniques thérapeutiques spécialisées, notamment le travail des tissus profonds, le relâchement fascial, les points de pression et les étirements passifs.",
+        rates: [
+          { minutes: 60, price: 135 },
+          { minutes: 90, price: 180 },
+          { minutes: 120, price: 230 },
+        ],
+      },
+    ],
+    duration: "{n} min",
+    price: "{n} $",
+    homeVisits: "Visites à domicile : des frais de déplacement s'ajoutent selon votre emplacement.",
+    book: "Prendre rendez-vous",
   },
 
   about: {
