@@ -152,6 +152,9 @@ export const fr: Dictionary = {
       cancelledSubject: "Votre rendez-vous HealthyZone a été annulé",
       cancelled:
         "Bonjour {name},\n\nVotre rendez-vous du {when} a été annulé. Pour réserver une nouvelle plage, rendez-vous sur {link} ou composez le {phone}.\n\nHealthyZone",
+      updatedSubject: "Votre rendez-vous HealthyZone a été modifié",
+      updated:
+        "Bonjour {name},\n\nLes détails de votre rendez-vous ont été modifiés :\n\n{when}\n{service}\n{where}\n\nPour toute question, composez le {phone} ou répondez à ce courriel.\n\nHealthyZone",
     },
   },
 

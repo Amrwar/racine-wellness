@@ -151,6 +151,9 @@ export const en = {
       cancelledSubject: "Your HealthyZone appointment has been cancelled",
       cancelled:
         "Hello {name},\n\nYour appointment on {when} has been cancelled. To book a new time, visit {link} or call {phone}.\n\nHealthyZone",
+      updatedSubject: "Your HealthyZone appointment has been updated",
+      updated:
+        "Hello {name},\n\nYour appointment details have been updated:\n\n{when}\n{service}\n{where}\n\nIf you have any questions, call {phone} or reply to this email.\n\nHealthyZone",
     },
   },
 

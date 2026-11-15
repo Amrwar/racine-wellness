@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { updateBooking } from "@/app/admin/actions";
 import type { Booking } from "@/lib/booking-data";
 import { formatPrice } from "@/lib/pricing-data";
@@ -97,6 +98,12 @@ export function BookingCard({ b }: { b: Booking }) {
           ) : (
             <ActionButton id={b.id} action="cancel" label="Cancel appointment" tone="danger" />
           )}
+          <Link
+            href={`/admin/bookings/${b.id}`}
+            className="rounded-full bg-surface px-4 py-2 text-sm font-semibold text-navy ring-1 ring-mist transition hover:bg-white"
+          >
+            Edit
+          </Link>
           <span className="text-xs text-muted">{b.email ? "The client is emailed automatically." : ""}</span>
         </div>
       )}

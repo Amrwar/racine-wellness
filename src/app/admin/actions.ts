@@ -8,12 +8,12 @@ import { db, hasDatabase } from "@/lib/db";
 import { getPricing, savePricing } from "@/lib/pricing";
 import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
 import { parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
-import { getBooking, saveAvailability } from "@/lib/bookings";
+import { getAvailability, getBooking, saveAvailability } from "@/lib/bookings";
 import { sendEmail, ownerEmail } from "@/lib/email";
 import { fill, getDictionary } from "@/i18n";
 import { localePath } from "@/i18n/config";
 import { site } from "@/lib/site";
-import { formatWhen } from "@/lib/time";
+import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 import { parsePost } from "@/lib/post-data";
 import { deletePost, savePost, slugTaken } from "@/lib/posts";
 import type { Post } from "@/lib/blog";
@@ -179,6 +179,112 @@ export async function updateAvailability(prev: AvailabilityState, formData: Form
   }
   revalidatePath("/admin", "layout");
   return { status: "saved", availability: parsed };
+}
+
+/* ---------------- Edit a booking ---------------- */
+
+export type EditBookingState = {
+  status: "idle" | "error" | "warn";
+  errors?: string[];
+  /** Clashes or times outside opening hours; saving again with force=yes goes ahead. */
+  warnings?: string[];
+};
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function editBooking(_prev: EditBookingState, formData: FormData): Promise<EditBookingState> {
+  await requireAdmin();
+  const get = (k: string, max = 500) => String(formData.get(k) ?? "").trim().slice(0, max);
+  const id = Number(formData.get("id"));
+  const booking = Number.isInteger(id) ? await getBooking(id) : null;
+  if (!booking || (booking.status !== "pending" && booking.status !== "confirmed")) {
+    return { status: "error", errors: ["This booking can no longer be edited."] };
+  }
+
+  const date = get("date", 10);
+  const time = get("time", 5);
+  const minutes = Math.round(Number(formData.get("minutes")));
+  const price = Math.round(Number(formData.get("price")) * 100) / 100;
+  const serviceId = get("service", 40);
+  const location = formData.get("location") === "home" ? "home" : "office";
+  const address = get("address", 300);
+  const name = get("name", 120);
+  const phone = get("phone", 40);
+  const email = get("email", 200);
+  const notes = get("notes", 2000);
+
+  const errors: string[] = [];
+  if (!isDay(date) || !isTime(time)) errors.push("Choose a date and start time.");
+  if (!(minutes >= 15 && minutes <= 600)) errors.push("The length must be between 15 and 600 minutes.");
+  if (!(price >= 0 && price <= 10000)) errors.push("Enter a price between $0 and $10,000.");
+  if (location === "home" && address.length < 6) errors.push("Enter the address for the home visit.");
+  if (name.length < 2) errors.push("Enter the client's name.");
+  if (phone.replace(/\D/g, "").length < 10) errors.push("Enter a valid phone number.");
+  if (email && !EMAIL_RE.test(email)) errors.push("Enter a valid email address, or leave it empty.");
+  if (errors.length) return { status: "error", errors };
+
+  const start = zonedToDate(date, time);
+  const end = new Date(start.getTime() + minutes * 60_000);
+  const sql = await db();
+
+  if (formData.get("force") !== "yes") {
+    const warnings: string[] = [];
+    const a = await getAvailability();
+    const buffer = a.bufferMinutes * 60_000;
+    const clashes = await sql`SELECT name, start_at, end_at FROM bookings
+      WHERE id <> ${id} AND status IN ('pending', 'confirmed')
+        AND start_at < ${new Date(end.getTime() + buffer).toISOString()}
+        AND end_at > ${new Date(start.getTime() - buffer).toISOString()}
+      ORDER BY start_at`;
+    for (const c of clashes) {
+      const s = new Date(c.start_at);
+      const overlap = s < end && new Date(c.end_at) > start;
+      warnings.push(
+        `${overlap ? "Overlaps" : `Leaves less than ${a.bufferMinutes} min before or after`} ${c.name}'s appointment (${localTime(s)}–${localTime(new Date(c.end_at))}).`,
+      );
+    }
+    const hours = a.week[weekday(date)];
+    const endDay = localDay(end);
+    if (!hours.open || a.closedDates.includes(date)) {
+      warnings.push("That day is closed in your opening hours.");
+    } else if (toMinutes(time) < toMinutes(hours.start) || endDay !== date || toMinutes(localTime(end)) > toMinutes(hours.end)) {
+      warnings.push(`That time is outside your opening hours (${hours.start}–${hours.end}).`);
+    }
+    if (start.getTime() < Date.now()) warnings.push("That time is in the past.");
+    if (warnings.length) return { status: "warn", warnings };
+  }
+
+  const pricing = await getPricing();
+  const service = pricing.services.find((s) => s.id === serviceId);
+  const serviceTitle = service?.title.en ?? booking.service_title;
+  await sql`UPDATE bookings SET start_at = ${start.toISOString()}, end_at = ${end.toISOString()},
+      service_id = ${service?.id ?? booking.service_id}, service_title = ${serviceTitle}, minutes = ${minutes}, price = ${price},
+      location = ${location}, address = ${location === "home" ? address : null}, name = ${name}, phone = ${phone},
+      email = ${email || null}, notes = ${notes || null}, wants_receipt = ${formData.get("receipt") === "yes"}
+    WHERE id = ${id}`;
+
+  if (email && formData.get("notify") === "yes") {
+    const locale = booking.locale === "fr" ? "fr" : "en";
+    const dict = getDictionary(locale);
+    const t = dict.booking;
+    const when = formatWhen(start, locale);
+    await sendEmail({
+      to: email,
+      replyTo: ownerEmail(),
+      subject: t.emails.updatedSubject,
+      text: fill(t.emails.updated, {
+        name: name.split(" ")[0],
+        when: `${when.day}, ${when.time}`,
+        service: `${service?.title[locale] ?? serviceTitle}, ${minutes} min (${formatPrice(price, locale)})`,
+        where: location === "home" ? `${t.home}: ${address}` : `${t.office} (${dict.contact.office})`,
+        phone: site.phone,
+      }),
+    });
+  }
+
+  revalidatePath("/admin", "layout");
+  const monday = addDays(date, -((weekday(date) + 6) % 7));
+  redirect(`/admin/bookings?week=${monday}&open=${id}#details`);
 }
 
 /* ---------------- Blog ---------------- */
