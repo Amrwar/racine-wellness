@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
-import { getPosts } from "@/lib/blog";
+import { getPosts } from "@/lib/posts";
 import { Container, Eyebrow } from "@/components/ui";
 import { BlogCta, FeaturedPost, PostCard } from "@/components/blog";
 import { alternatesFor } from "../layout";
@@ -19,7 +19,7 @@ export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) 
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
-  const [featured, ...rest] = getPosts();
+  const [featured, ...rest] = await getPosts();
 
   return (
     <>

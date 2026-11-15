@@ -3,7 +3,8 @@ import type { Locale } from "@/i18n/config";
 /**
  * Blog posts, written in English and French. Article bodies are a list of simple blocks so
  * they can be rendered with the site's own typography (no Markdown pipeline needed).
- * Photos live in public/images/blog and are built by design/blog-photos.py.
+ * Articles are stored in the database and edited in /admin/blog; the ones below are the originals.
+ * Photos live in public/images/blog (built by design/blog-photos.py) or in Vercel Blob (uploads).
  */
 
 export type Photo = { src: string; width: number; height: number };
@@ -30,35 +31,16 @@ export type Post = {
   cover: Photo;
   /** Diagrams are shown whole on a white card instead of cropped like photos. */
   coverDiagram?: boolean;
+  /** Drafts are only visible in the admin. Missing means published. */
+  published?: boolean;
   en: Localized;
   fr: Localized;
 };
 
-const img = (name: string, width: number, height: number): Photo => ({
-  src: `/images/blog/${name}.webp`,
-  width,
-  height,
-});
+import { P } from "./blog-photos";
 
-const P = {
-  deepTissue: img("deep-tissue", 1600, 1600),
-  swedish: img("swedish", 1400, 1400),
-  upperBack: img("upper-back", 1600, 1600),
-  sports: img("sports-massage", 1600, 1600),
-  anatomySketch: img("anatomy-sketch", 1060, 1060),
-  anatomyStudy: img("anatomy-study", 816, 1200),
-  anatomySide: img("anatomy-side", 578, 981),
-  anatomyBack: img("anatomy-back", 471, 800),
-  anatomyFullBody: img("anatomy-full-body", 1100, 1576),
-  postureChain: img("posture-chain", 898, 439),
-  footImbalance: img("foot-imbalance", 816, 1200),
-  shoulderRom: img("shoulder-rom", 816, 1200),
-  studioTable: img("studio-table", 1600, 1600),
-  studioTableSide: img("studio-table-side", 1400, 1400),
-  ziadStudio: img("ziad-studio", 1400, 1086),
-};
-
-export const posts: Post[] = [
+/** The original articles. They seed the database the first time the blog is read. */
+export const seedPosts: Post[] = [
   {
     slug: "massage-mobility-healthy-aging",
     date: "2026-10-18",
@@ -898,14 +880,6 @@ export const posts: Post[] = [
     },
   },
 ];
-
-export function getPosts() {
-  return [...posts].sort((a, b) => b.date.localeCompare(a.date));
-}
-
-export function getPost(slug: string) {
-  return posts.find((p) => p.slug === slug);
-}
 
 export function formatDate(date: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "fr" ? "fr-CA" : "en-CA", {

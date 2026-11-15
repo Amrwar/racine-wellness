@@ -4,21 +4,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { htmlLang, isLocale, localePath } from "@/i18n/config";
-import { getPost, getPosts, posts } from "@/lib/blog";
+import { getPost, getPosts } from "@/lib/posts";
 import { images, site } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { ArticleBody, AuthorCard, BlogCta, CoverImage, PostCard, PostMeta } from "@/components/blog";
 import { alternatesFor } from "../../layout";
 
-export const dynamicParams = false;
+// New articles from the admin render on first visit, then stay cached until edited.
+export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await getPosts()).map((p) => ({ slug: p.slug }));
 }
+
+const absolute = (src: string) => (src.startsWith("http") ? src : `${site.url}${src}`);
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!isLocale(locale) || !post) return {};
   const c = post[locale];
   return {
@@ -37,11 +40,11 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[sl
 
 export default async function ArticlePage({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { locale, slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!isLocale(locale) || !post) notFound();
   const t = getDictionary(locale);
   const c = post[locale];
-  const related = getPosts()
+  const related = (await getPosts())
     .filter((p) => p.slug !== slug)
     .slice(0, 3);
 
@@ -50,7 +53,7 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/blog/
     "@type": "BlogPosting",
     headline: c.title,
     description: c.excerpt,
-    image: `${site.url}${post.cover.src}`,
+    image: absolute(post.cover.src),
     datePublished: post.date,
     inLanguage: htmlLang[locale],
     author: { "@type": "Person", name: site.owner, jobTitle: t.credentialsLine },

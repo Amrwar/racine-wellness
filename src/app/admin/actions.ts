@@ -14,6 +14,9 @@ import { fill, getDictionary } from "@/i18n";
 import { localePath } from "@/i18n/config";
 import { site } from "@/lib/site";
 import { formatWhen } from "@/lib/time";
+import { parsePost } from "@/lib/post-data";
+import { deletePost, savePost, slugTaken } from "@/lib/posts";
+import type { Post } from "@/lib/blog";
 
 /* ---------------- Login ---------------- */
 
@@ -176,4 +179,57 @@ export async function updateAvailability(prev: AvailabilityState, formData: Form
   }
   revalidatePath("/admin", "layout");
   return { status: "saved", availability: parsed };
+}
+
+/* ---------------- Blog ---------------- */
+
+function refreshBlog(slugs: string[]) {
+  revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/blog", "page");
+  for (const slug of slugs) {
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath(`/fr/blog/${slug}`);
+  }
+  revalidatePath("/[locale]/blog/[slug]", "page");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/admin", "layout");
+}
+
+export type PostState = { status: "idle" | "saved" | "error"; problems?: string[]; post?: Post };
+
+export async function updatePost(prev: PostState, formData: FormData): Promise<PostState> {
+  await requireAdmin();
+  const previousSlug = String(formData.get("previousSlug") ?? "") || undefined;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get("post") ?? ""));
+  } catch {
+    return { status: "error", problems: ["The form couldn't be read. Please reload and try again."], post: prev.post };
+  }
+  const result = parsePost(raw);
+  if ("problems" in result) return { status: "error", problems: result.problems, post: prev.post };
+  const post = result.post;
+
+  if (post.slug !== previousSlug && (await slugTaken(post.slug))) {
+    return { status: "error", problems: ["Another article already uses this web address."], post: prev.post };
+  }
+  try {
+    await savePost(post, previousSlug);
+  } catch (err) {
+    console.error("[admin] save post failed:", err);
+    return { status: "error", problems: ["Saving failed. Please try again in a moment."], post: prev.post };
+  }
+  refreshBlog([post.slug, ...(previousSlug && previousSlug !== post.slug ? [previousSlug] : [])]);
+  // A new article (or a renamed one) moves to its own address in the editor.
+  if (post.slug !== previousSlug) redirect(`/admin/blog/${post.slug}?saved=1`);
+  return { status: "saved", post };
+}
+
+export async function removePost(formData: FormData) {
+  await requireAdmin();
+  const slug = String(formData.get("slug") ?? "");
+  if (!slug) return;
+  await deletePost(slug);
+  refreshBlog([slug]);
+  redirect("/admin/blog");
 }

@@ -56,6 +56,13 @@ async function ensureSchema(sql: NeonQueryFunction<false, false>) {
     status TEXT NOT NULL DEFAULT 'pending'
   )`;
   await sql`CREATE INDEX IF NOT EXISTS bookings_start_at_idx ON bookings (start_at)`;
+  await sql`CREATE TABLE IF NOT EXISTS posts (
+    slug TEXT PRIMARY KEY,
+    date TEXT NOT NULL,
+    published BOOLEAN NOT NULL DEFAULT false,
+    data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
   await sql`CREATE TABLE IF NOT EXISTS login_attempts (
     id SERIAL PRIMARY KEY,
     ip TEXT NOT NULL,

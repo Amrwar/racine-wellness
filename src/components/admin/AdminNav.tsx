@@ -9,6 +9,7 @@ const links = [
   { href: "/admin", label: "Overview", icon: "M3 12 12 4l9 8M5 10v10h5v-6h4v6h5V10" },
   { href: "/admin/bookings", label: "Bookings", icon: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" },
   { href: "/admin/messages", label: "Messages", icon: "M4 6h16v12H4zM4 7l8 6 8-6" },
+  { href: "/admin/blog", label: "Blog", icon: "M5 4h10l4 4v12H5zM14 4v5h5M8 13h8M8 17h5" },
   { href: "/admin/pricing", label: "Pricing", icon: "M20 12 12 20l-8-8V4h8zM8.5 8.5h.01" },
 ];
 

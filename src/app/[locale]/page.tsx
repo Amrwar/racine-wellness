@@ -7,7 +7,7 @@ import { site, images } from "@/lib/site";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
-import { getPosts } from "@/lib/blog";
+import { getPosts } from "@/lib/posts";
 import { getPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/pricing-data";
 import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
@@ -17,6 +17,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
   const pricing = await getPricing();
+  const latestPosts = (await getPosts()).slice(0, 3);
 
   return (
     <>
@@ -177,9 +178,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Link>
           </div>
           <ul className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            {getPosts()
-              .slice(0, 3)
-              .map((post) => (
+            {latestPosts.map((post) => (
                 <li key={post.slug}>
                   <PostCard post={post} locale={locale} t={t.blog} />
                 </li>
