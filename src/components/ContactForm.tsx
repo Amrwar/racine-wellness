@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState } from "react";
 import { sendContact, type ContactState } from "@/app/actions/contact";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
@@ -34,7 +34,16 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
   }
 
   return (
-    <form action={action} noValidate className="space-y-5">
+    // Submitted via onSubmit so a validation error doesn't reset what the visitor typed.
+    <form
+      noValidate
+      className="space-y-5"
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        const data = new FormData(ev.currentTarget);
+        startTransition(() => action(data));
+      }}
+    >
       <input type="hidden" name="locale" value={locale} />
 
       <div className="grid gap-5 sm:grid-cols-2">

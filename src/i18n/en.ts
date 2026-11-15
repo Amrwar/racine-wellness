@@ -97,6 +97,63 @@ export const en = {
     book: "Book a session",
   },
 
+  booking: {
+    metaTitle: "Book a session",
+    metaDescription:
+      "Request a massage therapy appointment with Ziad Bik, registered massage therapist, at the Saint-Jean office in the West Island or at your home.",
+    eyebrow: "Online booking",
+    title: "Book a massage session",
+    lead: "Choose your treatment, then a date and time that suit you. Ziad reviews each request and confirms your appointment by email.",
+    steps: ["Treatment", "Date and time", "Your details"],
+    chooseService: "Choose a treatment",
+    chooseDuration: "Session length",
+    chooseDay: "Choose a date",
+    chooseTime: "Available times",
+    loading: "Loading available times…",
+    noDays: "No times are open for online booking at the moment. Please contact us and we'll find a time that works for you.",
+    pickDay: "Select a date to see the available times.",
+    prevMonth: "Previous month",
+    nextMonth: "Next month",
+    where: "Location",
+    office: "At the office",
+    officeNote: "Saint-Jean, West Island",
+    home: "Home or workplace visit",
+    homeNote: "A travel fee is added depending on your location.",
+    address: "Address for the visit",
+    addressPlaceholder: "Street, city, postal code",
+    notes: "Anything Ziad should know (optional)",
+    notesPlaceholder: "Areas of tension, injuries, health conditions or preferences.",
+    email: "Email",
+    summary: "Your appointment",
+    change: "Change",
+    back: "Back",
+    next: "Continue",
+    submit: "Request this appointment",
+    sending: "Sending…",
+    pendingNote: "Your appointment is confirmed once Ziad has reviewed your request.",
+    successTitle: "Request received",
+    success: "Thank you {name}. Your request for {when} has been sent. You'll receive an email once Ziad confirms your appointment.",
+    taken: "That time has just been booked. Please choose another time.",
+    errors: {
+      address: "Please enter the address for the visit.",
+      slot: "Please choose a treatment, a date and a time.",
+    },
+    emails: {
+      requestSubject: "Your HealthyZone appointment request",
+      request:
+        "Hello {name},\n\nThank you for your request. Here are the details:\n\n{when}\n{service}\n{where}\n\nZiad will review your request and confirm your appointment by email. If you have any questions, call {phone} or reply to this email.\n\nHealthyZone",
+      confirmedSubject: "Your HealthyZone appointment is confirmed",
+      confirmed:
+        "Hello {name},\n\nYour appointment is confirmed:\n\n{when}\n{service}\n{where}\n\nIf you need to change or cancel it, call {phone} or reply to this email.\n\nSee you soon,\nZiad, HealthyZone",
+      declinedSubject: "About your HealthyZone appointment request",
+      declined:
+        "Hello {name},\n\nUnfortunately, the time you requested ({when}) is not available. Please choose another time at {link} or call {phone}, and we'll find a time that suits you.\n\nHealthyZone",
+      cancelledSubject: "Your HealthyZone appointment has been cancelled",
+      cancelled:
+        "Hello {name},\n\nYour appointment on {when} has been cancelled. To book a new time, visit {link} or call {phone}.\n\nHealthyZone",
+    },
+  },
+
   about: {
     eyebrow: "About",
     title: "Hi, I'm Ziad",

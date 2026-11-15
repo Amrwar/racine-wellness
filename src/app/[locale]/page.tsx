@@ -2,7 +2,7 @@ import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
-import { isLocale, localePath, sectionHref } from "@/i18n/config";
+import { isLocale, localePath } from "@/i18n/config";
 import { site, images } from "@/lib/site";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
@@ -40,7 +40,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               {t.hero.lead}
             </p>
             <div className="animate-fade-up delay-3 mt-10 flex flex-wrap gap-3">
-              <Button href={sectionHref(locale, "contact")} size="lg">
+              <Button href={localePath(locale, "/book")} size="lg">
                 {t.hero.book} <Arrow />
               </Button>
               <Button href={site.phoneHref} variant="outline-light" size="lg">
@@ -120,7 +120,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             ) : (
               <span />
             )}
-            <Button href={sectionHref(locale, "contact")} className="shrink-0">
+            <Button href={localePath(locale, "/book")} className="shrink-0">
               {t.pricing.book} <Arrow />
             </Button>
           </div>

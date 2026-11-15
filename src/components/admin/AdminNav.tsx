@@ -7,6 +7,7 @@ import { Wordmark } from "./Wordmark";
 
 const links = [
   { href: "/admin", label: "Overview", icon: "M3 12 12 4l9 8M5 10v10h5v-6h4v6h5V10" },
+  { href: "/admin/bookings", label: "Bookings", icon: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" },
   { href: "/admin/messages", label: "Messages", icon: "M4 6h16v12H4zM4 7l8 6 8-6" },
   { href: "/admin/pricing", label: "Pricing", icon: "M20 12 12 20l-8-8V4h8zM8.5 8.5h.01" },
 ];
@@ -28,7 +29,16 @@ function Icon({ d, className = "" }: { d: string; className?: string }) {
   );
 }
 
-export function AdminNav({ newCount, logout }: { newCount: number; logout: () => Promise<void> }) {
+export function AdminNav({
+  newCount,
+  pendingCount,
+  logout,
+}: {
+  newCount: number;
+  pendingCount: number;
+  logout: () => Promise<void>;
+}) {
+  const counts: Record<string, number> = { "/admin/messages": newCount, "/admin/bookings": pendingCount };
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const active = (href: string) => (href === "/admin" ? pathname === href : pathname.startsWith(href));
@@ -46,8 +56,8 @@ export function AdminNav({ newCount, logout }: { newCount: number; logout: () =>
         >
           <Icon d={l.icon} className={active(l.href) ? "text-green" : ""} />
           <span className="flex-1">{l.label}</span>
-          {l.href === "/admin/messages" && newCount > 0 && (
-            <span className="rounded-full bg-green px-2 py-0.5 text-xs font-semibold text-navy-deep">{newCount}</span>
+          {(counts[l.href] ?? 0) > 0 && (
+            <span className="rounded-full bg-green px-2 py-0.5 text-xs font-semibold text-navy-deep">{counts[l.href]}</span>
           )}
         </Link>
       ))}
@@ -98,7 +108,7 @@ export function AdminNav({ newCount, logout }: { newCount: number; logout: () =>
             className="relative grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
           >
             <Icon d={open ? "M6 6l12 12M18 6 6 18" : "M4 7h16M4 12h16M4 17h16"} className="h-6 w-6" />
-            {!open && newCount > 0 && <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-green" />}
+            {!open && newCount + pendingCount > 0 && <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-green" />}
           </button>
         </div>
         {open && (

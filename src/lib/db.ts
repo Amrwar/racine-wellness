@@ -36,6 +36,26 @@ async function ensureSchema(sql: NeonQueryFunction<false, false>) {
     value JSONB NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
+  await sql`CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    start_at TIMESTAMPTZ NOT NULL,
+    end_at TIMESTAMPTZ NOT NULL,
+    service_id TEXT NOT NULL,
+    service_title TEXT NOT NULL,
+    minutes INT NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    location TEXT NOT NULL,
+    address TEXT,
+    name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT,
+    notes TEXT,
+    wants_receipt BOOLEAN NOT NULL DEFAULT false,
+    locale TEXT NOT NULL DEFAULT 'en',
+    status TEXT NOT NULL DEFAULT 'pending'
+  )`;
+  await sql`CREATE INDEX IF NOT EXISTS bookings_start_at_idx ON bookings (start_at)`;
   await sql`CREATE TABLE IF NOT EXISTS login_attempts (
     id SERIAL PRIMARY KEY,
     ip TEXT NOT NULL,

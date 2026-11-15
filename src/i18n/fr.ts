@@ -98,6 +98,63 @@ export const fr: Dictionary = {
     book: "Prendre rendez-vous",
   },
 
+  booking: {
+    metaTitle: "Prendre rendez-vous",
+    metaDescription:
+      "Demandez un rendez-vous de massothérapie avec Ziad Bik, massothérapeute agréé, au bureau de Saint-Jean dans l'Ouest-de-l'Île ou à domicile.",
+    eyebrow: "Réservation en ligne",
+    title: "Réserver une séance de massage",
+    lead: "Choisissez votre soin, puis la date et l'heure qui vous conviennent. Ziad examine chaque demande et confirme votre rendez-vous par courriel.",
+    steps: ["Soin", "Date et heure", "Vos coordonnées"],
+    chooseService: "Choisissez un soin",
+    chooseDuration: "Durée de la séance",
+    chooseDay: "Choisissez une date",
+    chooseTime: "Heures disponibles",
+    loading: "Chargement des disponibilités…",
+    noDays: "Aucune plage n'est ouverte à la réservation en ligne pour le moment. Communiquez avec nous et nous trouverons un moment qui vous convient.",
+    pickDay: "Sélectionnez une date pour voir les heures disponibles.",
+    prevMonth: "Mois précédent",
+    nextMonth: "Mois suivant",
+    where: "Lieu",
+    office: "Au bureau",
+    officeNote: "Saint-Jean, Ouest-de-l'Île",
+    home: "À domicile ou au travail",
+    homeNote: "Des frais de déplacement s'ajoutent selon votre emplacement.",
+    address: "Adresse de la visite",
+    addressPlaceholder: "Rue, ville, code postal",
+    notes: "Informations utiles pour Ziad (facultatif)",
+    notesPlaceholder: "Zones de tension, blessures, conditions de santé ou préférences.",
+    email: "Courriel",
+    summary: "Votre rendez-vous",
+    change: "Modifier",
+    back: "Retour",
+    next: "Continuer",
+    submit: "Demander ce rendez-vous",
+    sending: "Envoi…",
+    pendingNote: "Votre rendez-vous est confirmé une fois que Ziad a examiné votre demande.",
+    successTitle: "Demande reçue",
+    success: "Merci {name}. Votre demande pour le {when} a été envoyée. Vous recevrez un courriel dès que Ziad aura confirmé votre rendez-vous.",
+    taken: "Cette plage vient d'être réservée. Veuillez choisir une autre heure.",
+    errors: {
+      address: "Veuillez indiquer l'adresse de la visite.",
+      slot: "Veuillez choisir un soin, une date et une heure.",
+    },
+    emails: {
+      requestSubject: "Votre demande de rendez-vous HealthyZone",
+      request:
+        "Bonjour {name},\n\nMerci pour votre demande. En voici les détails :\n\n{when}\n{service}\n{where}\n\nZiad examinera votre demande et confirmera votre rendez-vous par courriel. Pour toute question, composez le {phone} ou répondez à ce courriel.\n\nHealthyZone",
+      confirmedSubject: "Votre rendez-vous HealthyZone est confirmé",
+      confirmed:
+        "Bonjour {name},\n\nVotre rendez-vous est confirmé :\n\n{when}\n{service}\n{where}\n\nPour le modifier ou l'annuler, composez le {phone} ou répondez à ce courriel.\n\nÀ bientôt,\nZiad, HealthyZone",
+      declinedSubject: "Concernant votre demande de rendez-vous HealthyZone",
+      declined:
+        "Bonjour {name},\n\nMalheureusement, la plage demandée ({when}) n'est pas disponible. Choisissez une autre heure sur {link} ou composez le {phone}, et nous trouverons un moment qui vous convient.\n\nHealthyZone",
+      cancelledSubject: "Votre rendez-vous HealthyZone a été annulé",
+      cancelled:
+        "Bonjour {name},\n\nVotre rendez-vous du {when} a été annulé. Pour réserver une nouvelle plage, rendez-vous sur {link} ou composez le {phone}.\n\nHealthyZone",
+    },
+  },
+
   about: {
     eyebrow: "À propos",
     title: "Bonjour, je suis Ziad",

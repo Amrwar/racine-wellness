@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { fill } from "@/i18n";
-import { localePath, sectionHref, type Locale } from "@/i18n/config";
+import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/en";
 import { formatDate, type Block, type Photo, type Post } from "@/lib/blog";
 import { images } from "@/lib/site";
@@ -238,7 +238,7 @@ export function BlogCta({ locale, t }: { locale: Locale; t: BlogT }) {
           <h2 className="text-3xl font-semibold tracking-tight">{t.ctaTitle}</h2>
           <p className="mt-3 text-lg leading-relaxed text-white/75">{t.ctaText}</p>
         </div>
-        <Button href={sectionHref(locale, "contact")} size="lg" className="shrink-0">
+        <Button href={localePath(locale, "/book")} size="lg" className="shrink-0">
           {t.ctaButton} <Arrow />
         </Button>
       </Container>

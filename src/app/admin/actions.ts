@@ -5,8 +5,15 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { authConfigured, endSession, passwordMatches, requireAdmin, startSession } from "@/lib/auth";
 import { db, hasDatabase } from "@/lib/db";
-import { savePricing } from "@/lib/pricing";
-import { parsePricing, type Pricing } from "@/lib/pricing-data";
+import { getPricing, savePricing } from "@/lib/pricing";
+import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
+import { parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
+import { getBooking, saveAvailability } from "@/lib/bookings";
+import { sendEmail, ownerEmail } from "@/lib/email";
+import { fill, getDictionary } from "@/i18n";
+import { localePath } from "@/i18n/config";
+import { site } from "@/lib/site";
+import { formatWhen } from "@/lib/time";
 
 /* ---------------- Login ---------------- */
 
@@ -97,6 +104,76 @@ export async function updatePricing(prev: PricingState, formData: FormData): Pro
   }
   // Re-render the public home pages (EN and FR) with the new prices.
   revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/book", "page");
   revalidatePath("/admin", "layout");
   return { status: "saved", pricing };
+}
+
+/* ---------------- Bookings ---------------- */
+
+const transitions: Record<string, { from: BookingStatus[]; to: BookingStatus; email: "confirmed" | "declined" | "cancelled" }> = {
+  confirm: { from: ["pending"], to: "confirmed", email: "confirmed" },
+  decline: { from: ["pending"], to: "declined", email: "declined" },
+  cancel: { from: ["confirmed", "pending"], to: "cancelled", email: "cancelled" },
+};
+
+/** Confirm, decline or cancel a booking, then email the client. */
+export async function updateBooking(formData: FormData) {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  const move = transitions[String(formData.get("action"))];
+  if (!Number.isInteger(id) || !move) return;
+  const booking = await getBooking(id);
+  if (!booking || !move.from.includes(booking.status)) return;
+
+  const sql = await db();
+  await sql`UPDATE bookings SET status = ${move.to} WHERE id = ${id}`;
+
+  if (booking.email && formData.get("notify") !== "no") {
+    const locale = booking.locale === "fr" ? "fr" : "en";
+    const dict = getDictionary(locale);
+    const t = dict.booking;
+    const when = formatWhen(new Date(booking.start_at), locale);
+    const pricing = await getPricing();
+    const title = pricing.services.find((s) => s.id === booking.service_id)?.title[locale] ?? booking.service_title;
+    await sendEmail({
+      to: booking.email,
+      replyTo: ownerEmail(),
+      subject: t.emails[`${move.email}Subject`],
+      text: fill(t.emails[move.email], {
+        name: booking.name.split(" ")[0],
+        when: `${when.day}, ${when.time}`,
+        service: `${title}, ${booking.minutes} min (${formatPrice(Number(booking.price), locale)})`,
+        where: booking.location === "home" ? `${t.home}: ${booking.address ?? ""}` : `${t.office} (${dict.contact.office})`,
+        phone: site.phone,
+        link: `${site.url}${localePath(locale, "/book")}`,
+      }),
+    });
+  }
+  revalidatePath("/admin", "layout");
+}
+
+export type AvailabilityState = { status: "idle" | "saved" | "error"; message?: string; availability?: Availability };
+
+export async function updateAvailability(prev: AvailabilityState, formData: FormData): Promise<AvailabilityState> {
+  await requireAdmin();
+  let parsed: Availability | null = null;
+  try {
+    parsed = parseAvailability(JSON.parse(String(formData.get("availability") ?? "")));
+  } catch {}
+  if (!parsed) {
+    return {
+      status: "error",
+      message: "Check the opening hours: each open day needs a start time before its end time.",
+      availability: prev.availability,
+    };
+  }
+  try {
+    await saveAvailability(parsed);
+  } catch (err) {
+    console.error("[admin] save availability failed:", err);
+    return { status: "error", message: "Saving failed. Please try again in a moment.", availability: prev.availability };
+  }
+  revalidatePath("/admin", "layout");
+  return { status: "saved", availability: parsed };
 }

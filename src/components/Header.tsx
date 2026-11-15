@@ -58,7 +58,7 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
 
         <div className="hidden items-center gap-3 md:flex">
           {langSwitch}
-          <Button href={sectionHref(locale, "contact")}>{t.header.book}</Button>
+          <Button href={localePath(locale, "/book")}>{t.header.book}</Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -95,7 +95,7 @@ export function Header({ t }: { t: Pick<Dictionary, "nav" | "header"> }) {
             {t.nav[item.key]}
           </Link>
         ))}
-        <Button href={sectionHref(locale, "contact")} size="lg" className="mt-6 w-full" onClick={close}>
+        <Button href={localePath(locale, "/book")} size="lg" className="mt-6 w-full" onClick={close}>
           {t.header.book}
         </Button>
       </nav>
