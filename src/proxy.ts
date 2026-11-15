@@ -33,7 +33,7 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip Next internals, static files, and root-level metadata routes.
-    "/((?!_next|api|favicon.ico|robots.txt|sitemap.xml|opengraph-image|.*\\..*).*)",
+    // Skip Next internals, the admin area, static files, and root-level metadata routes.
+    "/((?!_next|api|admin|favicon.ico|robots.txt|sitemap.xml|opengraph-image|.*\\..*).*)",
   ],
 };

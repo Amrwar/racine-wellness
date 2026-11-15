@@ -8,12 +8,15 @@ import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/compo
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/blog";
+import { getPricing } from "@/lib/pricing";
+import { formatPrice } from "@/lib/pricing-data";
 import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
+  const pricing = await getPricing();
 
   return (
     <>
@@ -83,22 +86,24 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
             <SectionHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} />
-            <p className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
-              <span aria-hidden className="h-2 w-2 rounded-full bg-green" />
-              {t.pricing.promo}
-            </p>
+            {pricing.promo.enabled && pricing.promo[locale] && (
+              <p className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
+                <span aria-hidden className="h-2 w-2 rounded-full bg-green" />
+                {pricing.promo[locale]}
+              </p>
+            )}
           </div>
-          <ul className="mt-12 grid gap-5 md:grid-cols-2">
-            {t.pricing.items.map((item) => (
-              <li key={item.title} className="flex flex-col rounded-2xl bg-white p-7 shadow-card ring-1 ring-mist/70 sm:p-8">
-                <h3 className="text-xl font-semibold text-navy">{item.title}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.text}</p>
+          <ul className={`mt-12 grid gap-5 md:grid-cols-2 ${pricing.services.length > 2 ? "lg:grid-cols-3" : ""}`}>
+            {pricing.services.map((item) => (
+              <li key={item.id} className="flex flex-col rounded-2xl bg-white p-7 shadow-card ring-1 ring-mist/70 sm:p-8">
+                <h3 className="text-xl font-semibold text-navy">{item.title[locale]}</h3>
+                <p className="mt-2 leading-relaxed text-muted">{item.text[locale]}</p>
                 <dl className="mt-auto divide-y divide-mist/70 pt-6">
                   {item.rates.map((r) => (
                     <div key={r.minutes} className="flex items-baseline justify-between py-3.5">
                       <dt className="font-medium text-ink">{t.pricing.duration.replace("{n}", String(r.minutes))}</dt>
                       <dd className="text-2xl font-semibold tracking-tight text-navy">
-                        {t.pricing.price.replace("{n}", String(r.price))}
+                        {formatPrice(r.price, locale)}
                       </dd>
                     </div>
                   ))}
@@ -107,10 +112,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             ))}
           </ul>
           <div className="mt-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
-            <p className="flex items-start gap-3 text-muted">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-blue-dark" />
-              {t.pricing.homeVisits}
-            </p>
+            {pricing.homeVisits[locale] ? (
+              <p className="flex items-start gap-3 text-muted">
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-blue-dark" />
+                {pricing.homeVisits[locale]}
+              </p>
+            ) : (
+              <span />
+            )}
             <Button href={sectionHref(locale, "contact")} className="shrink-0">
               {t.pricing.book} <Arrow />
             </Button>

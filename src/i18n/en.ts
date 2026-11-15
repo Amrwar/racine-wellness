@@ -93,30 +93,7 @@ export const en = {
     eyebrow: "Pricing",
     title: "Massage therapy rates",
     lead: "Choose the treatment and duration that best suit your needs. Insurance receipts are provided for every massage session.",
-    promo: "10% off your first session",
-    items: [
-      {
-        title: "Swedish Relaxation Massage",
-        text: "A relaxation massage of the back, neck, legs (front and back), arms and feet.",
-        rates: [
-          { minutes: 60, price: 100 },
-          { minutes: 90, price: 135 },
-          { minutes: 120, price: 170 },
-        ],
-      },
-      {
-        title: "Therapeutic Massage",
-        text: "Specialized therapeutic techniques, including deep tissue work, fascial release, pressure points and passive stretching.",
-        rates: [
-          { minutes: 60, price: 135 },
-          { minutes: 90, price: 180 },
-          { minutes: 120, price: 230 },
-        ],
-      },
-    ],
     duration: "{n} min",
-    price: "${n}",
-    homeVisits: "Home visits: a travel fee is added depending on your location.",
     book: "Book a session",
   },
 

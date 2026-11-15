@@ -3,6 +3,7 @@
 import { site } from "@/lib/site";
 import { fill, getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
+import { db, hasDatabase } from "@/lib/db";
 
 export type ContactState = {
   status: "idle" | "success" | "error";
@@ -55,6 +56,19 @@ export async function sendContact(
     message || "(No message)",
   ].join("\n");
 
+  // Save to the admin inbox first; the email is a notification on top of it.
+  let saved = false;
+  if (hasDatabase()) {
+    try {
+      const sql = await db();
+      await sql`INSERT INTO messages (name, email, phone, message, wants_receipt, locale)
+        VALUES (${name}, ${email || null}, ${phone}, ${message || null}, ${wantsReceipt}, ${locale})`;
+      saved = true;
+    } catch (err) {
+      console.error("[contact] could not save message:", err);
+    }
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL ?? site.email;
   const from = process.env.CONTACT_FROM_EMAIL ?? `${site.name} <onboarding@resend.dev>`;
@@ -79,7 +93,8 @@ export async function sendContact(
     }
   } catch (err) {
     console.error(err);
-    return { status: "error", message: fill(t.failed, { email: site.email }) };
+    // The enquiry is safe in the admin inbox even if the email notification failed.
+    if (!saved) return { status: "error", message: fill(t.failed, { email: site.email }) };
   }
 
   return {
