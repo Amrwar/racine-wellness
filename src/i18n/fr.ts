@@ -155,6 +155,9 @@ export const fr: Dictionary = {
       updatedSubject: "Votre rendez-vous HealthyZone a été modifié",
       updated:
         "Bonjour {name},\n\nLes détails de votre rendez-vous ont été modifiés :\n\n{when}\n{service}\n{where}\n\nPour toute question, composez le {phone} ou répondez à ce courriel.\n\nHealthyZone",
+      reminderSubject: "Rappel : votre rendez-vous HealthyZone demain",
+      reminder:
+        "Bonjour {name},\n\nNous vous rappelons votre rendez-vous de demain :\n\n{when}\n{service}\n{where}\n\nPour le modifier ou l'annuler, composez le {phone} ou répondez à ce courriel dès que possible.\n\nÀ bientôt,\nZiad, HealthyZone",
     },
   },
 

@@ -9,6 +9,8 @@ export type Business = {
   notifyEmail: string;
   /** Instagram profile URL. Empty hides the icon. */
   instagram: string;
+  /** Email clients a reminder the day before a confirmed appointment. */
+  reminders: boolean;
 };
 
 export const defaultBusiness: Business = {
@@ -16,6 +18,7 @@ export const defaultBusiness: Business = {
   email: "info@healthyzone.ca",
   notifyEmail: "",
   instagram: "https://www.instagram.com/healthyzone.ca/",
+  reminders: true,
 };
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,7 +32,13 @@ export function phoneHref(phone: string) {
 /** Validates submitted details; returns the cleaned value or a list of problems. */
 export function parseBusiness(raw: Record<string, unknown>): { value?: Business; errors: string[] } {
   const s = (k: string, max = 200) => String(raw[k] ?? "").trim().slice(0, max);
-  const value: Business = { phone: s("phone", 40), email: s("email"), notifyEmail: s("notifyEmail"), instagram: s("instagram", 300) };
+  const value: Business = {
+    phone: s("phone", 40),
+    email: s("email"),
+    notifyEmail: s("notifyEmail"),
+    instagram: s("instagram", 300),
+    reminders: raw.reminders === "yes",
+  };
   const errors: string[] = [];
   const digits = value.phone.replace(/\D/g, "").length;
   if (digits < 10 || digits > 15) errors.push("Enter a valid phone number, e.g. +1 (438) 225-8859.");

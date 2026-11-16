@@ -154,6 +154,9 @@ export const en = {
       updatedSubject: "Your HealthyZone appointment has been updated",
       updated:
         "Hello {name},\n\nYour appointment details have been updated:\n\n{when}\n{service}\n{where}\n\nIf you have any questions, call {phone} or reply to this email.\n\nHealthyZone",
+      reminderSubject: "Reminder: your HealthyZone appointment tomorrow",
+      reminder:
+        "Hello {name},\n\nThis is a reminder of your appointment tomorrow:\n\n{when}\n{service}\n{where}\n\nIf you need to change or cancel it, please call {phone} or reply to this email as soon as possible.\n\nSee you soon,\nZiad, HealthyZone",
     },
   },
 

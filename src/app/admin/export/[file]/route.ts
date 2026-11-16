@@ -7,7 +7,7 @@ import { localDay, localTime } from "@/lib/time";
 const cell = (v: unknown) => {
   const s = v === null || v === undefined ? "" : String(v);
   // Quote every cell; neutralise spreadsheet formulas (=, +, -, @) typed by clients.
-  const safe = /^[=+\-@]/.test(s) ? `'${s}` : s;
+  const safe = /^[=@]|^[+-](?![\d\s(])/.test(s) ? `'${s}` : s;
   return `"${safe.replace(/"/g, '""')}"`;
 };
 const csv = (header: string[], rows: unknown[][]) => "﻿" + [header, ...rows].map((r) => r.map(cell).join(",")).join("\r\n");

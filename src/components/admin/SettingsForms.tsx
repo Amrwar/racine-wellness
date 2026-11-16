@@ -40,6 +40,15 @@ export function BusinessForm({ initial, fallbackNotify }: { initial: Business; f
             <input name="instagram" type="url" defaultValue={initial.instagram} placeholder="https://www.instagram.com/…" className={input} />
           </Field>
         </div>
+        <label className="flex items-start gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-mist/60">
+          <input type="checkbox" name="reminders" value="yes" defaultChecked={initial.reminders} className="mt-1 h-4 w-4 accent-navy" />
+          <span>
+            <span className="block text-sm font-semibold text-navy">Send appointment reminders</span>
+            <span className="block text-sm text-muted">
+              Each morning, clients with a confirmed appointment the next day get a reminder email (in their language). The wording is under Text &amp; photos → All other text → Booking page and client emails.
+            </span>
+          </span>
+        </label>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Status state={state} />
           <button disabled={pending} className={`${button} ml-auto`}>
