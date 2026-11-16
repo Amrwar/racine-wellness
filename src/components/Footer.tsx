@@ -7,7 +7,7 @@ import { Instagram } from "./icons";
 
 export function Footer({ t, business }: { t: Dictionary; business: Business }) {
   return (
-    <footer className="bg-navy-deep text-white">
+    <footer className="bg-[var(--footer-bg,var(--color-navy-deep))] text-white">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>

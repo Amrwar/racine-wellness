@@ -18,6 +18,8 @@ import { getBusiness, saveBusiness } from "@/lib/business";
 import { parseBusiness } from "@/lib/business-data";
 import { getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
+import { saveDesign } from "@/lib/design";
+import { parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 import { parsePost } from "@/lib/post-data";
@@ -512,4 +514,26 @@ export async function updateText(prev: TextState, formData: FormData): Promise<T
   }
   revalidatePath("/", "layout");
   return { status: "saved", overrides: value };
+}
+
+/* ---------------- Design ---------------- */
+
+export type DesignState = { status: "idle" | "saved" | "error"; message?: string; design?: Design };
+
+export async function updateDesign(prev: DesignState, formData: FormData): Promise<DesignState> {
+  await requireAdmin();
+  let design: Design;
+  try {
+    design = parseDesign(JSON.parse(String(formData.get("design") ?? "")));
+  } catch {
+    return { status: "error", message: "The form data couldn't be read. Please reload and try again.", design: prev.design };
+  }
+  try {
+    await saveDesign(design);
+  } catch (err) {
+    console.error("[admin] save design failed:", err);
+    return { status: "error", message: "Saving failed. Please try again in a moment.", design: prev.design };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", design };
 }

@@ -7,6 +7,8 @@ import { SectionLinks } from "@/components/SectionLinks";
 import { site } from "@/lib/site";
 import { getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
+import { getDesign } from "@/lib/design";
+import { designCss, hiddenMenuKeys } from "@/lib/design-data";
 import { phoneHref, type Business } from "@/lib/business-data";
 import type { Dictionary } from "@/i18n/en";
 import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "@/i18n/config";
@@ -86,11 +88,13 @@ function businessJsonLd(locale: Locale, t: Dictionary, business: Business) {
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const [t, business] = await Promise.all([getText(locale), getBusiness()]);
+  const [t, business, design] = await Promise.all([getText(locale), getBusiness(), getDesign()]);
 
   return (
     <html lang={htmlLang[locale]} className={`${poppins.variable} h-full`}>
       <body className="flex min-h-full flex-col">
+        {/* Colours and text size chosen in Admin → Design */}
+        <style dangerouslySetInnerHTML={{ __html: designCss(design) }} />
         <LocaleProvider locale={locale}>
           <a
             href="#main"
@@ -98,7 +102,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           >
             {t.header.skip}
           </a>
-          <Header t={{ nav: t.nav, header: t.header }} />
+          <Header t={{ nav: t.nav, header: t.header }} hidden={hiddenMenuKeys(design)} />
           <main id="main" className="flex-1">
             {children}
           </main>
