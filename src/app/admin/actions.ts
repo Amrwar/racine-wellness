@@ -423,27 +423,32 @@ export async function updateContent(prev: ContentState, formData: FormData): Pro
 
 export type TranslateResult = { text?: string; error?: string };
 
+/**
+ * Tried in order. Claude needs paid AI Gateway credits; until the team has them, the gateway
+ * refuses it and the free-tier models answer instead.
+ */
+const TRANSLATION_MODELS = ["anthropic/claude-sonnet-5.5", "google/gemini-2.5-flash", "openai/gpt-5-mini"];
+const TRANSLATION_INSTRUCTIONS =
+  "You translate website text for HealthyZone, a registered massage therapy and personal training practice in Montréal's West Island, " +
+  "from English into natural Québec French. Keep a professional, clinical and warm tone and use the formal \"vous\" unless the English speaks as Ziad in the first person. " +
+  "Use standard Québec terms (massothérapeute agréé, massothérapie, reçus d'assurance, entraîneur personnel, Ouest-de-l'Île). " +
+  "Keep line breaks, numbers, prices, names and anything in {curly braces} exactly as they are. Reply with the French text only, with no quotes or notes.";
+
 /** Drafts the French version of a piece of website text. Ziad reviews it before saving. */
 export async function translateToFrench(english: string): Promise<TranslateResult> {
   await requireAdmin();
   const source = english.trim().slice(0, 4000);
   if (!source) return { error: "Write the English text first." };
-  try {
-    const { text } = await generateText({
-      model: "anthropic/claude-sonnet-5.5",
-      instructions:
-        "You translate website text for HealthyZone, a registered massage therapy and personal training practice in Montréal's West Island, " +
-        "from English into natural Québec French. Keep a professional, clinical and warm tone and use the formal \"vous\" unless the English speaks as Ziad in the first person. " +
-        "Use standard Québec terms (massothérapeute agréé, massothérapie, reçus d'assurance, entraîneur personnel, Ouest-de-l'Île). " +
-        "Keep line breaks, numbers, prices, names and anything in {curly braces} exactly as they are. Reply with the French text only, with no quotes or notes.",
-      prompt: source,
-    });
-    const french = text.trim();
-    return french ? { text: french } : { error: "No translation came back. Please try again." };
-  } catch (err) {
-    console.error("[admin] translation failed:", err);
-    return { error: "The translation service isn't available right now. Please try again, or write the French yourself." };
+  for (const model of TRANSLATION_MODELS) {
+    try {
+      const { text } = await generateText({ model, instructions: TRANSLATION_INSTRUCTIONS, prompt: source });
+      const french = text.trim();
+      if (french) return { text: french };
+    } catch (err) {
+      console.error(`[admin] translation with ${model} failed:`, (err as Error).message);
+    }
   }
+  return { error: "The translation service isn't available right now. Please try again, or write the French yourself." };
 }
 
 /* ---------------- Settings: contact details and password ---------------- */
