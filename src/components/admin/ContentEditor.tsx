@@ -7,7 +7,23 @@ import { upload } from "@vercel/blob/client";
 import { updateContent, type ContentState } from "@/app/admin/actions";
 import { serviceIconKeys, serviceIconNames, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
 import { serviceIcons } from "@/components/icons";
+import type { Bilingual } from "@/lib/pricing-data";
 import { BilingualFields, Section } from "./fields";
+
+type Path = (string | number)[];
+
+function getAt(obj: unknown, path: Path): unknown {
+  return path.reduce<unknown>((o, k) => (o as Record<string | number, unknown>)[k], obj);
+}
+
+/** Copy of obj with patch merged into the object at path. */
+function mergeAt<T>(obj: T, path: Path, patch: object): T {
+  if (!path.length) return { ...obj, ...patch };
+  const [k, ...rest] = path;
+  const copy = (Array.isArray(obj) ? [...obj] : { ...obj }) as Record<string | number, unknown>;
+  copy[k] = mergeAt(copy[k], rest, patch);
+  return copy as T;
+}
 
 const jump = [
   ["top", "Top of page"],
@@ -23,16 +39,22 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
   const saved = state.content ?? initial;
   const dirty = JSON.stringify(content) !== JSON.stringify(saved);
 
-  /** Updates one part of the content, e.g. set("hero", { ...content.hero, title }). */
-  const set = <K extends keyof SiteContent>(key: K, value: SiteContent[K]) => setContent((c) => ({ ...c, [key]: value }));
+  // Every update starts from the latest content, so a translation finishing later never undoes other edits.
+  /** Props for a bilingual field at a path, e.g. bi("hero", "title") or bi("services", "items", 0, "text"). */
+  const bi = (...path: Path) => ({
+    value: getAt(content, path) as Bilingual,
+    onChange: (patch: Partial<Bilingual>) => setContent((c) => mergeAt(c, path, patch)),
+  });
+  const setPhoto = (key: "hero" | "about", photo: SitePhoto | null) => setContent((c) => ({ ...c, [key]: { ...c[key], photo } }));
   const items = content.services.items;
-  const setItems = (next: ServiceItem[]) => set("services", { ...content.services, items: next });
-  const setItem = (i: number, item: ServiceItem) => setItems(items.map((x, j) => (j === i ? item : x)));
-  const move = (i: number, d: -1 | 1) => {
-    const next = [...items];
-    [next[i], next[i + d]] = [next[i + d], next[i]];
-    setItems(next);
-  };
+  const setItems = (change: (items: ServiceItem[]) => ServiceItem[]) =>
+    setContent((c) => ({ ...c, services: { ...c.services, items: change(c.services.items) } }));
+  const move = (i: number, d: -1 | 1) =>
+    setItems((list) => {
+      const next = [...list];
+      [next[i], next[i + d]] = [next[i + d], next[i]];
+      return next;
+    });
 
   return (
     <form action={action} className="space-y-6 pb-28">
@@ -47,21 +69,21 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
       </nav>
 
       <Section id="top" title="Top of the page" text="The first thing visitors see: the large photo, heading and introduction.">
-        <BilingualFields label="Tagline" hint="Small line above the heading; also in the footer." value={content.tagline} onChange={(v) => set("tagline", v)} />
-        <BilingualFields label="Main heading" value={content.hero.title} onChange={(v) => set("hero", { ...content.hero, title: v })} />
-        <BilingualFields label="Introduction" multiline rows={3} value={content.hero.lead} onChange={(v) => set("hero", { ...content.hero, lead: v })} />
+        <BilingualFields label="Tagline" hint="Small line above the heading; also in the footer." {...bi("tagline")} />
+        <BilingualFields label="Main heading" {...bi("hero", "title")} />
+        <BilingualFields label="Introduction" multiline rows={3} {...bi("hero", "lead")} />
         <PhotoField
           label="Main photo"
           note="Works best as a wide landscape photo with you on the right side, leaving space on the left for the text."
           photo={content.hero.photo}
           fallback={defaults.hero}
-          onChange={(photo) => set("hero", { ...content.hero, photo })}
+          onChange={(photo) => setPhoto("hero", photo)}
         />
       </Section>
 
       <Section id="services" title="Services" text="The service cards on the home page. Prices are edited on the Pricing page.">
-        <BilingualFields label="Heading" value={content.services.title} onChange={(v) => set("services", { ...content.services, title: v })} />
-        <BilingualFields label="Introduction" multiline rows={2} value={content.services.lead} onChange={(v) => set("services", { ...content.services, lead: v })} />
+        <BilingualFields label="Heading" {...bi("services", "title")} />
+        <BilingualFields label="Introduction" multiline rows={2} {...bi("services", "lead")} />
         <ol className="space-y-4">
           {items.map((item, i) => (
             <li key={i} className="rounded-2xl bg-surface p-5 ring-1 ring-mist/60">
@@ -77,7 +99,7 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
                     label="Remove service"
                     danger
                     disabled={items.length === 1}
-                    onClick={() => setItems(items.filter((_, j) => j !== i))}
+                    onClick={() => setItems((list) => list.filter((_, j) => j !== i))}
                     d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"
                   />
                 </div>
@@ -96,7 +118,7 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
                           title={serviceIconNames[key]}
                           aria-label={serviceIconNames[key]}
                           aria-pressed={on}
-                          onClick={() => setItem(i, { ...item, icon: key })}
+                          onClick={() => setItems((list) => list.map((x, j) => (j === i ? { ...x, icon: key } : x)))}
                           className={`grid h-11 w-11 place-items-center rounded-xl transition ${on ? "bg-navy text-green" : "bg-white text-muted ring-1 ring-mist hover:text-navy hover:ring-blue"}`}
                         >
                           <Icon className="h-6 w-6" strokeWidth={1.75} />
@@ -105,8 +127,8 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
                     })}
                   </div>
                 </fieldset>
-                <BilingualFields label="Name" value={item.title} onChange={(v) => setItem(i, { ...item, title: v })} />
-                <BilingualFields label="Description" multiline rows={3} value={item.text} onChange={(v) => setItem(i, { ...item, text: v })} />
+                <BilingualFields label="Name" {...bi("services", "items", i, "title")} />
+                <BilingualFields label="Description" multiline rows={3} {...bi("services", "items", i, "text")} />
               </div>
             </li>
           ))}
@@ -114,7 +136,7 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
         <button
           type="button"
           disabled={items.length >= 12}
-          onClick={() => setItems([...items, { icon: "hands", title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
+          onClick={() => setItems((list) => [...list, { icon: "hands", title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
           className="rounded-full border-2 border-dashed border-blue/50 px-5 py-2.5 text-sm font-semibold text-blue-dark hover:border-blue disabled:opacity-40"
         >
           + Add a service
@@ -134,26 +156,24 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
           </>
         }
       >
-        <BilingualFields label="Heading" value={content.pricing.title} onChange={(v) => set("pricing", { ...content.pricing, title: v })} />
-        <BilingualFields label="Introduction" multiline rows={2} value={content.pricing.lead} onChange={(v) => set("pricing", { ...content.pricing, lead: v })} />
+        <BilingualFields label="Heading" {...bi("pricing", "title")} />
+        <BilingualFields label="Introduction" multiline rows={2} {...bi("pricing", "lead")} />
       </Section>
 
       <Section id="about" title="About you">
-        <BilingualFields label="Heading" value={content.about.title} onChange={(v) => set("about", { ...content.about, title: v })} />
+        <BilingualFields label="Heading" {...bi("about", "title")} />
         <BilingualFields
           label="Titles"
           hint="Under the heading; also used for your author line on the blog."
-          value={content.about.credentialsLine}
-          onChange={(v) => set("about", { ...content.about, credentialsLine: v })}
+          {...bi("about", "credentialsLine")}
         />
-        <BilingualFields label="Paragraph 1" multiline value={content.about.text1} onChange={(v) => set("about", { ...content.about, text1: v })} />
-        <BilingualFields label="Paragraph 2" multiline value={content.about.text2} onChange={(v) => set("about", { ...content.about, text2: v })} />
+        <BilingualFields label="Paragraph 1" multiline {...bi("about", "text1")} />
+        <BilingualFields label="Paragraph 2" multiline {...bi("about", "text2")} />
         <BilingualFields
           label="Checklist"
           hint="One item per line."
           multiline
-          value={content.about.credentials}
-          onChange={(v) => set("about", { ...content.about, credentials: v })}
+          {...bi("about", "credentials")}
         />
         <PhotoField
           label="Your portrait"
@@ -161,7 +181,7 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
           portrait
           photo={content.about.photo}
           fallback={defaults.portrait}
-          onChange={(photo) => set("about", { ...content.about, photo })}
+          onChange={(photo) => setPhoto("about", photo)}
         />
       </Section>
 
@@ -178,15 +198,14 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
           </>
         }
       >
-        <BilingualFields label="Heading" value={content.contact.title} onChange={(v) => set("contact", { ...content.contact, title: v })} />
-        <BilingualFields label="Introduction" multiline rows={2} value={content.contact.lead} onChange={(v) => set("contact", { ...content.contact, lead: v })} />
+        <BilingualFields label="Heading" {...bi("contact", "title")} />
+        <BilingualFields label="Introduction" multiline rows={2} {...bi("contact", "lead")} />
         <BilingualFields
           label="Office"
           hint="Also shown in the footer and the booking page."
-          value={content.contact.office}
-          onChange={(v) => set("contact", { ...content.contact, office: v })}
+          {...bi("contact", "office")}
         />
-        <BilingualFields label="Service area" value={content.contact.areaNote} onChange={(v) => set("contact", { ...content.contact, areaNote: v })} />
+        <BilingualFields label="Service area" {...bi("contact", "areaNote")} />
       </Section>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-mist/70 bg-white/95 backdrop-blur lg:left-64">

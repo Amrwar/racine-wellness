@@ -47,6 +47,8 @@ export function Section({
 /**
  * English and French side by side. The French side has a "Translate from English" button that
  * drafts the French with AI; Ziad reviews it before saving.
+ * onChange receives only the language that changed, so parents merge it into their latest state:
+ * a translation that finishes after other edits never overwrites them.
  */
 export function BilingualFields({
   label,
@@ -58,7 +60,7 @@ export function BilingualFields({
 }: {
   label: string;
   value: Bilingual;
-  onChange: (v: Bilingual) => void;
+  onChange: (patch: Partial<Bilingual>) => void;
   multiline?: boolean;
   rows?: number;
   hint?: string;
@@ -73,7 +75,7 @@ export function BilingualFields({
     start(async () => {
       const res = await translateToFrench(value.en);
       if (res.text) {
-        onChange({ ...value, fr: res.text });
+        onChange({ fr: res.text });
         setDrafted(true);
       } else setError(res.error ?? "The translation didn't work.");
     });
@@ -84,7 +86,7 @@ export function BilingualFields({
       <Field label={`${label} · English`} hint={hint}>
         <Tag
           value={value.en}
-          onChange={(e) => onChange({ ...value, en: e.target.value })}
+          onChange={(e) => onChange({ en: e.target.value })}
           rows={multiline ? rows : undefined}
           className={`${input} ${multiline ? "resize-y leading-relaxed" : ""}`}
         />
@@ -109,7 +111,7 @@ export function BilingualFields({
           aria-label={`${label} · Français`}
           value={value.fr}
           onChange={(e) => {
-            onChange({ ...value, fr: e.target.value });
+            onChange({ fr: e.target.value });
             setDrafted(false);
           }}
           rows={multiline ? rows : undefined}

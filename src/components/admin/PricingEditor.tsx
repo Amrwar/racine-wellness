@@ -21,6 +21,9 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
 
   const setService = (i: number, s: PricedService) =>
     setPricing((p) => ({ ...p, services: p.services.map((x, j) => (j === i ? s : x)) }));
+  /** Applies a change to the latest version of a service (safe for translations that finish later). */
+  const patchService = (i: number, change: (s: PricedService) => PricedService) =>
+    setPricing((p) => ({ ...p, services: p.services.map((x, j) => (j === i ? change(x) : x)) }));
   const moveService = (i: number, d: -1 | 1) =>
     setPricing((p) => {
       const services = [...p.services];
@@ -82,8 +85,8 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
             </div>
           }
         >
-          <BilingualFields label="Name" value={s.title} onChange={(title) => setService(i, { ...s, title })} />
-          <BilingualFields label="Description" value={s.text} onChange={(text) => setService(i, { ...s, text })} multiline />
+          <BilingualFields label="Name" value={s.title} onChange={(v) => patchService(i, (x) => ({ ...x, title: { ...x.title, ...v } }))} />
+          <BilingualFields label="Description" value={s.text} onChange={(v) => patchService(i, (x) => ({ ...x, text: { ...x.text, ...v } }))} multiline />
 
           <div>
             <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Durations and prices</span>
@@ -161,7 +164,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
       )}
 
       <Section title="Home visits note" text="Shown under the price cards. Leave both empty to hide it.">
-        <BilingualFields label="Note" value={pricing.homeVisits} onChange={(homeVisits) => setPricing((p) => ({ ...p, homeVisits }))} />
+        <BilingualFields label="Note" value={pricing.homeVisits} onChange={(v) => setPricing((p) => ({ ...p, homeVisits: { ...p.homeVisits, ...v } }))} />
       </Section>
 
       {/* Sticky save bar */}
