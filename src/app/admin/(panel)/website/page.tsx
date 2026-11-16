@@ -24,7 +24,7 @@ export default async function WebsitePage() {
           </>
         }
       />
-      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait }} />
+      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: images.sections }} />
     </>
   );
 }

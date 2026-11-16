@@ -14,8 +14,10 @@ export async function POST(request: Request) {
       onBeforeGenerateToken: async (pathname) => {
         if (!(await isAdmin())) throw new Error("Not signed in");
         if (!/^(blog|site)\//.test(pathname)) throw new Error("Invalid path");
+        // SVG only for service icons (shown with <img>, which never runs scripts inside an SVG).
+        const icon = pathname.startsWith("site/icon-");
         return {
-          allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
+          allowedContentTypes: icon ? ["image/png", "image/webp", "image/svg+xml"] : ["image/jpeg", "image/png", "image/webp", "image/avif"],
           maximumSizeInBytes: 20 * 1024 * 1024,
           addRandomSuffix: true,
         };

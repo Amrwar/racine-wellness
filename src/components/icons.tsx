@@ -1,4 +1,45 @@
 import type { SVGProps } from "react";
+import {
+  Accessibility,
+  Activity,
+  Apple,
+  Baby,
+  Bath,
+  Bed,
+  Bike,
+  Bone,
+  Brain,
+  Briefcase,
+  Droplets,
+  Flame,
+  Flower2,
+  Footprints,
+  Hand,
+  HandHeart,
+  HeartPulse,
+  House,
+  Leaf,
+  Medal,
+  Moon,
+  Mountain,
+  PersonStanding,
+  Salad,
+  ShieldCheck,
+  Smile,
+  Snowflake,
+  Sparkles,
+  Sprout,
+  Stethoscope,
+  Sun,
+  Target,
+  Thermometer,
+  Timer,
+  Trophy,
+  Users,
+  Waves,
+  Wind,
+} from "lucide-react";
+import type { ServiceIcon } from "@/lib/content-data";
 
 const base = {
   fill: "none",
@@ -112,11 +153,62 @@ export function Youth(p: SVGProps<SVGSVGElement>) {
   );
 }
 
-export const serviceIcons = {
+type IconComponent = (p: SVGProps<SVGSVGElement>) => React.ReactNode;
+
+/** Every icon Ziad can pick for a service card (keys and names in serviceIconChoices). */
+export const serviceIcons: Record<ServiceIcon, IconComponent> = {
   hands: Hands,
   posture: Posture,
   mobility: Mobility,
   strength: Dumbbell,
   heart: Heart,
   youth: Youth,
+  "hand-heart": HandHeart,
+  hand: Hand,
+  activity: Activity,
+  "heart-pulse": HeartPulse,
+  person: PersonStanding,
+  accessibility: Accessibility,
+  footprints: Footprints,
+  bike: Bike,
+  medal: Medal,
+  trophy: Trophy,
+  target: Target,
+  timer: Timer,
+  brain: Brain,
+  bone: Bone,
+  stethoscope: Stethoscope,
+  thermometer: Thermometer,
+  flame: Flame,
+  snowflake: Snowflake,
+  droplets: Droplets,
+  waves: Waves,
+  wind: Wind,
+  bath: Bath,
+  bed: Bed,
+  moon: Moon,
+  sun: Sun,
+  leaf: Leaf,
+  flower: Flower2,
+  sprout: Sprout,
+  sparkles: Sparkles,
+  mountain: Mountain,
+  apple: Apple,
+  salad: Salad,
+  smile: Smile,
+  baby: Baby,
+  users: Users,
+  shield: ShieldCheck,
+  house: House,
+  briefcase: Briefcase,
 };
+
+/** A service's icon: the uploaded image if there is one, otherwise the chosen built-in icon. */
+export function ServiceIconView({ icon, image, className = "h-7 w-7" }: { icon: ServiceIcon; image?: { src: string } | null; className?: string }) {
+  if (image) {
+    // eslint-disable-next-line @next/next/no-img-element -- small uploaded icon, may be SVG
+    return <img src={image.src} alt="" className={`${className} object-contain`} />;
+  }
+  const Icon = serviceIcons[icon] ?? Hands;
+  return <Icon className={className} strokeWidth={1.75} />;
+}

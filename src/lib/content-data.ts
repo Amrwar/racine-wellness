@@ -4,19 +4,79 @@ import { fr } from "@/i18n/fr";
 import type { Locale } from "@/i18n/config";
 import type { Bilingual } from "./pricing-data";
 
-export const serviceIconKeys = ["hands", "posture", "mobility", "strength", "heart", "youth"] as const;
-export type ServiceIcon = (typeof serviceIconKeys)[number];
-export const serviceIconNames: Record<ServiceIcon, string> = {
-  hands: "Hands",
-  posture: "Posture",
-  mobility: "Mobility",
-  strength: "Dumbbell",
-  heart: "Heart",
-  youth: "Youth",
-};
+/** Icons for the service cards: HealthyZone's own six first, then a wider library (lucide). */
+export const serviceIconChoices = [
+  { key: "hands", label: "Hands" },
+  { key: "posture", label: "Posture" },
+  { key: "mobility", label: "Mobility" },
+  { key: "strength", label: "Dumbbell" },
+  { key: "heart", label: "Heart" },
+  { key: "youth", label: "Youth" },
+  { key: "hand-heart", label: "Caring hands" },
+  { key: "hand", label: "Hand" },
+  { key: "activity", label: "Activity" },
+  { key: "heart-pulse", label: "Heart rate" },
+  { key: "person", label: "Person standing" },
+  { key: "accessibility", label: "Accessibility" },
+  { key: "footprints", label: "Footprints" },
+  { key: "bike", label: "Bike" },
+  { key: "medal", label: "Medal" },
+  { key: "trophy", label: "Trophy" },
+  { key: "target", label: "Target" },
+  { key: "timer", label: "Timer" },
+  { key: "brain", label: "Brain" },
+  { key: "bone", label: "Bone" },
+  { key: "stethoscope", label: "Stethoscope" },
+  { key: "thermometer", label: "Thermometer" },
+  { key: "flame", label: "Heat" },
+  { key: "snowflake", label: "Cold" },
+  { key: "droplets", label: "Oil drops" },
+  { key: "waves", label: "Waves" },
+  { key: "wind", label: "Breathing" },
+  { key: "bath", label: "Bath" },
+  { key: "bed", label: "Bed" },
+  { key: "moon", label: "Sleep" },
+  { key: "sun", label: "Sun" },
+  { key: "leaf", label: "Leaf" },
+  { key: "flower", label: "Flower" },
+  { key: "sprout", label: "Sprout" },
+  { key: "sparkles", label: "Sparkles" },
+  { key: "mountain", label: "Mountain" },
+  { key: "apple", label: "Apple" },
+  { key: "salad", label: "Nutrition" },
+  { key: "smile", label: "Smile" },
+  { key: "baby", label: "Baby" },
+  { key: "users", label: "Group" },
+  { key: "shield", label: "Protection" },
+  { key: "house", label: "Home visit" },
+  { key: "briefcase", label: "Workplace" },
+] as const;
+export type ServiceIcon = (typeof serviceIconChoices)[number]["key"];
+const iconKeys: readonly string[] = serviceIconChoices.map((c) => c.key);
 
 export type SitePhoto = { src: string; width: number; height: number };
-export type ServiceItem = { icon: ServiceIcon; title: Bilingual; text: Bilingual };
+
+/** Home-page sections with a full-width background photo. */
+export const backgroundKeys = ["services", "about", "blog", "contact"] as const;
+export type BackgroundKey = (typeof backgroundKeys)[number];
+
+/** How a background photo sits in its section: zoom in percent, focus point in percent from left/top. */
+export type Framing = { zoom: number; x: number; y: number };
+
+export const defaultFraming: Record<BackgroundKey, Framing> = {
+  services: { zoom: 100, x: 50, y: 50 },
+  about: { zoom: 100, x: 50, y: 40 },
+  blog: { zoom: 100, x: 50, y: 70 },
+  contact: { zoom: 100, x: 30, y: 50 },
+};
+
+/** CSS for a framed background image (object-fit: cover assumed). */
+export function framingStyle(f: Framing) {
+  const origin = `${f.x}% ${f.y}%`;
+  return { objectPosition: origin, transformOrigin: origin, transform: f.zoom > 100 ? `scale(${f.zoom / 100})` : undefined };
+}
+/** image: an uploaded icon, shown instead of the built-in one. */
+export type ServiceItem = { icon: ServiceIcon; image: SitePhoto | null; title: Bilingual; text: Bilingual };
 
 export type SiteContent = {
   tagline: Bilingual;
@@ -33,6 +93,9 @@ export type SiteContent = {
     photo: SitePhoto | null;
   };
   contact: { title: Bilingual; lead: Bilingual; office: Bilingual; areaNote: Bilingual };
+  /** Uploaded section backgrounds; null keeps the built-in photo. */
+  backgrounds: Record<BackgroundKey, SitePhoto | null>;
+  framing: Record<BackgroundKey, Framing>;
 };
 
 const pair = (pick: (d: Dictionary) => string): Bilingual => ({ en: pick(en), fr: pick(fr) });
@@ -45,6 +108,7 @@ export const defaultContent: SiteContent = {
     lead: pair((d) => d.services.lead),
     items: en.services.items.map((item, i) => ({
       icon: item.icon,
+      image: null,
       title: { en: item.title, fr: fr.services.items[i]?.title ?? item.title },
       text: { en: item.text, fr: fr.services.items[i]?.text ?? item.text },
     })),
@@ -64,6 +128,8 @@ export const defaultContent: SiteContent = {
     office: pair((d) => d.contact.office),
     areaNote: pair((d) => d.contact.areaNote),
   },
+  backgrounds: { services: null, about: null, blog: null, contact: null },
+  framing: defaultFraming,
 };
 
 /* ---------------- Reading and checking ---------------- */
@@ -85,6 +151,15 @@ function photo(v: unknown): SitePhoto | null {
   return w > 0 && h > 0 ? { src: p.src, width: w, height: h } : null;
 }
 
+function framing(v: unknown, fallback: Framing): Framing {
+  const f = (v ?? {}) as Partial<Framing>;
+  const num = (n: unknown, min: number, max: number, d: number) => {
+    const x = Math.round(Number(n));
+    return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : d;
+  };
+  return { zoom: num(f.zoom, 100, 250, fallback.zoom), x: num(f.x, 0, 100, fallback.x), y: num(f.y, 0, 100, fallback.y) };
+}
+
 /** Reads saved content, filling anything missing from the built-in defaults. */
 export function parseContent(raw: unknown): SiteContent {
   const r = (raw ?? {}) as Record<string, Record<string, unknown>>;
@@ -98,7 +173,8 @@ export function parseContent(raw: unknown): SiteContent {
       lead: bi(r.services?.lead, d.services.lead),
       items: items
         ? items.slice(0, 12).map((item) => ({
-            icon: serviceIconKeys.includes(item.icon as ServiceIcon) ? (item.icon as ServiceIcon) : "hands",
+            icon: iconKeys.includes(String(item.icon)) ? (item.icon as ServiceIcon) : "hands",
+            image: photo(item.image),
             title: bi(item.title, { en: "", fr: "" }, 80),
             text: bi(item.text, { en: "", fr: "" }, 400),
           }))
@@ -118,6 +194,18 @@ export function parseContent(raw: unknown): SiteContent {
       lead: bi(r.contact?.lead, d.contact.lead),
       office: bi(r.contact?.office, d.contact.office, 120),
       areaNote: bi(r.contact?.areaNote, d.contact.areaNote, 160),
+    },
+    backgrounds: {
+      services: photo(r.backgrounds?.services),
+      about: photo(r.backgrounds?.about),
+      blog: photo(r.backgrounds?.blog),
+      contact: photo(r.backgrounds?.contact),
+    },
+    framing: {
+      services: framing(r.framing?.services, defaultFraming.services),
+      about: framing(r.framing?.about, defaultFraming.about),
+      blog: framing(r.framing?.blog, defaultFraming.blog),
+      contact: framing(r.framing?.contact, defaultFraming.contact),
     },
   };
 }
@@ -163,7 +251,8 @@ export function applyContent(t: Dictionary, c: SiteContent, locale: Locale): Dic
       ...t.services,
       title: L(c.services.title),
       lead: L(c.services.lead),
-      items: c.services.items.map((s) => ({ icon: s.icon, title: L(s.title), text: L(s.text) })),
+      // The home page draws icons from the content itself (which can hold more icon types and uploads).
+      items: c.services.items.map((s) => ({ icon: "hands" as const, title: L(s.title), text: L(s.text) })),
     },
     pricing: { ...t.pricing, title: L(c.pricing.title), lead: L(c.pricing.lead) },
     about: {

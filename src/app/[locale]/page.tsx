@@ -6,14 +6,14 @@ import { images } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { phoneHref } from "@/lib/business-data";
-import type { SitePhoto } from "@/lib/content-data";
+import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/posts";
 import { getPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/pricing-data";
-import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
+import { Mail, MapPin, Phone, ServiceIconView } from "@/components/icons";
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -58,7 +58,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- Services ---------- */}
       <section id="services" className="relative isolate overflow-hidden bg-white py-20 sm:py-28">
-        <SectionPhoto src={images.sections.services} className="object-center" />
+        <SectionPhoto src={content.backgrounds.services?.src ?? images.sections.services} framing={content.framing.services} />
         {/* White fade at the top only, behind the heading; the photo shows untouched below */}
         <div
           aria-hidden
@@ -67,18 +67,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Container>
           <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {t.services.items.map((s) => {
-              const Icon = serviceIcons[s.icon];
+            {content.services.items.map((s, i) => {
               return (
                 <li
-                  key={s.title}
+                  key={i}
                   className="rounded-2xl bg-white p-7 shadow-xl shadow-ink/10 ring-1 ring-mist/70 transition hover:-translate-y-1 hover:shadow-2xl"
                 >
                   <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy text-green">
-                    <Icon className="h-7 w-7" strokeWidth={1.75} />
+                    <ServiceIconView icon={s.icon} image={s.image} />
                   </span>
-                  <h3 className="mt-5 text-lg font-semibold text-navy">{s.title}</h3>
-                  <p className="mt-2 leading-relaxed text-muted">{s.text}</p>
+                  <h3 className="mt-5 text-lg font-semibold text-navy">{s.title[locale]}</h3>
+                  <p className="mt-2 leading-relaxed text-muted">{s.text[locale]}</p>
                 </li>
               );
             })}
@@ -134,7 +133,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- About ---------- */}
       <section id="about" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.about} className="object-[50%_40%]" />
+        <SectionPhoto src={content.backgrounds.about?.src ?? images.sections.about} framing={content.framing.about} />
+        {/* An uploaded photo isn't pre-toned like the built-in one: darken it so the white text stays readable. */}
+        {content.backgrounds.about && <div aria-hidden className="absolute inset-0 -z-10 bg-ink/45" />}
         <Container className="grid items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <div className="relative mx-auto max-w-sm lg:max-w-none">
@@ -170,7 +171,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- Latest from the blog ---------- */}
       <section className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.blog} className="object-[50%_70%]" />
+        <SectionPhoto src={content.backgrounds.blog?.src ?? images.sections.blog} framing={content.framing.blog} />
+        {/* Lighten an uploaded photo so the dark heading stays readable. */}
+        {content.backgrounds.blog && <div aria-hidden className="absolute inset-0 -z-10 bg-white/60" />}
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
             <SectionHeader eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
@@ -193,7 +196,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* ---------- Contact ---------- */}
       <section id="contact" className="relative isolate overflow-hidden bg-ink py-20 sm:py-28">
-        <SectionPhoto src={images.sections.contact} className="object-[30%_50%]" />
+        <SectionPhoto src={content.backgrounds.contact?.src ?? images.sections.contact} framing={content.framing.contact} />
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/95 via-ink/85 to-ink/70" />
         <Container className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
@@ -229,8 +232,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 }
 
 /** Full-bleed real photo behind a section; the section adds its own colour overlay on top. */
-function SectionPhoto({ src, className = "" }: { src: string; className?: string }) {
-  return <Image src={src} alt="" fill sizes="100vw" className={`-z-20 object-cover ${className}`} />;
+function SectionPhoto({ src, framing }: { src: string; framing: Framing }) {
+  // Zoom and focus point are set per section in Admin → Website.
+  return <Image src={src} alt="" fill sizes="100vw" className="-z-20 object-cover" style={framingStyle(framing)} />;
 }
 
 /** Hero photo: the square shot for phones and tablets, the wide (extended wall) version on desktop. */

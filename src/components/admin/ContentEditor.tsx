@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateContent, type ContentState } from "@/app/admin/actions";
-import { serviceIconKeys, serviceIconNames, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
-import { serviceIcons } from "@/components/icons";
+import { defaultFraming, framingStyle, serviceIconChoices, type BackgroundKey, type Framing, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
+import { ServiceIconView, serviceIcons } from "@/components/icons";
 import type { Bilingual } from "@/lib/pricing-data";
 import { BilingualFields, Section } from "./fields";
 
@@ -30,10 +30,17 @@ const jump = [
   ["services", "Services"],
   ["pricing", "Pricing"],
   ["about", "About"],
+  ["blog", "Blog preview"],
   ["contact", "Contact"],
 ] as const;
 
-export function ContentEditor({ initial, defaults }: { initial: SiteContent; defaults: { hero: string; portrait: string } }) {
+export function ContentEditor({
+  initial,
+  defaults,
+}: {
+  initial: SiteContent;
+  defaults: { hero: string; portrait: string; backgrounds: Record<BackgroundKey, string> };
+}) {
   const [content, setContent] = useState(initial);
   const [state, action, pending] = useActionState<ContentState, FormData>(updateContent, { status: "idle" });
   const saved = state.content ?? initial;
@@ -46,6 +53,26 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
     onChange: (patch: Partial<Bilingual>) => setContent((c) => mergeAt(c, path, patch)),
   });
   const setPhoto = (key: "hero" | "about", photo: SitePhoto | null) => setContent((c) => ({ ...c, [key]: { ...c[key], photo } }));
+  /** Background photo field for one home-page section. */
+  const background = (key: BackgroundKey, note = "") => (
+    <div className="space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-mist/60">
+      <PhotoField
+        label="Background photo"
+        kind="background"
+        name={`background-${key}`}
+        note={`A wide landscape photo works best; the text sits on top of it, so calm photos without busy detail read best.${note}`}
+        photo={content.backgrounds[key]}
+        fallback={defaults.backgrounds[key]}
+        onChange={(photo) => setContent((c) => ({ ...c, backgrounds: { ...c.backgrounds, [key]: photo } }))}
+      />
+      <FramingControls
+        src={content.backgrounds[key]?.src ?? defaults.backgrounds[key]}
+        value={content.framing[key]}
+        fallback={defaultFraming[key]}
+        onChange={(f) => setContent((c) => ({ ...c, framing: { ...c.framing, [key]: f } }))}
+      />
+    </div>
+  );
   const items = content.services.items;
   const setItems = (change: (items: ServiceItem[]) => ServiceItem[]) =>
     setContent((c) => ({ ...c, services: { ...c.services, items: change(c.services.items) } }));
@@ -74,6 +101,8 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
         <BilingualFields label="Introduction" multiline rows={3} {...bi("hero", "lead")} />
         <PhotoField
           label="Main photo"
+          kind="hero"
+          name="hero"
           note="Works best as a wide landscape photo with you on the right side, leaving space on the left for the text."
           photo={content.hero.photo}
           fallback={defaults.hero}
@@ -105,28 +134,10 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
                 </div>
               </div>
               <div className="space-y-4">
-                <fieldset>
-                  <legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Icon</legend>
-                  <div className="flex flex-wrap gap-2">
-                    {serviceIconKeys.map((key) => {
-                      const Icon = serviceIcons[key];
-                      const on = item.icon === key;
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          title={serviceIconNames[key]}
-                          aria-label={serviceIconNames[key]}
-                          aria-pressed={on}
-                          onClick={() => setItems((list) => list.map((x, j) => (j === i ? { ...x, icon: key } : x)))}
-                          className={`grid h-11 w-11 place-items-center rounded-xl transition ${on ? "bg-navy text-green" : "bg-white text-muted ring-1 ring-mist hover:text-navy hover:ring-blue"}`}
-                        >
-                          <Icon className="h-6 w-6" strokeWidth={1.75} />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </fieldset>
+                <IconPicker
+                  item={item}
+                  onChange={(change) => setItems((list) => list.map((x, j) => (j === i ? { ...x, ...change } : x)))}
+                />
                 <BilingualFields label="Name" {...bi("services", "items", i, "title")} />
                 <BilingualFields label="Description" multiline rows={3} {...bi("services", "items", i, "text")} />
               </div>
@@ -136,11 +147,12 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
         <button
           type="button"
           disabled={items.length >= 12}
-          onClick={() => setItems((list) => [...list, { icon: "hands", title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
+          onClick={() => setItems((list) => [...list, { icon: "hands", image: null, title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
           className="rounded-full border-2 border-dashed border-blue/50 px-5 py-2.5 text-sm font-semibold text-blue-dark hover:border-blue disabled:opacity-40"
         >
           + Add a service
         </button>
+        {background("services")}
       </Section>
 
       <Section
@@ -178,11 +190,17 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
         <PhotoField
           label="Your portrait"
           note="A portrait (taller than wide) works best."
-          portrait
+          kind="portrait"
+          name="portrait"
           photo={content.about.photo}
           fallback={defaults.portrait}
           onChange={(photo) => setPhoto("about", photo)}
         />
+        {background("about", " It is darkened slightly so the white text stays readable.")}
+      </Section>
+
+      <Section id="blog" title="Blog preview" text="The “From the blog” section with your three latest articles. The articles themselves are edited on the Blog page.">
+        {background("blog", " It is lightened slightly so the dark heading stays readable.")}
       </Section>
 
       <Section
@@ -206,6 +224,7 @@ export function ContentEditor({ initial, defaults }: { initial: SiteContent; def
           {...bi("contact", "office")}
         />
         <BilingualFields label="Service area" {...bi("contact", "areaNote")} />
+        {background("contact")}
       </Section>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-mist/70 bg-white/95 backdrop-blur lg:left-64">
@@ -257,6 +276,145 @@ function SmallButton({ label, d, onClick, disabled, danger = false }: { label: s
   );
 }
 
+/** Built-in icons (the six HealthyZone ones up front, more on demand) or an uploaded icon. */
+function IconPicker({ item, onChange }: { item: ServiceItem; onChange: (change: Partial<ServiceItem>) => void }) {
+  const [more, setMore] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [error, setError] = useState("");
+  const first = serviceIconChoices.slice(0, 6);
+  // Keep the current choice visible even when the full list is closed.
+  const shown = more ? serviceIconChoices : first.some((c) => c.key === item.icon) ? first : [...first, serviceIconChoices.find((c) => c.key === item.icon)!];
+
+  async function onFile(file: File) {
+    setError("");
+    if (!/^image\/(png|svg\+xml|webp)$/.test(file.type)) return setError("Please choose a PNG, SVG or WebP icon.");
+    if (file.size > 2 * 1024 * 1024) return setError("That icon is over 2 MB. Please choose a smaller one.");
+    try {
+      setProgress(0);
+      const ext = file.type === "image/svg+xml" ? "svg" : file.type.split("/")[1];
+      const blob = await upload(`site/icon-${Date.now().toString(36)}.${ext}`, file, {
+        access: "public",
+        handleUploadUrl: "/admin/upload",
+        contentType: file.type,
+        onUploadProgress: ({ percentage }) => setProgress(percentage),
+      });
+      onChange({ image: { src: blob.url, width: 96, height: 96 } });
+    } catch (err) {
+      console.error(err);
+      setError("The upload didn't work. Please try again.");
+    } finally {
+      setProgress(null);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  const tile = (on: boolean) =>
+    `grid h-11 w-11 place-items-center rounded-xl transition ${on ? "bg-navy text-green ring-2 ring-blue" : "bg-white text-muted ring-1 ring-mist hover:text-navy hover:ring-blue"}`;
+
+  return (
+    <fieldset>
+      <legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Icon</legend>
+      <div className="flex flex-wrap gap-2">
+        {item.image && (
+          <span className={tile(true)} title="Your uploaded icon">
+            <ServiceIconView icon={item.icon} image={item.image} className="h-6 w-6" />
+          </span>
+        )}
+        {shown.map(({ key, label }) => {
+          const Icon = serviceIcons[key];
+          return (
+            <button
+              key={key}
+              type="button"
+              title={label}
+              aria-label={label}
+              aria-pressed={!item.image && item.icon === key}
+              onClick={() => onChange({ icon: key, image: null })}
+              className={tile(!item.image && item.icon === key)}
+            >
+              <Icon className="h-6 w-6" strokeWidth={1.75} />
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        <button type="button" onClick={() => setMore((v) => !v)} className="font-semibold text-blue-dark hover:underline">
+          {more ? "Show fewer icons" : `More icons (${serviceIconChoices.length - 6})`}
+        </button>
+        <input ref={fileRef} type="file" accept="image/png,image/svg+xml,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
+        <button type="button" disabled={progress !== null} onClick={() => fileRef.current?.click()} className="font-semibold text-blue-dark hover:underline disabled:cursor-wait">
+          {progress === null ? "Upload your own icon" : `Uploading… ${Math.round(progress)}%`}
+        </button>
+        {item.image && (
+          <button type="button" onClick={() => onChange({ image: null })} className="font-medium text-muted hover:text-navy">
+            Remove uploaded icon
+          </button>
+        )}
+      </div>
+      <p className="mt-1 text-xs text-muted">Uploaded icons sit on the dark blue tile: a white or light icon on a transparent background (PNG or SVG) looks best.</p>
+      {error && <p className="mt-1 text-sm text-danger">{error}</p>}
+    </fieldset>
+  );
+}
+
+/** Zoom and focus-point sliders for a section background, with a live preview of the section's shape. */
+function FramingControls({
+  src,
+  value,
+  fallback,
+  onChange,
+}: {
+  src: string;
+  value: Framing;
+  fallback: Framing;
+  onChange: (f: Framing) => void;
+}) {
+  const sliders: { key: keyof Framing; label: string; min: number; max: number; left: string; right: string }[] = [
+    { key: "zoom", label: "Size", min: 100, max: 250, left: "Whole photo", right: "Zoomed in" },
+    { key: "x", label: "Left to right", min: 0, max: 100, left: "Left", right: "Right" },
+    { key: "y", label: "Top to bottom", min: 0, max: 100, left: "Top", right: "Bottom" },
+  ];
+  const changed = JSON.stringify(value) !== JSON.stringify(fallback);
+  return (
+    <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div>
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Preview on a computer screen</p>
+        <div className="relative aspect-[16/7] overflow-hidden rounded-xl bg-ink ring-1 ring-mist/70">
+          <Image src={src} alt="" fill sizes="400px" className="object-cover" style={framingStyle(value)} />
+        </div>
+      </div>
+      <div className="space-y-3">
+        {sliders.map((s) => (
+          <label key={s.key} className="block">
+            <span className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+              {s.label}
+              <span className="normal-case tracking-normal">{s.key === "zoom" ? `${value.zoom}%` : `${value[s.key]}%`}</span>
+            </span>
+            <input
+              type="range"
+              min={s.min}
+              max={s.max}
+              value={value[s.key]}
+              onChange={(e) => onChange({ ...value, [s.key]: Number(e.target.value) })}
+              className="mt-1 w-full accent-navy"
+            />
+            <span className="flex justify-between text-[0.7rem] text-muted">
+              <span>{s.left}</span>
+              <span>{s.right}</span>
+            </span>
+          </label>
+        ))}
+        {changed && (
+          <button type="button" onClick={() => onChange(fallback)} className="text-sm font-medium text-blue-dark hover:underline">
+            Reset size and position
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** Reads the photo's pixel size before upload (the site needs it to lay images out). */
 async function imageSize(file: File) {
   const url = URL.createObjectURL(file);
@@ -275,14 +433,17 @@ function PhotoField({
   note,
   photo,
   fallback,
-  portrait = false,
+  kind,
+  name,
   onChange,
 }: {
   label: string;
   note: string;
   photo: SitePhoto | null;
   fallback: string;
-  portrait?: boolean;
+  kind: "hero" | "portrait" | "background";
+  /** Start of the uploaded file's name. */
+  name: string;
   onChange: (p: SitePhoto | null) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -297,7 +458,7 @@ function PhotoField({
       setProgress(0);
       const { width, height } = await imageSize(file);
       const ext = file.type.split("/")[1].replace("jpeg", "jpg");
-      const blob = await upload(`site/${portrait ? "portrait" : "hero"}-${width}x${height}.${ext}`, file, {
+      const blob = await upload(`site/${name}-${width}x${height}.${ext}`, file, {
         access: "public",
         handleUploadUrl: "/admin/upload",
         contentType: file.type,
@@ -317,9 +478,9 @@ function PhotoField({
     <div>
       <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</p>
       <div className="flex flex-wrap items-center gap-5">
-        <div className={`relative shrink-0 overflow-hidden rounded-xl bg-surface ring-1 ring-mist/70 ${portrait ? "h-36 w-28" : "h-28 w-48"}`}>
+        {kind !== "background" && <div className={`relative shrink-0 overflow-hidden rounded-xl bg-surface ring-1 ring-mist/70 ${kind === "portrait" ? "h-36 w-28" : "h-28 w-48"}`}>
           <Image src={photo?.src ?? fallback} alt="" fill sizes="200px" className="object-cover object-top" />
-        </div>
+        </div>}
         <div className="space-y-2">
           <input
             ref={fileRef}
