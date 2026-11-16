@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { draftMode } from "next/headers";
+import { Suspense } from "react";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { fontVariables } from "@/lib/fonts";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -15,12 +18,7 @@ import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import "../globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -89,9 +87,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const [t, business, design] = await Promise.all([getText(locale), getBusiness(), getDesign()]);
+  const preview = (await draftMode()).isEnabled;
 
   return (
-    <html lang={htmlLang[locale]} className={`${poppins.variable} h-full`}>
+    <html lang={htmlLang[locale]} className={`${fontVariables} h-full`}>
       <body className="flex min-h-full flex-col">
         {/* Colours and text size chosen in Admin → Design */}
         <style dangerouslySetInnerHTML={{ __html: designCss(design) }} />
@@ -108,6 +107,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           </main>
           <Footer t={t} business={business} />
           <SectionLinks />
+          {preview && (
+            <Suspense>
+              <PreviewBanner />
+            </Suspense>
+          )}
         </LocaleProvider>
         <script
           type="application/ld+json"

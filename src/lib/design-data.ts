@@ -31,7 +31,8 @@ export type Design = {
   hiddenMenu: string[];
   layout: Layout;
   buttons: { shape: ButtonShape };
-  hero: { size: HeroSize };
+  hero: { size: HeroSize; align: "left" | "center"; shade: number };
+  fonts: { body: FontKey; heading: FontKey };
   forms: FormFields;
 };
 
@@ -43,6 +44,18 @@ export type Layout = {
   contactForm: "left" | "right";
 };
 export type ButtonShape = "pill" | "rounded" | "square";
+
+/** Fonts loaded by the site layout (next/font); each sets the CSS variable --font-<key>. */
+export const fontChoices = [
+  { key: "poppins", name: "Poppins", note: "Modern and friendly (original)" },
+  { key: "inter", name: "Inter", note: "Clean and neutral" },
+  { key: "montserrat", name: "Montserrat", note: "Bold and geometric" },
+  { key: "nunito", name: "Nunito", note: "Soft and rounded" },
+  { key: "lora", name: "Lora", note: "Elegant serif" },
+  { key: "playfair", name: "Playfair Display", note: "Classic serif, for headings" },
+] as const;
+export type FontKey = (typeof fontChoices)[number]["key"];
+const fontKeys: readonly string[] = fontChoices.map((f) => f.key);
 export type HeroSize = "small" | "normal" | "large";
 /** Optional form fields that can be switched off (name and phone are always asked; booking email too, for confirmations). */
 export type FormFields = {
@@ -85,7 +98,8 @@ export const defaultDesign: Design = {
   hiddenMenu: [],
   layout: { servicesColumns: 3, pricingColumns: 3, blogColumns: 3, aboutPhoto: "left", contactForm: "right" },
   buttons: { shape: "pill" },
-  hero: { size: "normal" },
+  hero: { size: "normal", align: "left", shade: 0 },
+  fonts: { body: "poppins", heading: "poppins" },
   forms: { contactEmail: true, contactMessage: true, contactReceipt: true, bookingHomeVisits: true, bookingNotes: true, bookingReceipt: true },
 };
 
@@ -119,6 +133,7 @@ export function parseDesign(raw: unknown): Design {
   const b = (r.buttons ?? {}) as Record<string, unknown>;
   const h = (r.hero ?? {}) as Record<string, unknown>;
   const f = (r.forms ?? {}) as Record<string, unknown>;
+  const fo = (r.fonts ?? {}) as Record<string, unknown>;
   const style = Object.fromEntries(
     designSectionKeys.map((k) => {
       const v = st[k] ?? {};
@@ -142,7 +157,15 @@ export function parseDesign(raw: unknown): Design {
       contactForm: l.contactForm === "left" ? "left" : "right",
     },
     buttons: { shape: ["pill", "rounded", "square"].includes(b.shape as string) ? (b.shape as ButtonShape) : "pill" },
-    hero: { size: ["small", "normal", "large"].includes(h.size as string) ? (h.size as HeroSize) : "normal" },
+    hero: {
+      size: ["small", "normal", "large"].includes(h.size as string) ? (h.size as HeroSize) : "normal",
+      align: h.align === "center" ? "center" : "left",
+      shade: num(h.shade, 0, 80, 0),
+    },
+    fonts: {
+      body: fontKeys.includes(fo.body as string) ? (fo.body as FontKey) : "poppins",
+      heading: fontKeys.includes(fo.heading as string) ? (fo.heading as FontKey) : "poppins",
+    },
     forms: Object.fromEntries(
       (Object.keys(defaultDesign.forms) as (keyof FormFields)[]).map((k) => [k, f[k] !== false]),
     ) as FormFields,
@@ -167,5 +190,8 @@ export function designCss(d: Design) {
     `--footer-bg:${d.footer.bg}`,
     `--btn-radius:${buttonRadius[d.buttons.shape]}`,
   ];
-  return `:root{${vars.join(";")}}html{font-size:${d.textScale}%}`;
+  const stack = (k: FontKey) => `var(--font-${k}),${k === "lora" || k === "playfair" ? "Georgia,serif" : "ui-sans-serif,system-ui,sans-serif"}`;
+  vars.push(`--font-sans:${stack(d.fonts.body)}`);
+  const headings = d.fonts.heading !== d.fonts.body ? `h1,h2,h3,h4{font-family:${stack(d.fonts.heading)}}` : "";
+  return `:root{${vars.join(";")}}html{font-size:${d.textScale}%}${headings}`;
 }

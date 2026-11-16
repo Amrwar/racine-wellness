@@ -1,3 +1,4 @@
+import { writeSetting } from "./settings";
 import { db, hasDatabase } from "./db";
 import { defaultPricing, parsePricing, type Pricing } from "./pricing-data";
 
@@ -15,7 +16,5 @@ export async function getPricing(): Promise<Pricing> {
 }
 
 export async function savePricing(pricing: Pricing) {
-  const sql = await db();
-  await sql`INSERT INTO settings (key, value, updated_at) VALUES ('pricing', ${JSON.stringify(pricing)}::jsonb, now())
-    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
+  await writeSetting("pricing", pricing);
 }

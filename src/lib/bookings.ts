@@ -1,3 +1,4 @@
+import { writeSetting } from "./settings";
 import { createHmac } from "node:crypto";
 import { db, hasDatabase } from "./db";
 import { defaultAvailability, parseAvailability, type Availability, type Booking, hoursOn } from "./booking-data";
@@ -20,9 +21,7 @@ export async function getAvailability(): Promise<Availability> {
 }
 
 export async function saveAvailability(a: Availability) {
-  const sql = await db();
-  await sql`INSERT INTO settings (key, value, updated_at) VALUES ('availability', ${JSON.stringify(a)}::jsonb, now())
-    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
+  await writeSetting("availability", a);
 }
 
 type Busy = { start: number; end: number };

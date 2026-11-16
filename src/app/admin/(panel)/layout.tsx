@@ -18,7 +18,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen lg:pl-64">
       <AdminNav newCount={newCount} pendingCount={pendingCount} logout={logout} />
-      <main className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-12">{children}</main>
+      {/* Pages with a live preview (marked .wide-page) get more room. */}
+      <main className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-12 has-[.wide-page]:max-w-[1600px]">{children}</main>
     </div>
   );
 }

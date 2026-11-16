@@ -20,6 +20,7 @@ import { getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
 import { saveDesign } from "@/lib/design";
 import { saveClientNotes } from "@/lib/clients";
+import { writeDraft, type PreviewableKey } from "@/lib/settings";
 import { parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
@@ -577,4 +578,20 @@ export async function replyToMessage(_prev: SettingsState, formData: FormData): 
   await sql`UPDATE messages SET reply = ${reply}, replied_at = now(), status = 'handled' WHERE id = ${id}`;
   revalidatePath("/admin", "layout");
   return { status: "saved", message: `Reply sent to ${m.email}.` };
+}
+
+/* ---------------- Preview drafts ---------------- */
+
+/** Stores unsaved edits so the preview (Ziad's browser only) can show them. Nothing goes live. */
+export async function savePreviewDraft(kind: PreviewableKey, json: string): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  try {
+    const raw = JSON.parse(json);
+    const value = kind === "content" ? parseContent(raw) : kind === "design" ? parseDesign(raw) : cleanOverrides(raw).value;
+    await writeDraft(kind, value);
+    return { ok: true };
+  } catch (err) {
+    console.error("[admin] preview draft failed:", err);
+    return { ok: false };
+  }
 }

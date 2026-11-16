@@ -217,18 +217,20 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           aria-hidden
           className="absolute inset-x-0 top-18 -z-10 h-[78vw] bg-gradient-to-b from-transparent from-40% to-[#1a1b1d] lg:bottom-0 lg:h-auto lg:bg-gradient-to-r lg:from-black/65 lg:from-0% lg:via-black/20 lg:to-transparent"
         />
+        {/* Extra shading over the photo, set in Admin → Design */}
+        {design.hero.shade > 0 && <div aria-hidden className="absolute inset-0 -z-10 bg-black" style={{ opacity: design.hero.shade / 100 }} />}
         <Container className="flex flex-col pb-16 pt-[calc(78vw-3rem)] lg:min-h-[calc(100svh-4.5rem)] lg:max-h-[56rem] lg:justify-center lg:py-24">
-          <div className="max-w-xl">
+          <div className={design.hero.align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-xl"}>
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
             </Eyebrow>
             <h1 className={`animate-fade-up delay-1 font-medium leading-[1.08] tracking-[-0.03em] ${heroSizeClass[design.hero.size]}`}>
               {t.hero.title}
             </h1>
-            <p className="animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80">
+            <p className={`animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80 ${design.hero.align === "center" ? "mx-auto" : ""}`}>
               {t.hero.lead}
             </p>
-            <div className="animate-fade-up delay-3 mt-10 flex flex-wrap gap-3">
+            <div className={`animate-fade-up delay-3 mt-10 flex flex-wrap gap-3 ${design.hero.align === "center" ? "justify-center" : ""}`}>
               <Button href={localePath(locale, "/book")} size="lg">
                 {t.hero.book} <Arrow />
               </Button>

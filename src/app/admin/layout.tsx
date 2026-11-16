@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { fontVariables } from "@/lib/fonts";
 import "../globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+
 
 export const metadata: Metadata = {
   title: { default: "Admin · HealthyZone", template: "%s · HealthyZone Admin" },
@@ -17,7 +12,7 @@ export const metadata: Metadata = {
 /** Root layout for the private admin area (separate from the public, localized site). */
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-CA" className={`${poppins.variable} h-full`}>
+    <html lang="en-CA" className={`${fontVariables} h-full`}>
       <body className="min-h-full bg-surface">{children}</body>
     </html>
   );
