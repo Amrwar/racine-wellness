@@ -9,7 +9,6 @@ import { getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { phoneHref, type Business } from "@/lib/business-data";
 import type { Dictionary } from "@/i18n/en";
-import { getDictionary } from "@/i18n";
 import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "@/i18n/config";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import "../globals.css";
@@ -40,7 +39,7 @@ export function alternatesFor(path: string) {
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale);
+  const t = (await getText(locale));
   return {
     metadataBase: new URL(site.url),
     title: { default: t.meta.titleDefault, template: `%s · ${site.name}` },

@@ -4,6 +4,7 @@ import { getContent } from "@/lib/content";
 import { images } from "@/lib/site";
 import { PageHeader } from "@/components/admin/ui";
 import { ContentEditor } from "@/components/admin/ContentEditor";
+import { WebsiteTabs } from "@/components/admin/WebsiteTabs";
 
 export const metadata: Metadata = { title: "Website" };
 
@@ -24,6 +25,7 @@ export default async function WebsitePage() {
           </>
         }
       />
+      <WebsiteTabs active="home" />
       <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: images.sections }} />
     </>
   );

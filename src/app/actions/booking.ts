@@ -1,6 +1,6 @@
 "use server";
 
-import { fill, getDictionary } from "@/i18n";
+import { fill } from "@/i18n";
 import { isLocale, type Locale } from "@/i18n/config";
 import { db } from "@/lib/db";
 import { getPricing } from "@/lib/pricing";

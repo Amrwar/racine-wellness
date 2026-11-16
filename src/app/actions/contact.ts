@@ -1,8 +1,9 @@
 "use server";
 
+import { getText } from "@/lib/content";
 import { site } from "@/lib/site";
 import { getBusiness, notifyEmail } from "@/lib/business";
-import { fill, getDictionary } from "@/i18n";
+import { fill } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { db, hasDatabase } from "@/lib/db";
 
@@ -24,7 +25,7 @@ export async function sendContact(
 ): Promise<ContactState> {
   const rawLocale = clean(formData.get("locale"), 5);
   const locale = isLocale(rawLocale) ? rawLocale : "en";
-  const t = getDictionary(locale).form;
+  const t = (await getText(locale)).form;
 
   // Honeypot: real users never fill this.
   if (clean(formData.get("company"))) {

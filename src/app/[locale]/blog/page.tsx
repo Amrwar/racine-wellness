@@ -1,7 +1,7 @@
+import { getText } from "@/lib/content";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { getPosts } from "@/lib/posts";
 import { Container, Eyebrow } from "@/components/ui";
@@ -11,14 +11,14 @@ import { alternatesFor } from "../layout";
 export async function generateMetadata({ params }: PageProps<"/[locale]/blog">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const m = getDictionary(locale).meta.blog;
+  const m = (await getText(locale)).meta.blog;
   return { title: m.title, description: m.description, alternates: alternatesFor("/blog") };
 }
 
 export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const t = (await getText(locale));
   const [featured, ...rest] = await getPosts();
 
   return (

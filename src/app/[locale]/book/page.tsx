@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { getPricing } from "@/lib/pricing";
 import { getText } from "@/lib/content";
@@ -14,7 +13,7 @@ import { alternatesFor } from "../layout";
 export async function generateMetadata({ params }: PageProps<"/[locale]/book">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale).booking;
+  const t = (await getText(locale)).booking;
   return { title: t.metaTitle, description: t.metaDescription, alternates: alternatesFor("/book") };
 }
 

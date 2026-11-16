@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDictionary } from "@/i18n";
 import { getText } from "@/lib/content";
 import { htmlLang, isLocale, localePath } from "@/i18n/config";
 import { getPost, getPosts } from "@/lib/posts";

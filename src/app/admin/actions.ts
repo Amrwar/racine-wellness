@@ -11,12 +11,13 @@ import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
 import { parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
 import { getAvailability, getBooking, saveAvailability } from "@/lib/bookings";
 import { sendEmail, ownerEmail } from "@/lib/email";
-import { fill, getDictionary } from "@/i18n";
+import { fill } from "@/i18n";
 import { localePath } from "@/i18n/config";
 import { site } from "@/lib/site";
 import { getBusiness, saveBusiness } from "@/lib/business";
 import { parseBusiness } from "@/lib/business-data";
-import { getText, saveContent } from "@/lib/content";
+import { getText, saveContent, saveTextOverrides } from "@/lib/content";
+import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 import { parsePost } from "@/lib/post-data";
@@ -487,4 +488,28 @@ export async function signOutOtherDevices(): Promise<SettingsState> {
   await requireAdmin();
   await signOutEverywhere();
   return { status: "saved", message: "Done. Every other phone and computer has been signed out." };
+}
+
+/* ---------------- All other text ---------------- */
+
+export type TextState = { status: "idle" | "saved" | "error"; message?: string; overrides?: TextOverrides };
+
+export async function updateText(prev: TextState, formData: FormData): Promise<TextState> {
+  await requireAdmin();
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get("text") ?? ""));
+  } catch {
+    return { status: "error", message: "The form data couldn't be read. Please reload and try again.", overrides: prev.overrides };
+  }
+  const { value, problems } = cleanOverrides(raw);
+  if (problems.length) return { status: "error", message: problems.slice(0, 3).join(" "), overrides: prev.overrides };
+  try {
+    await saveTextOverrides(value);
+  } catch (err) {
+    console.error("[admin] save text failed:", err);
+    return { status: "error", message: "Saving failed. Please try again in a moment.", overrides: prev.overrides };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", overrides: value };
 }

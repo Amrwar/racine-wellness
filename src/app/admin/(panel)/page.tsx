@@ -7,6 +7,8 @@ import { Card, PageHeader } from "@/components/admin/ui";
 import { MessageCard, type Message } from "@/components/admin/MessageCard";
 import type { Booking } from "@/lib/booking-data";
 import { formatWhen, localTime } from "@/lib/time";
+import { getGoogleSettings, googleConfigured } from "@/lib/google";
+import { Checklist, type ChecklistItem } from "@/components/admin/Checklist";
 
 export default async function OverviewPage() {
   await requireAdmin();
@@ -24,6 +26,47 @@ export default async function OverviewPage() {
   const upcoming = (await sql`SELECT * FROM bookings WHERE status IN ('pending', 'confirmed') AND end_at > now()
     ORDER BY start_at LIMIT 4`) as Booking[];
   const pricing = await getPricing();
+  const keys = new Set((await sql`SELECT key FROM settings`).map((r) => r.key as string));
+  const google = await getGoogleSettings();
+  const setup: ChecklistItem[] = [
+    {
+      done: keys.has("availability"),
+      title: "Set your real opening hours",
+      text: "The booking page uses sample hours until you save yours. Add your days off there too.",
+      href: "/admin/bookings/availability",
+      action: "Set hours",
+    },
+    {
+      done: google.connected,
+      title: "Connect your Google Calendar",
+      text: googleConfigured()
+        ? "Red events in your Google Calendar will block those times on the booking page."
+        : "Your web developer is finishing the Google setup; then one click connects it here.",
+      href: "/admin/bookings/availability#google",
+      action: "Open",
+    },
+    {
+      done: keys.has("admin_auth"),
+      title: "Choose your own password",
+      text: "Replace the password you were given with one only you know.",
+      href: "/admin/settings#password",
+      action: "Change",
+    },
+    {
+      done: keys.has("business"),
+      title: "Check your contact details",
+      text: "Phone, email, Instagram, and the address that receives booking requests.",
+      href: "/admin/settings",
+      action: "Review",
+    },
+    {
+      done: keys.has("content"),
+      title: "Review your home page",
+      text: "Read through the text and photos, in English and French, and adjust anything.",
+      href: "/admin/website",
+      action: "Review",
+    },
+  ];
   const prices = pricing.services.flatMap((s) => s.rates.map((r) => r.price));
 
   const stats = [
@@ -35,6 +78,30 @@ export default async function OverviewPage() {
   return (
     <>
       <PageHeader title="Hello, Ziad" lead="Here's what's happening on your website." />
+
+      <Checklist items={setup} />
+
+      <nav aria-label="Quick actions" className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { href: "/admin/bookings/new", label: "Add a booking", d: "M12 5v14M5 12h14" },
+          { href: "/admin/bookings/availability", label: "Hours & time off", d: "M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" },
+          { href: "/admin/blog/new", label: "Write an article", d: "M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" },
+          { href: "/admin/website", label: "Edit the website", d: "M3 5h18v14H3zM3 9h18" },
+        ].map((a) => (
+          <Link
+            key={a.href}
+            href={a.href}
+            className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-sm font-semibold text-navy shadow-card ring-1 ring-mist/60 transition hover:-translate-y-0.5 hover:ring-blue"
+          >
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-navy text-green">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d={a.d} />
+              </svg>
+            </span>
+            {a.label}
+          </Link>
+        ))}
+      </nav>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {stats.map((s) => (
@@ -140,6 +207,43 @@ export default async function OverviewPage() {
           </Card>
         </section>
       </div>
+
+      <section className="mt-10">
+        <h2 className="mb-4 text-lg font-semibold text-navy">How it works</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "Online bookings",
+              text: "Clients request a time on the booking page. Nothing is final until you confirm it in Bookings; the client is emailed when you confirm, decline or cancel.",
+            },
+            {
+              title: "Your availability",
+              text: "Only times inside your opening hours, outside your days off and away from other appointments (plus your travel gap) are offered to clients.",
+            },
+            {
+              title: "Messages",
+              text: "Contact form messages arrive here and by email. Mark them handled once you've replied so the count stays useful.",
+            },
+            {
+              title: "Your website",
+              text: "Every text, photo, price and article can be changed from this admin. Changes appear on the site as soon as you save.",
+            },
+            {
+              title: "English and French",
+              text: "Every text has both languages. “Translate from English” writes a French draft for you to read over before saving.",
+            },
+            {
+              title: "On your phone",
+              text: "This admin works on your phone. Add it to your home screen, and subscribe to the bookings calendar link on the Bookings page.",
+            },
+          ].map((h) => (
+            <Card key={h.title} className="p-5">
+              <h3 className="font-semibold text-navy">{h.title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{h.text}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

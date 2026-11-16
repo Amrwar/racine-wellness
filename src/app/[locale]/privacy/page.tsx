@@ -1,6 +1,6 @@
+import { getText } from "@/lib/content";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { getBusiness } from "@/lib/business";
 import { Container, Eyebrow } from "@/components/ui";
@@ -10,7 +10,7 @@ import { alternatesFor } from "../layout";
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const m = getDictionary(locale).meta.privacy;
+  const m = (await getText(locale)).meta.privacy;
   return {
     title: m.title,
     description: m.description,
@@ -34,7 +34,7 @@ function withEmail(text: string, email: string) {
 export default async function PrivacyPage({ params }: PageProps<"/[locale]/privacy">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const t = (await getText(locale));
   const p = t.privacy;
   const { email } = await getBusiness();
 
