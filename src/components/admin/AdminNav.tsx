@@ -5,13 +5,20 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Wordmark } from "./Wordmark";
 
+/** Sidebar sections, in order; each link belongs to the group above it. */
+const groups = [
+  { title: "Your business", from: "/admin" },
+  { title: "Your website", from: "/admin/website" },
+  { title: "Account", from: "/admin/settings" },
+];
+
 const links = [
   { href: "/admin", label: "Overview", icon: "M3 12 12 4l9 8M5 10v10h5v-6h4v6h5V10" },
   { href: "/admin/bookings", label: "Bookings", icon: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" },
   { href: "/admin/messages", label: "Messages", icon: "M4 6h16v12H4zM4 7l8 6 8-6" },
-  { href: "/admin/blog", label: "Blog", icon: "M5 4h10l4 4v12H5zM14 4v5h5M8 13h8M8 17h5" },
+  { href: "/admin/website", label: "Text & photos", icon: "M3 5h18v14H3zM3 9h18M7 13h5M7 16h8" },
   { href: "/admin/pricing", label: "Pricing", icon: "M20 12 12 20l-8-8V4h8zM8.5 8.5h.01" },
-  { href: "/admin/website", label: "Website", icon: "M3 5h18v14H3zM3 9h18M7 13h5M7 16h8" },
+  { href: "/admin/blog", label: "Blog", icon: "M5 4h10l4 4v12H5zM14 4v5h5M8 13h8M8 17h5" },
   { href: "/admin/settings", label: "Settings", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" },
 ];
 
@@ -50,6 +57,12 @@ export function AdminNav({
   const nav = (
     <nav className="flex flex-col gap-1" aria-label="Admin">
       {links.map((l) => (
+        <div key={l.href}>
+        {groups.find((g) => g.from === l.href) && (
+          <p className={`px-4 pb-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/40 ${l.href === "/admin" ? "" : "pt-4"}`}>
+            {groups.find((g) => g.from === l.href)!.title}
+          </p>
+        )}
         <Link
           key={l.href}
           href={l.href}
@@ -63,6 +76,7 @@ export function AdminNav({
             <span className="rounded-full bg-green px-2 py-0.5 text-xs font-semibold text-navy-deep">{counts[l.href]}</span>
           )}
         </Link>
+        </div>
       ))}
     </nav>
   );
@@ -85,7 +99,7 @@ export function AdminNav({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col justify-between bg-navy p-5 lg:flex">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col justify-between overflow-y-auto bg-navy p-5 lg:flex">
         <div>
           <Link href="/admin" className="block px-4 pb-8 pt-2">
             <Wordmark />
