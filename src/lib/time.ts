@@ -73,3 +73,8 @@ export function formatWhen(at: Date, locale: "en" | "fr") {
   const time = new Intl.DateTimeFormat(tag, { timeZone: TZ, hour: "numeric", minute: "2-digit" }).format(at);
   return { day, time };
 }
+
+/** The current time in ms (server components read it once per request). */
+export function nowMs() {
+  return Date.now();
+}

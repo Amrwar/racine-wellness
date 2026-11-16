@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { calendarToken } from "@/lib/bookings";
+import { calendarToken, getAvailability } from "@/lib/bookings";
 import { googleBusy } from "@/lib/google";
 import type { Booking } from "@/lib/booking-data";
 import { site } from "@/lib/site";
-import { addDays, isDay, localDay, localTime, weekday, zonedToDate } from "@/lib/time";
+import { addDays, isDay, localDay, localTime, nowMs, weekday, zonedToDate } from "@/lib/time";
 import { BookingCard } from "@/components/admin/BookingCard";
 import { CopyLink } from "@/components/admin/CopyLink";
+import { MonthGrid, WeekGrid, WeekList, type CalEvent } from "@/components/admin/Calendar";
 import { Card, EmptyState, PageHeader } from "@/components/admin/ui";
 
 export const metadata: Metadata = { title: "Bookings" };
@@ -20,19 +21,43 @@ const short = (d: string, opts: Intl.DateTimeFormatOptions) =>
 
 export default async function BookingsPage({ searchParams }: PageProps<"/admin/bookings">) {
   await requireAdmin();
-  const { week, open } = await searchParams;
-  const today = localDay(new Date());
+  const { week, month: monthParam, view: viewParam, open } = await searchParams;
+  const now = nowMs();
+  const today = localDay(new Date(now));
+  const view = viewParam === "month" ? "month" : "week";
   const monday = mondayOf(isDay(week) ? week : today);
   const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
+  const month = typeof monthParam === "string" && /^\d{4}-\d{2}$/.test(monthParam) ? monthParam : (isDay(week) ? week : today).slice(0, 7);
+  const monthStart = addDays(`${month}-01`, -((weekday(`${month}-01`) + 6) % 7));
+  // The range the current view shows.
+  const [from, to] = view === "month" ? [monthStart, addDays(monthStart, 42)] : [monday, addDays(monday, 7)];
 
   const sql = await db();
   const pending = (await sql`SELECT * FROM bookings WHERE status = 'pending' AND end_at > now() ORDER BY start_at`) as Booking[];
-  const inWeek = (await sql`SELECT * FROM bookings WHERE status IN ('pending', 'confirmed')
-    AND start_at >= ${zonedToDate(monday, "00:00").toISOString()}
-    AND start_at < ${zonedToDate(addDays(monday, 7), "00:00").toISOString()}
+  const inRange = (await sql`SELECT * FROM bookings WHERE status IN ('pending', 'confirmed')
+    AND start_at >= ${zonedToDate(from, "00:00").toISOString()}
+    AND start_at < ${zonedToDate(to, "00:00").toISOString()}
     ORDER BY start_at`) as Booking[];
-  const blocked = await googleBusy(zonedToDate(monday, "00:00"), zonedToDate(addDays(monday, 7), "00:00"));
-  const selected = typeof open === "string" ? inWeek.find((b) => String(b.id) === open) : undefined;
+  const [blocked, availability] = await Promise.all([googleBusy(zonedToDate(from, "00:00"), zonedToDate(to, "00:00")), getAvailability()]);
+  const selected = typeof open === "string" ? inRange.find((b) => String(b.id) === open) : undefined;
+  const events: CalEvent[] = [
+    ...inRange.map((b) => ({
+      id: String(b.id),
+      start: new Date(b.start_at).getTime(),
+      end: new Date(b.end_at).getTime(),
+      kind: b.status === "confirmed" ? ("confirmed" as const) : ("pending" as const),
+      title: b.name,
+      sub: `${b.service_title}, ${b.minutes} min · ${b.location === "home" ? "Home visit" : "Office"}${b.status === "pending" ? " · request" : ""}`,
+      href: `/admin/bookings?week=${mondayOf(localDay(new Date(b.start_at)))}&open=${b.id}#details`,
+    })),
+    ...blocked.map((g, i) => ({ id: `g${i}`, start: g.start, end: g.end, kind: "google" as const, title: g.label, sub: "Google Calendar" })),
+  ];
+  const monthName = new Intl.DateTimeFormat("en-CA", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${month}-15T12:00:00Z`));
+  const shiftMonth = (n: number) => {
+    const [y, m] = month.split("-").map(Number);
+    const d = new Date(Date.UTC(y, m - 1 + n, 1));
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+  };
 
   const token = calendarToken();
   const feed = token ? `${site.url}/api/calendar/${token}.ics` : null;
@@ -81,79 +106,58 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-navy">{range}</h2>
-          <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-card ring-1 ring-mist/60">
-            <WeekLink href={`/admin/bookings?week=${addDays(monday, -7)}`} label="Previous week" d="M15 6l-6 6 6 6" />
-            <Link href="/admin/bookings" className="rounded-full px-3 py-1.5 text-sm font-medium text-navy hover:bg-surface">
-              This week
-            </Link>
-            <WeekLink href={`/admin/bookings?week=${addDays(monday, 7)}`} label="Next week" d="M9 6l6 6-6 6" />
+          <h2 className="text-lg font-semibold text-navy">{view === "month" ? monthName : range}</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-card ring-1 ring-mist/60">
+              {(["week", "month"] as const).map((v) => (
+                <Link
+                  key={v}
+                  href={v === "month" ? `/admin/bookings?view=month&month=${monday.slice(0, 7)}` : `/admin/bookings?week=${view === "month" ? `${month}-01` : monday}`}
+                  aria-current={view === v ? "page" : undefined}
+                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium ${view === v ? "bg-navy text-white" : "text-navy hover:bg-surface"}`}
+                >
+                  {v === "week" ? "Week" : "Month"}
+                </Link>
+              ))}
+            </div>
+            <div className="flex items-center gap-1 rounded-full bg-white p-1 shadow-card ring-1 ring-mist/60">
+              <WeekLink
+                href={view === "month" ? `/admin/bookings?view=month&month=${shiftMonth(-1)}` : `/admin/bookings?week=${addDays(monday, -7)}`}
+                label={view === "month" ? "Previous month" : "Previous week"}
+                d="M15 6l-6 6 6 6"
+              />
+              <Link href={view === "month" ? "/admin/bookings?view=month" : "/admin/bookings"} className="rounded-full px-3 py-1.5 text-sm font-medium text-navy hover:bg-surface">
+                Today
+              </Link>
+              <WeekLink
+                href={view === "month" ? `/admin/bookings?view=month&month=${shiftMonth(1)}` : `/admin/bookings?week=${addDays(monday, 7)}`}
+                label={view === "month" ? "Next month" : "Next week"}
+                d="M9 6l6 6-6 6"
+              />
+            </div>
           </div>
         </div>
 
-        <Card className="overflow-hidden">
-          <div className="grid divide-y divide-mist/60 lg:grid-cols-7 lg:divide-x lg:divide-y-0">
-            {days.map((d) => {
-              const items = inWeek.filter((b) => localDay(new Date(b.start_at)) === d);
-              const dayStart = zonedToDate(d, "00:00").getTime();
-              const dayEnd = zonedToDate(addDays(d, 1), "00:00").getTime();
-              const google = blocked.filter((g) => g.start < dayEnd && g.end > dayStart);
-              const isToday = d === today;
-              return (
-                <div key={d} className={`min-h-28 p-3 lg:min-h-80 ${isToday ? "bg-blue/5" : ""}`}>
-                  <p className={`mb-2 text-xs font-semibold uppercase tracking-[0.12em] ${isToday ? "text-blue-dark" : "text-muted"}`}>
-                    {short(d, { weekday: "short" })}{" "}
-                    <span className={`ml-0.5 text-base normal-case tracking-normal ${isToday ? "text-blue-dark" : "text-navy"}`}>
-                      {short(d, { day: "numeric" })}
-                    </span>
-                  </p>
-                  <ul className="space-y-2">
-                    {items.map((b) => (
-                      <li key={b.id}>
-                        <Link
-                          href={`/admin/bookings?week=${monday}&open=${b.id}#details`}
-                          className={`block rounded-xl px-3 py-2 text-xs transition ${
-                            b.status === "confirmed"
-                              ? "bg-navy text-white hover:bg-navy-deep"
-                              : "border border-dashed border-blue bg-blue/8 text-navy hover:bg-blue/15"
-                          } ${selected?.id === b.id ? "ring-2 ring-green ring-offset-1" : ""}`}
-                        >
-                          <span className="block font-semibold">
-                            {localTime(new Date(b.start_at))}–{localTime(new Date(b.end_at))}
-                          </span>
-                          <span className="block truncate">{b.name}</span>
-                          <span className={`block truncate ${b.status === "confirmed" ? "text-white/70" : "text-muted"}`}>
-                            {b.location === "home" ? "Home visit" : "Office"}
-                            {b.status === "pending" && " · request"}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                    {google.map((g, i) => (
-                      <li
-                        key={`g${i}`}
-                        title="Blocked by your Google Calendar"
-                        className="rounded-xl bg-[repeating-linear-gradient(135deg,#fde8e8_0,#fde8e8_6px,#fff_6px,#fff_12px)] px-3 py-2 text-xs text-[#9b1c1c] ring-1 ring-[#f5b5b5]"
-                      >
-                        <span className="block font-semibold">
-                          {g.end - g.start >= 86_400_000 - 3_600_000 ? "All day" : `${localTime(new Date(Math.max(g.start, dayStart)))}–${localTime(new Date(Math.min(g.end, dayEnd)))}`}
-                        </span>
-                        <span className="block truncate">{g.label}</span>
-                      </li>
-                    ))}
-                    {items.length === 0 && google.length === 0 && <li className="text-xs text-muted/60 lg:pt-2">—</li>}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-        <p className="mt-3 flex flex-wrap gap-4 text-xs text-muted">
+        {view === "month" ? (
+          <MonthGrid month={month} events={events} availability={availability} today={today} />
+        ) : (
+          <>
+            <div className="hidden md:block">
+              <WeekGrid days={days} events={events} availability={availability} today={today} now={now} selectedId={selected ? String(selected.id) : undefined} />
+            </div>
+            <div className="md:hidden">
+              <WeekList days={days} events={events} availability={availability} today={today} now={now} selectedId={selected ? String(selected.id) : undefined} />
+            </div>
+          </>
+        )}
+        <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-navy" /> Confirmed</span>
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded border border-dashed border-blue bg-blue/10" /> Awaiting confirmation</span>
+          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-surface ring-1 ring-mist" /> Outside opening hours</span>
           {blocked.length > 0 && (
             <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-[#fde8e8] ring-1 ring-[#f5b5b5]" /> Blocked in Google Calendar</span>
           )}
+          {view === "week" && <span className="hidden md:inline">Click an empty time to add a booking there.</span>}
         </p>
 
         {selected && (
