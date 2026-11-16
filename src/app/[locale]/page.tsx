@@ -118,8 +118,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
           <div className="mt-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
             {pricing.homeVisits[locale] ? (
-              <p className="flex items-start gap-3 text-muted">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-blue-dark" />
+              <p className="flex items-start gap-3 text-lg font-medium leading-snug text-ink sm:text-xl">
+                <MapPin className="mt-0.5 h-6 w-6 shrink-0 text-blue-dark" />
                 {pricing.homeVisits[locale]}
               </p>
             ) : (
