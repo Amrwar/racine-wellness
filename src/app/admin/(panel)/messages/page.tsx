@@ -28,7 +28,15 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
 
   return (
     <>
-      <PageHeader title="Messages" lead="Enquiries sent through the contact form on the website." />
+      <PageHeader
+        title="Messages"
+        lead="Enquiries sent through the contact form on the website."
+        action={
+          <a href="/admin/export/messages.csv" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy shadow-card ring-1 ring-mist/60 hover:ring-blue">
+            Download spreadsheet
+          </a>
+        }
+      />
 
       <div className="mb-6 inline-flex rounded-full bg-white p-1 shadow-card ring-1 ring-mist/60" role="tablist">
         {filters.map((f) => (

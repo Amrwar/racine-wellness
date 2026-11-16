@@ -19,6 +19,7 @@ import { parseBusiness } from "@/lib/business-data";
 import { getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
 import { saveDesign } from "@/lib/design";
+import { saveClientNotes } from "@/lib/clients";
 import { parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
@@ -536,4 +537,44 @@ export async function updateDesign(prev: DesignState, formData: FormData): Promi
   }
   revalidatePath("/", "layout");
   return { status: "saved", design };
+}
+
+/* ---------------- Clients ---------------- */
+
+export async function updateClientNotes(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  await requireAdmin();
+  const key = String(formData.get("key") ?? "");
+  if (!/^\d{4,10}$/.test(key)) return { status: "error", message: "Unknown client." };
+  try {
+    await saveClientNotes(key, String(formData.get("notes") ?? "").trim().slice(0, 5000));
+  } catch (err) {
+    console.error("[admin] save client notes failed:", err);
+    return { status: "error", message: "Saving failed. Please try again." };
+  }
+  revalidatePath("/admin/clients", "layout");
+  return { status: "saved", message: "Notes saved." };
+}
+
+/* ---------------- Message replies ---------------- */
+
+export async function replyToMessage(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  const reply = String(formData.get("reply") ?? "").trim().slice(0, 10000);
+  if (!Number.isInteger(id)) return { status: "error", message: "Unknown message." };
+  if (reply.length < 5) return { status: "error", message: "Write your reply first." };
+  const sql = await db();
+  const [m] = await sql`SELECT name, email, message, locale FROM messages WHERE id = ${id}`;
+  if (!m?.email) return { status: "error", message: "This person didn't leave an email address. Call them instead." };
+  const quoted = m.message ? `\n\n----\n${String(m.message).split("\n").map((l: string) => `> ${l}`).join("\n")}` : "";
+  const sent = await sendEmail({
+    to: m.email,
+    replyTo: await ownerEmail(),
+    subject: m.locale === "fr" ? "Réponse à votre message · HealthyZone" : "Reply to your message · HealthyZone",
+    text: reply + quoted,
+  });
+  if (!sent) return { status: "error", message: "The email couldn't be sent. Please try again in a moment." };
+  await sql`UPDATE messages SET reply = ${reply}, replied_at = now(), status = 'handled' WHERE id = ${id}`;
+  revalidatePath("/admin", "layout");
+  return { status: "saved", message: `Reply sent to ${m.email}.` };
 }

@@ -15,6 +15,7 @@ const groups = [
 const links = [
   { href: "/admin", label: "Overview", icon: "M3 12 12 4l9 8M5 10v10h5v-6h4v6h5V10" },
   { href: "/admin/bookings", label: "Bookings", icon: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" },
+  { href: "/admin/clients", label: "Clients", icon: "M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM22 19v-1a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8" },
   { href: "/admin/messages", label: "Messages", icon: "M4 6h16v12H4zM4 7l8 6 8-6" },
   { href: "/admin/website", label: "Text & photos", icon: "M3 5h18v14H3zM3 9h18M7 13h5M7 16h8" },
   { href: "/admin/design", label: "Design", icon: "M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.4-4-7.8-9-7.8zM7.5 12.5h.01M9.5 8h.01M14.5 8h.01" },

@@ -76,6 +76,12 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
             >
               Opening hours & time off
             </Link>
+            <a
+              href="/admin/export/bookings.csv"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy shadow-card ring-1 ring-mist/60 hover:ring-blue"
+            >
+              Download spreadsheet
+            </a>
             <Link
               href="/admin/bookings/new"
               className="inline-flex items-center gap-2 rounded-full bg-blue-dark px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue/25 hover:bg-[#00649f]"

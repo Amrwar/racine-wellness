@@ -1,6 +1,7 @@
 import { Badge, Card, formatDate } from "./ui";
 import { setMessageStatus } from "@/app/admin/actions";
 import { DeleteMessage } from "./DeleteMessage";
+import { ReplyBox } from "./ReplyBox";
 
 export type Message = {
   id: number;
@@ -12,6 +13,8 @@ export type Message = {
   wants_receipt: boolean;
   locale: string;
   status: "new" | "handled";
+  reply?: string | null;
+  replied_at?: string | null;
 };
 
 export function MessageCard({ m, compact = false }: { m: Message; compact?: boolean }) {
@@ -43,6 +46,21 @@ export function MessageCard({ m, compact = false }: { m: Message; compact?: bool
 
       {m.message && (
         <p className={`mt-4 whitespace-pre-line leading-relaxed text-ink ${compact ? "line-clamp-2" : ""}`}>{m.message}</p>
+      )}
+
+      {!compact && m.reply && (
+        <div className="mt-4 rounded-xl bg-surface p-4 ring-1 ring-mist/60">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+            Your reply{m.replied_at ? ` · ${formatDate(m.replied_at)}` : ""}
+          </p>
+          <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink">{m.reply}</p>
+        </div>
+      )}
+
+      {!compact && m.email && (
+        <div className="mt-4">
+          <ReplyBox key={m.replied_at ?? "new"} id={m.id} name={m.name} locale={m.locale} />
+        </div>
       )}
 
       {!compact && (

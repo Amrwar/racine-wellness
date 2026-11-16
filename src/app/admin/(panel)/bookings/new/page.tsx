@@ -11,7 +11,8 @@ export const metadata: Metadata = { title: "New booking" };
 
 export default async function NewBookingPage({ searchParams }: PageProps<"/admin/bookings/new">) {
   await requireAdmin();
-  const { date, time } = await searchParams;
+  const { date, time, name, phone, email } = await searchParams;
+  const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : "");
   const pricing = await getPricing();
   const first = pricing.services[0];
   const rate = first?.rates[0];
@@ -26,9 +27,9 @@ export default async function NewBookingPage({ searchParams }: PageProps<"/admin
     price: rate?.price ?? 0,
     location: "office",
     address: null,
-    name: "",
-    phone: "",
-    email: null,
+    name: str(name, 120),
+    phone: str(phone, 40),
+    email: str(email, 200) || null,
     notes: null,
     wants_receipt: false,
     locale: "en",

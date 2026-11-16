@@ -38,7 +38,11 @@ export function BookingCard({ b }: { b: Booking }) {
           <p className="text-sm font-semibold text-blue-dark">
             {when.day} · {localTime(start)}–{localTime(new Date(b.end_at))}
           </p>
-          <p className="mt-1 text-lg font-semibold text-navy">{b.name}</p>
+          <p className="mt-1 text-lg font-semibold text-navy">
+            <Link href={`/admin/clients/${b.phone.replace(/\D/g, "").slice(-10)}`} className="hover:underline">
+              {b.name}
+            </Link>
+          </p>
           <p className="text-sm text-muted">
             {b.service_title} · {b.minutes} min · {formatPrice(Number(b.price), "en")}
           </p>

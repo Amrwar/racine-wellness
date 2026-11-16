@@ -63,6 +63,21 @@ async function ensureSchema(sql: NeonQueryFunction<false, false>) {
     data JSONB NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
+  await sql`CREATE TABLE IF NOT EXISTS client_notes (
+    client_key TEXT PRIMARY KEY,
+    notes TEXT NOT NULL DEFAULT '',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS reminded_at TIMESTAMPTZ`;
+  await sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply TEXT`;
+  await sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS replied_at TIMESTAMPTZ`;
+  await sql`CREATE TABLE IF NOT EXISTS settings_history (
+    id SERIAL PRIMARY KEY,
+    key TEXT NOT NULL,
+    value JSONB NOT NULL,
+    saved_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
+  await sql`CREATE INDEX IF NOT EXISTS settings_history_key_idx ON settings_history (key, saved_at DESC)`;
   await sql`CREATE TABLE IF NOT EXISTS login_attempts (
     id SERIAL PRIMARY KEY,
     ip TEXT NOT NULL,
