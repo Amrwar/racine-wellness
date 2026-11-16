@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { updatePricing, type PricingState } from "@/app/admin/actions";
 import type { Pricing, PricedService } from "@/lib/pricing-data";
-import { BilingualFields, Field, Section, input } from "./fields";
+import { BilingualFields, DragHandle, Field, Section, input, useDragReorder } from "./fields";
 
 const newService = (): PricedService => ({
   id: `service-${Date.now().toString(36)}`,
@@ -24,6 +24,14 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
   /** Applies a change to the latest version of a service (safe for translations that finish later). */
   const patchService = (i: number, change: (s: PricedService) => PricedService) =>
     setPricing((p) => ({ ...p, services: p.services.map((x, j) => (j === i ? change(x) : x)) }));
+  const drag = useDragReorder((from, to) =>
+    setPricing((p) => {
+      const services = [...p.services];
+      const [s] = services.splice(from, 1);
+      services.splice(to, 0, s);
+      return { ...p, services };
+    }),
+  );
   const moveService = (i: number, d: -1 | 1) =>
     setPricing((p) => {
       const services = [...p.services];
@@ -63,11 +71,12 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
       </Section>
 
       {pricing.services.map((s, i) => (
+        <div key={s.id} {...drag.item(i)} className={`rounded-2xl transition ${drag.dragging === i ? "opacity-60 ring-2 ring-blue" : ""}`}>
         <Section
-          key={s.id}
           title={s.title.en || "New service"}
           action={
             <div className="flex shrink-0 items-center gap-1">
+              <DragHandle {...drag.handle(i)} />
               <IconButton label="Move up" disabled={i === 0} onClick={() => moveService(i, -1)} d="M12 19V5M5 12l7-7 7 7" />
               <IconButton
                 label="Move down"
@@ -151,6 +160,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
             )}
           </div>
         </Section>
+        </div>
       ))}
 
       {pricing.services.length < 12 && (

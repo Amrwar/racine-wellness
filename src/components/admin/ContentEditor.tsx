@@ -8,7 +8,7 @@ import { updateContent, type ContentState } from "@/app/admin/actions";
 import { defaultFraming, framingStyle, serviceIconChoices, type BackgroundKey, type Framing, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
 import { ServiceIconView, serviceIcons } from "@/components/icons";
 import type { Bilingual } from "@/lib/pricing-data";
-import { BilingualFields, Section } from "./fields";
+import { BilingualFields, DragHandle, Section, useDragReorder } from "./fields";
 
 type Path = (string | number)[];
 
@@ -76,6 +76,14 @@ export function ContentEditor({
   const items = content.services.items;
   const setItems = (change: (items: ServiceItem[]) => ServiceItem[]) =>
     setContent((c) => ({ ...c, services: { ...c.services, items: change(c.services.items) } }));
+  const moveTo = (from: number, to: number) =>
+    setItems((list) => {
+      const next = [...list];
+      const [it] = next.splice(from, 1);
+      next.splice(to, 0, it);
+      return next;
+    });
+  const drag = useDragReorder(moveTo);
   const move = (i: number, d: -1 | 1) =>
     setItems((list) => {
       const next = [...list];
@@ -115,9 +123,10 @@ export function ContentEditor({
         <BilingualFields label="Introduction" multiline rows={2} {...bi("services", "lead")} />
         <ol className="space-y-4">
           {items.map((item, i) => (
-            <li key={i} className="rounded-2xl bg-surface p-5 ring-1 ring-mist/60">
+            <li key={i} {...drag.item(i)} className={`rounded-2xl bg-surface p-5 ring-1 transition ${drag.dragging === i ? "opacity-60 ring-2 ring-blue" : "ring-mist/60"}`}>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <p className="font-semibold text-navy">
+                <p className="flex items-center gap-2 font-semibold text-navy">
+                  <DragHandle {...drag.handle(i)} />
                   Service {i + 1}
                   {item.title.en && <span className="font-normal text-muted"> · {item.title.en}</span>}
                 </p>

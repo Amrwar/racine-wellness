@@ -29,7 +29,45 @@ export type Design = {
   footer: { bg: string };
   /** Menu links to hide (also hidden automatically when their home-page section is hidden). */
   hiddenMenu: string[];
+  layout: Layout;
+  buttons: { shape: ButtonShape };
+  hero: { size: HeroSize };
+  forms: FormFields;
 };
+
+export type Layout = {
+  servicesColumns: 2 | 3;
+  pricingColumns: 2 | 3;
+  blogColumns: 2 | 3;
+  aboutPhoto: "left" | "right";
+  contactForm: "left" | "right";
+};
+export type ButtonShape = "pill" | "rounded" | "square";
+export type HeroSize = "small" | "normal" | "large";
+/** Optional form fields that can be switched off (name and phone are always asked; booking email too, for confirmations). */
+export type FormFields = {
+  contactEmail: boolean;
+  contactMessage: boolean;
+  contactReceipt: boolean;
+  bookingHomeVisits: boolean;
+  bookingNotes: boolean;
+  bookingReceipt: boolean;
+};
+
+export const buttonRadius: Record<ButtonShape, string> = { pill: "9999px", rounded: "0.75rem", square: "0.25rem" };
+
+/** Hero heading sizes (full class strings so Tailwind sees them). */
+export const heroSizeClass: Record<HeroSize, string> = {
+  small: "text-[2.2rem] sm:text-5xl lg:text-6xl",
+  normal: "text-[2.6rem] sm:text-6xl lg:text-7xl",
+  large: "text-[2.9rem] sm:text-7xl lg:text-8xl",
+};
+
+export const columnsClass = {
+  services: { 2: "sm:grid-cols-2", 3: "sm:grid-cols-2 lg:grid-cols-3" },
+  pricing: { 2: "md:grid-cols-2", 3: "md:grid-cols-2 lg:grid-cols-3" },
+  blog: { 2: "sm:grid-cols-2", 3: "sm:grid-cols-2 lg:grid-cols-3" },
+} as const;
 
 export const menuKeys = ["services", "pricing", "about", "blog", "contact"] as const;
 
@@ -45,6 +83,10 @@ export const defaultDesign: Design = {
   header: { bg: "#004575" },
   footer: { bg: "#00304f" },
   hiddenMenu: [],
+  layout: { servicesColumns: 3, pricingColumns: 3, blogColumns: 3, aboutPhoto: "left", contactForm: "right" },
+  buttons: { shape: "pill" },
+  hero: { size: "normal" },
+  forms: { contactEmail: true, contactMessage: true, contactReceipt: true, bookingHomeVisits: true, bookingNotes: true, bookingReceipt: true },
 };
 
 /** Vertical padding of a section, per spacing choice. */
@@ -73,6 +115,10 @@ export function parseDesign(raw: unknown): Design {
   // Sections added to the site later appear at the end.
   for (const key of designSectionKeys) if (!sections.some((x) => x.key === key)) sections.push({ key, visible: true });
   const st = (r.style ?? {}) as Record<string, Partial<SectionStyle>>;
+  const l = (r.layout ?? {}) as Record<string, unknown>;
+  const b = (r.buttons ?? {}) as Record<string, unknown>;
+  const h = (r.hero ?? {}) as Record<string, unknown>;
+  const f = (r.forms ?? {}) as Record<string, unknown>;
   const style = Object.fromEntries(
     designSectionKeys.map((k) => {
       const v = st[k] ?? {};
@@ -88,6 +134,18 @@ export function parseDesign(raw: unknown): Design {
     header: { bg: hex((r.header as { bg?: unknown } | undefined)?.bg, defaultDesign.header.bg) },
     footer: { bg: hex((r.footer as { bg?: unknown } | undefined)?.bg, defaultDesign.footer.bg) },
     hiddenMenu: Array.isArray(r.hiddenMenu) ? (r.hiddenMenu as unknown[]).filter((k): k is string => menuKeys.includes(k as never)) : [],
+    layout: {
+      servicesColumns: l.servicesColumns === 2 ? 2 : 3,
+      pricingColumns: l.pricingColumns === 2 ? 2 : 3,
+      blogColumns: l.blogColumns === 2 ? 2 : 3,
+      aboutPhoto: l.aboutPhoto === "right" ? "right" : "left",
+      contactForm: l.contactForm === "left" ? "left" : "right",
+    },
+    buttons: { shape: ["pill", "rounded", "square"].includes(b.shape as string) ? (b.shape as ButtonShape) : "pill" },
+    hero: { size: ["small", "normal", "large"].includes(h.size as string) ? (h.size as HeroSize) : "normal" },
+    forms: Object.fromEntries(
+      (Object.keys(defaultDesign.forms) as (keyof FormFields)[]).map((k) => [k, f[k] !== false]),
+    ) as FormFields,
   };
 }
 
@@ -107,6 +165,7 @@ export function designCss(d: Design) {
     `--color-green:${green}`,
     `--header-bg:${d.header.bg}`,
     `--footer-bg:${d.footer.bg}`,
+    `--btn-radius:${buttonRadius[d.buttons.shape]}`,
   ];
   return `:root{${vars.join(";")}}html{font-size:${d.textScale}%}`;
 }

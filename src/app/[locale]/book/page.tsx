@@ -4,6 +4,7 @@ import { isLocale } from "@/i18n/config";
 import { getPricing } from "@/lib/pricing";
 import { getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
+import { getDesign } from "@/lib/design";
 import { phoneHref } from "@/lib/business-data";
 import { Container, SectionHeader } from "@/components/ui";
 import { BookingForm } from "@/components/BookingForm";
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/book">):
 export default async function BookPage({ params }: PageProps<"/[locale]/book">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const [t, pricing, business] = await Promise.all([getText(locale), getPricing(), getBusiness()]);
+  const [t, pricing, business, design] = await Promise.all([getText(locale), getPricing(), getBusiness(), getDesign()]);
 
   return (
     <section className="bg-surface py-14 sm:py-20">
@@ -41,6 +42,7 @@ export default async function BookPage({ params }: PageProps<"/[locale]/book">) 
             durationLabel={t.pricing.duration}
             services={pricing.services}
             promo={pricing.promo.enabled ? pricing.promo[locale] : ""}
+            fields={design.forms}
           />
         </div>
       </Container>

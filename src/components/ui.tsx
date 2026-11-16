@@ -29,7 +29,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const base =
-    "group inline-flex items-center justify-center gap-2 rounded-full font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2";
+    "group inline-flex items-center justify-center gap-2 rounded-[var(--btn-radius,9999px)] font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2";
   const sizes = {
     md: "px-5 py-2.5 text-sm",
     lg: "px-7 py-3.5 text-base",

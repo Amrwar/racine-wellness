@@ -1,5 +1,6 @@
 "use client";
 
+import type { FormFields } from "@/lib/design-data";
 import { startTransition, useActionState } from "react";
 import { sendContact, type ContactState } from "@/app/actions/contact";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -11,7 +12,8 @@ const initial: ContactState = { status: "idle" };
 const field =
   "w-full rounded-xl border bg-surface px-4 py-3 text-ink placeholder:text-muted/60 transition focus:border-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue/30";
 
-export function ContactForm({ t }: { t: Dictionary["form"] }) {
+export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pick<FormFields, "contactEmail" | "contactMessage" | "contactReceipt"> }) {
+  const show = { email: fields?.contactEmail !== false, message: fields?.contactMessage !== false, receipt: fields?.contactReceipt !== false };
   const locale = useLocale();
   const [state, action, pending] = useActionState(sendContact, initial);
   const e = state.errors ?? {};
@@ -70,6 +72,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
         </Field>
       </div>
 
+      {show.email && (
       <Field label={t.email} htmlFor="email" error={e.email}>
         <input
           id="email"
@@ -80,7 +83,9 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           placeholder={t.emailPlaceholder}
         />
       </Field>
+      )}
 
+      {show.message && (
       <Field label={t.message} htmlFor="message" error={e.message}>
         <textarea
           id="message"
@@ -90,7 +95,9 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           placeholder={t.messagePlaceholder}
         />
       </Field>
+      )}
 
+      {show.receipt && (
       <label
         htmlFor="receipt"
         className="flex cursor-pointer items-center gap-3 rounded-xl border border-mist bg-surface px-4 py-3 transition has-[:checked]:border-blue has-[:checked]:bg-blue/5"
@@ -107,6 +114,7 @@ export function ContactForm({ t }: { t: Dictionary["form"] }) {
           <span className="block text-xs text-muted">{t.receiptNote}</span>
         </span>
       </label>
+      )}
 
       {/* Honeypot */}
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>

@@ -6,12 +6,16 @@ import {
   defaultDesign,
   designSectionNames,
   menuKeys,
+  type ButtonShape,
   type Design,
   type DesignSection,
+  type FormFields,
+  type HeroSize,
+  type Layout,
   type SectionStyle,
   type Spacing,
 } from "@/lib/design-data";
-import { Section } from "./fields";
+import { DragHandle, Section, useDragReorder } from "./fields";
 
 const menuNames: Record<string, string> = { services: "Services", pricing: "Pricing", about: "About", blog: "Blog", contact: "Contact" };
 
@@ -50,13 +54,59 @@ function Segmented<T extends string | number>({ value, options, onChange, label 
 export function DesignEditor({ initial, backgrounds }: { initial: Design; backgrounds: Partial<Record<DesignSection, string>> }) {
   const [design, setDesign] = useState(initial);
   const [state, action, pending] = useActionState<DesignState, FormData>(updateDesign, { status: "idle" });
-  const [dragging, setDragging] = useState<number | null>(null);
   const [openStyle, setOpenStyle] = useState<DesignSection | null>(null);
   const saved = state.design ?? initial;
   const dirty = JSON.stringify(design) !== JSON.stringify(saved);
   const { navy, blue, green } = design.colors;
 
   const setColors = (c: Partial<Design["colors"]>) => setDesign((d) => ({ ...d, colors: { ...d.colors, ...c } }));
+  const setLayout = (l: Partial<Layout>) => setDesign((d) => ({ ...d, layout: { ...d.layout, ...l } }));
+  const setForms = (f: Partial<FormFields>) => setDesign((d) => ({ ...d, forms: { ...d.forms, ...f } }));
+  /** The layout choice offered for each section, if any. */
+  const layoutControl = (key: DesignSection) => {
+    const cols = (field: "servicesColumns" | "pricingColumns" | "blogColumns") => (
+      <Segmented<number>
+        label="Columns"
+        value={design.layout[field]}
+        onChange={(v) => setLayout({ [field]: v === 2 ? 2 : 3 } as Partial<Layout>)}
+        options={[
+          { value: 2, label: "2 per row" },
+          { value: 3, label: "3 per row" },
+        ]}
+      />
+    );
+    const control =
+      key === "services" ? cols("servicesColumns")
+      : key === "pricing" ? cols("pricingColumns")
+      : key === "blog" ? cols("blogColumns")
+      : key === "about" ? (
+        <Segmented
+          label="Photo side"
+          value={design.layout.aboutPhoto}
+          onChange={(v) => setLayout({ aboutPhoto: v })}
+          options={[
+            { value: "left", label: "Photo on the left" },
+            { value: "right", label: "Photo on the right" },
+          ]}
+        />
+      ) : (
+        <Segmented
+          label="Form side"
+          value={design.layout.contactForm}
+          onChange={(v) => setLayout({ contactForm: v })}
+          options={[
+            { value: "left", label: "Form on the left" },
+            { value: "right", label: "Form on the right" },
+          ]}
+        />
+      );
+    return (
+      <div className="sm:col-span-2">
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Layout on computers</p>
+        {control}
+      </div>
+    );
+  };
   const setStyle = (key: DesignSection, s: Partial<SectionStyle>) => setDesign((d) => ({ ...d, style: { ...d.style, [key]: { ...d.style[key], ...s } } }));
   const move = (from: number, to: number) =>
     setDesign((d) => {
@@ -66,6 +116,8 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
       list.splice(to, 0, item);
       return { ...d, sections: list };
     });
+
+  const drag = useDragReorder(move);
 
   return (
     <form action={action} className="space-y-6 pb-28">
@@ -140,6 +192,43 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
         />
       </Section>
 
+      <Section title="Buttons and main heading" text="The shape of every button on the website, and the size of the big heading at the top of the home page.">
+        <div className="flex flex-wrap items-end gap-8">
+          <div>
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Button shape</p>
+            <Segmented<ButtonShape>
+              label="Button shape"
+              value={design.buttons.shape}
+              onChange={(v) => setDesign((d) => ({ ...d, buttons: { shape: v } }))}
+              options={[
+                { value: "pill", label: "Round" },
+                { value: "rounded", label: "Soft corners" },
+                { value: "square", label: "Square" },
+              ]}
+            />
+          </div>
+          <span
+            className="px-5 py-2.5 text-sm font-semibold text-white"
+            style={{ background: `color-mix(in oklab, ${blue} 78%, black)`, borderRadius: design.buttons.shape === "pill" ? 9999 : design.buttons.shape === "rounded" ? "0.75rem" : "0.25rem" }}
+          >
+            Book a session
+          </span>
+        </div>
+        <div>
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Main heading size</p>
+          <Segmented<HeroSize>
+            label="Main heading size"
+            value={design.hero.size}
+            onChange={(v) => setDesign((d) => ({ ...d, hero: { size: v } }))}
+            options={[
+              { value: "small", label: "Smaller" },
+              { value: "normal", label: "Normal" },
+              { value: "large", label: "Larger" },
+            ]}
+          />
+        </div>
+      </Section>
+
       <Section title="Home page sections" text="Drag to change the order, switch a section off to hide it, and open Style to change its colour wash and height.">
         <p className="rounded-xl bg-surface px-4 py-3 text-sm text-muted ring-1 ring-mist/60">
           <span className="font-semibold text-navy">Top of the page</span> (photo and main heading) always comes first.
@@ -151,32 +240,11 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
             return (
               <li
                 key={s.key}
-                draggable
-                onDragStart={(e) => {
-                  setDragging(i);
-                  e.dataTransfer.effectAllowed = "move";
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  if (dragging !== null && dragging !== i) {
-                    move(dragging, i);
-                    setDragging(i);
-                  }
-                }}
-                onDragEnd={() => setDragging(null)}
-                className={`rounded-2xl bg-white ring-1 transition ${dragging === i ? "opacity-60 ring-2 ring-blue" : "ring-mist/70"}`}
+                {...drag.item(i)}
+                className={`rounded-2xl bg-white ring-1 transition ${drag.dragging === i ? "opacity-60 ring-2 ring-blue" : "ring-mist/70"}`}
               >
                 <div className="flex items-center gap-3 p-3 sm:p-4">
-                  <span className="cursor-grab text-muted active:cursor-grabbing" title="Drag to move" aria-hidden>
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                      <circle cx="9" cy="6" r="1.5" />
-                      <circle cx="15" cy="6" r="1.5" />
-                      <circle cx="9" cy="12" r="1.5" />
-                      <circle cx="15" cy="12" r="1.5" />
-                      <circle cx="9" cy="18" r="1.5" />
-                      <circle cx="15" cy="18" r="1.5" />
-                    </svg>
-                  </span>
+                  <DragHandle {...drag.handle(i)} />
                   {/* Thumbnail with the section's photo and colour wash */}
                   <span className="relative hidden h-12 w-20 shrink-0 overflow-hidden rounded-lg bg-surface ring-1 ring-mist/70 sm:block">
                     {bg && (
@@ -250,12 +318,50 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
                         ]}
                       />
                     </div>
+                    {layoutControl(s.key)}
                   </div>
                 )}
               </li>
             );
           })}
         </ol>
+      </Section>
+
+      <Section title="Forms" text="Switch off questions you don't need. Name and phone are always asked; the booking form always asks for an email so the client can receive the confirmation.">
+        <div className="grid gap-6 sm:grid-cols-2">
+          {(
+            [
+              ["Contact form", [["contactEmail", "Email"], ["contactMessage", "Message"], ["contactReceipt", "Insurance receipt checkbox"]]],
+              ["Booking form", [["bookingHomeVisits", "Home and workplace visits"], ["bookingNotes", "Notes for Ziad"], ["bookingReceipt", "Insurance receipt checkbox"]]],
+            ] as [string, [keyof FormFields, string][]][]
+          ).map(([title, fields]) => (
+            <div key={title}>
+              <p className="mb-2 font-semibold text-navy">{title}</p>
+              <ul className="space-y-2">
+                {fields.map(([k, label]) => (
+                  <li key={k}>
+                    <label className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-2.5 text-sm ring-1 ring-mist/60">
+                      <span className={design.forms[k] ? "text-ink" : "text-muted line-through"}>{label}</span>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={design.forms[k]}
+                        aria-label={`Ask for ${label}`}
+                        onClick={() => setForms({ [k]: !design.forms[k] })}
+                        className={`relative h-6 w-10 shrink-0 rounded-full transition ${design.forms[k] ? "bg-green" : "bg-mist"}`}
+                      >
+                        <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${design.forms[k] ? "left-5" : "left-1"}`} />
+                      </button>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        {!design.forms.bookingHomeVisits && (
+          <p className="text-sm text-muted">With home visits off, clients can only book at the office, and the home-visits note under the prices stays as written on the Pricing page.</p>
+        )}
       </Section>
 
       <Section title="Top menu" text="Choose which links appear in the top menu. Links to hidden sections are hidden automatically. The link names are edited under Text & photos → All other text.">

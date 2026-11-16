@@ -7,7 +7,7 @@ import { images } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { getDesign } from "@/lib/design";
-import { spacingClass, type DesignSection, type SectionStyle } from "@/lib/design-data";
+import { columnsClass, heroSizeClass, spacingClass, type DesignSection, type SectionStyle } from "@/lib/design-data";
 import { phoneHref } from "@/lib/business-data";
 import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
@@ -39,7 +39,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Tint style={design.style.services} />
           <Container>
             <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
-            <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className={`mt-12 grid gap-5 ${columnsClass.services[design.layout.servicesColumns]}`}>
               {content.services.items.map((s, i) => {
                 return (
                   <li
@@ -71,7 +71,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 </p>
               )}
             </div>
-            <ul className={`mt-12 grid gap-5 md:grid-cols-2 ${pricing.services.length > 2 ? "lg:grid-cols-3" : ""}`}>
+            <ul className={`mt-12 grid gap-5 ${columnsClass.pricing[pricing.services.length > 2 ? design.layout.pricingColumns : 2]}`}>
               {pricing.services.map((item) => (
                 <li key={item.id} className="flex flex-col rounded-2xl bg-white p-7 shadow-card ring-1 ring-mist/70 sm:p-8">
                   <h3 className="text-xl font-semibold text-navy">{item.title[locale]}</h3>
@@ -112,7 +112,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           {content.backgrounds.about && <div aria-hidden className="absolute inset-0 -z-10 bg-ink/45" />}
           <Tint style={design.style.about} />
           <Container className="grid items-center gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-5">
+            <div className={`lg:col-span-5 ${design.layout.aboutPhoto === "right" ? "lg:order-last" : ""}`}>
               <div className="relative mx-auto max-w-sm lg:max-w-none">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl shadow-black/25 ring-4 ring-white">
                   <Image
@@ -160,7 +160,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 {t.blog.viewAll} <Arrow />
               </Link>
             </div>
-            <ul className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className={`mt-12 grid gap-7 ${columnsClass.blog[design.layout.blogColumns]}`}>
               {latestPosts.map((post) => (
                   <li key={post.slug}>
                     <PostCard post={post} locale={locale} t={t.blog} />
@@ -196,10 +196,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </ul>
             </div>
 
-            <div className="lg:col-span-7">
+            <div className={`lg:col-span-7 ${design.layout.contactForm === "left" ? "lg:order-first" : ""}`}>
               <div className="rounded-3xl bg-white p-6 shadow-2xl shadow-black/30 sm:p-10">
                 <h3 className="mb-6 text-xl font-semibold text-navy">{t.contact.formTitle}</h3>
-                <ContactForm t={t.form} />
+                <ContactForm t={t.form} fields={design.forms} />
               </div>
             </div>
           </Container>
@@ -222,7 +222,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
             </Eyebrow>
-            <h1 className="animate-fade-up delay-1 text-[2.6rem] font-medium leading-[1.08] tracking-[-0.03em] sm:text-6xl lg:text-7xl">
+            <h1 className={`animate-fade-up delay-1 font-medium leading-[1.08] tracking-[-0.03em] ${heroSizeClass[design.hero.size]}`}>
               {t.hero.title}
             </h1>
             <p className="animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { translateToFrench } from "@/app/admin/actions";
 import type { Bilingual } from "@/lib/pricing-data";
 
@@ -121,5 +121,65 @@ export function BilingualFields({
         {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
       </div>
     </div>
+  );
+}
+
+/**
+ * Drag-to-reorder for a list of cards that contain text fields: dragging starts only from the
+ * handle, so selecting text inside a field never moves the card.
+ */
+export function useDragReorder(move: (from: number, to: number) => void) {
+  const [armed, setArmed] = useState<number | null>(null);
+  const [dragging, setDragging] = useState<number | null>(null);
+  // A ref as well as state: drag events can arrive before React re-renders.
+  const current = useRef<number | null>(null);
+  const item = (i: number) => ({
+    draggable: armed === i,
+    onDragStart: (e: React.DragEvent) => {
+      current.current = i;
+      setDragging(i);
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(i));
+    },
+    onDragEnter: (e: React.DragEvent) => {
+      if (current.current !== null) e.preventDefault();
+    },
+    onDragOver: (e: React.DragEvent) => {
+      const from = current.current;
+      if (from === null) return;
+      e.preventDefault();
+      if (from !== i) {
+        move(from, i);
+        current.current = i;
+        setDragging(i);
+      }
+    },
+    onDrop: (e: React.DragEvent) => e.preventDefault(),
+    onDragEnd: () => {
+      current.current = null;
+      setDragging(null);
+      setArmed(null);
+    },
+  });
+  const handle = (i: number) => ({
+    onPointerDown: () => setArmed(i),
+    onPointerUp: () => setArmed(null),
+  });
+  return { item, handle, dragging };
+}
+
+/** The six-dot grip shown on draggable cards. */
+export function DragHandle(props: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span {...props} title="Drag to move" className="cursor-grab touch-none text-muted hover:text-navy active:cursor-grabbing">
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
+        <circle cx="9" cy="6" r="1.5" />
+        <circle cx="15" cy="6" r="1.5" />
+        <circle cx="9" cy="12" r="1.5" />
+        <circle cx="15" cy="12" r="1.5" />
+        <circle cx="9" cy="18" r="1.5" />
+        <circle cx="15" cy="18" r="1.5" />
+      </svg>
+    </span>
   );
 }

@@ -10,6 +10,7 @@ import { ownerEmail, sendEmail } from "@/lib/email";
 import { formatWhen, isDay, isTime, zonedToDate } from "@/lib/time";
 import { site } from "@/lib/site";
 import { getBusiness } from "@/lib/business";
+import { getDesign } from "@/lib/design";
 import { getText } from "@/lib/content";
 import { revalidatePath } from "next/cache";
 
@@ -53,7 +54,8 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
   const minutes = Number(formData.get("minutes"));
   const date = clean(formData.get("date"), 10);
   const time = clean(formData.get("time"), 5);
-  const location = formData.get("location") === "home" ? "home" : "office";
+  // Home visits can be switched off in Admin → Design; then every request is for the office.
+  const location = formData.get("location") === "home" && (await getDesign()).forms.bookingHomeVisits ? "home" : "office";
   const address = clean(formData.get("address"), 300);
   const name = clean(formData.get("name"), 120);
   const phone = clean(formData.get("phone"), 40);

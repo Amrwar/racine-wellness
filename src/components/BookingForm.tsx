@@ -1,5 +1,6 @@
 "use client";
 
+import type { FormFields } from "@/lib/design-data";
 import { startTransition, useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { availableDays, availableTimes, requestBooking, type BookingState } from "@/app/actions/booking";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -16,10 +17,13 @@ type Props = {
   form: Dictionary["form"];
   durationLabel: string;
   services: PricedService[];
+  /** Optional fields switched on or off in Admin → Design. */
+  fields?: Pick<FormFields, "bookingHomeVisits" | "bookingNotes" | "bookingReceipt">;
   promo: string;
 };
 
-export function BookingForm({ t, form, durationLabel, services, promo }: Props) {
+export function BookingForm({ t, form, durationLabel, services, promo, fields }: Props) {
+  const show = { home: fields?.bookingHomeVisits !== false, notes: fields?.bookingNotes !== false, receipt: fields?.bookingReceipt !== false };
   const locale = useLocale();
   const tag = locale === "fr" ? "fr-CA" : "en-CA";
   const [step, setStep] = useState(0);
@@ -248,7 +252,7 @@ export function BookingForm({ t, form, durationLabel, services, promo }: Props) 
             <fieldset>
               <legend className="mb-3 text-lg font-semibold text-navy">{t.where}</legend>
               <div className="grid gap-3 sm:grid-cols-2">
-                {(["office", "home"] as const).map((loc) => (
+                {(show.home ? (["office", "home"] as const) : (["office"] as const)).map((loc) => (
                   <label
                     key={loc}
                     className={`cursor-pointer rounded-2xl border-2 p-4 transition ${
@@ -287,10 +291,13 @@ export function BookingForm({ t, form, durationLabel, services, promo }: Props) 
             <Field label={t.email} htmlFor="b-email" error={e.email} required={form.required}>
               <input id="b-email" name="email" type="email" autoComplete="email" className={`${field} ${e.email ? "border-danger" : "border-mist"}`} placeholder={form.emailPlaceholder} />
             </Field>
-            <Field label={t.notes} htmlFor="b-notes">
-              <textarea id="b-notes" name="notes" rows={4} className={`${field} resize-y border-mist`} placeholder={t.notesPlaceholder} />
-            </Field>
+            {show.notes && (
+              <Field label={t.notes} htmlFor="b-notes">
+                <textarea id="b-notes" name="notes" rows={4} className={`${field} resize-y border-mist`} placeholder={t.notesPlaceholder} />
+              </Field>
+            )}
 
+            {show.receipt && (
             <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-mist bg-surface px-4 py-3 transition has-[:checked]:border-blue has-[:checked]:bg-blue/5">
               <input name="receipt" type="checkbox" value="yes" className="h-5 w-5 shrink-0 cursor-pointer rounded accent-navy" />
               <span>
@@ -298,6 +305,7 @@ export function BookingForm({ t, form, durationLabel, services, promo }: Props) 
                 <span className="block text-xs text-muted">{form.receiptNote}</span>
               </span>
             </label>
+            )}
 
             <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
               <label htmlFor="b-company">Company</label>
