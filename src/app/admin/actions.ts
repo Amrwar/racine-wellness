@@ -20,7 +20,7 @@ import { getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
 import { saveDesign } from "@/lib/design";
 import { saveClientNotes } from "@/lib/clients";
-import { writeDraft, type PreviewableKey } from "@/lib/settings";
+import { historyKeys, writeDraft, writeSetting, type PreviewableKey } from "@/lib/settings";
 import { parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
@@ -594,4 +594,17 @@ export async function savePreviewDraft(kind: PreviewableKey, json: string): Prom
     console.error("[admin] preview draft failed:", err);
     return { ok: false };
   }
+}
+
+/* ---------------- Change history ---------------- */
+
+export async function restoreVersion(id: number): Promise<SettingsState> {
+  await requireAdmin();
+  const sql = await db();
+  const [row] = await sql`SELECT key, value FROM settings_history WHERE id = ${id}`;
+  if (!row || !(historyKeys as readonly string[]).includes(row.key)) return { status: "error", message: "That version no longer exists." };
+  // writeSetting keeps the version being replaced, so a restore can be undone too.
+  await writeSetting(row.key, row.value);
+  revalidatePath("/", "layout");
+  return { status: "saved", message: "Restored." };
 }
