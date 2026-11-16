@@ -33,14 +33,24 @@ export function MessageCard({ m, compact = false }: { m: Message; compact?: bool
         </div>
       </div>
 
+      {/* Compact cards sit inside a link (Overview), so they show plain text instead of nested links. */}
       <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <a href={`tel:${m.phone.replace(/[^\d+]/g, "")}`} className="font-medium text-blue-dark hover:underline">
-          {m.phone}
-        </a>
-        {m.email && (
-          <a href={`mailto:${m.email}`} className="font-medium text-blue-dark hover:underline">
-            {m.email}
-          </a>
+        {compact ? (
+          <>
+            <span className="font-medium text-blue-dark">{m.phone}</span>
+            {m.email && <span className="font-medium text-blue-dark">{m.email}</span>}
+          </>
+        ) : (
+          <>
+            <a href={`tel:${m.phone.replace(/[^\d+]/g, "")}`} className="font-medium text-blue-dark hover:underline">
+              {m.phone}
+            </a>
+            {m.email && (
+              <a href={`mailto:${m.email}`} className="font-medium text-blue-dark hover:underline">
+                {m.email}
+              </a>
+            )}
+          </>
         )}
       </div>
 

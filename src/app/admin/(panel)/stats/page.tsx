@@ -58,13 +58,13 @@ export default async function StatsPage() {
     sql`SELECT
         count(*) FILTER (WHERE status = 'confirmed' AND date_trunc('month', start_at AT TIME ZONE ${TZ}) = date_trunc('month', now() AT TIME ZONE ${TZ}))::int AS month_n,
         coalesce(sum(price) FILTER (WHERE status = 'confirmed' AND date_trunc('month', start_at AT TIME ZONE ${TZ}) = date_trunc('month', now() AT TIME ZONE ${TZ})), 0)::float AS month_rev,
-        count(DISTINCT right(regexp_replace(phone, '\\D', '', 'g'), 10)) FILTER (WHERE status = 'confirmed')::int AS clients,
+        count(DISTINCT right(regexp_replace(phone, '[^0-9]', '', 'g'), 10)) FILTER (WHERE status = 'confirmed')::int AS clients,
         count(*) FILTER (WHERE status IN ('declined', 'cancelled'))::int AS lost,
         count(*)::int AS requests
       FROM bookings`,
   ]);
   const [{ returning }] = await sql`SELECT count(*)::int AS returning FROM (
-      SELECT right(regexp_replace(phone, '\\D', '', 'g'), 10) AS k FROM bookings WHERE status = 'confirmed' GROUP BY 1 HAVING count(*) > 1) r`;
+      SELECT right(regexp_replace(phone, '[^0-9]', '', 'g'), 10) AS k FROM bookings WHERE status = 'confirmed' GROUP BY 1 HAVING count(*) > 1) r`;
 
   // Last 12 months, oldest first, including empty months.
   const now = new Date();

@@ -28,7 +28,7 @@ export async function getClients(): Promise<Client[]> {
   const sql = await db();
   const rows = await sql`
     WITH b AS (
-      SELECT *, right(regexp_replace(phone, '\D', '', 'g'), 10) AS client_key FROM bookings
+      SELECT *, right(regexp_replace(phone, '[^0-9]', '', 'g'), 10) AS client_key FROM bookings
       WHERE status IN ('pending', 'confirmed')
     )
     SELECT b.client_key AS key,
@@ -54,7 +54,7 @@ export async function getClient(key: string) {
   if (!client) return null;
   const sql = await db();
   const bookings = (await sql`SELECT * FROM bookings
-    WHERE right(regexp_replace(phone, '\D', '', 'g'), 10) = ${key} ORDER BY start_at DESC`) as Booking[];
+    WHERE right(regexp_replace(phone, '[^0-9]', '', 'g'), 10) = ${key} ORDER BY start_at DESC`) as Booking[];
   return { client, bookings };
 }
 
