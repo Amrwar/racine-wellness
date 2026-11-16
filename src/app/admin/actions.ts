@@ -20,6 +20,7 @@ import { getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
 import { saveDesign } from "@/lib/design";
 import { saveClientNotes } from "@/lib/clients";
+import { deleteUnused } from "@/lib/photos";
 import { historyKeys, writeDraft, writeSetting, type PreviewableKey } from "@/lib/settings";
 import { parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
@@ -607,4 +608,18 @@ export async function restoreVersion(id: number): Promise<SettingsState> {
   await writeSetting(row.key, row.value);
   revalidatePath("/", "layout");
   return { status: "saved", message: "Restored." };
+}
+
+/* ---------------- Photo library ---------------- */
+
+export async function removePhoto(url: string): Promise<SettingsState> {
+  await requireAdmin();
+  try {
+    if (!(await deleteUnused(url))) return { status: "error", message: "This photo is in use, so it was kept." };
+  } catch (err) {
+    console.error("[admin] delete photo failed:", err);
+    return { status: "error", message: "Deleting failed. Please try again." };
+  }
+  revalidatePath("/admin/photos");
+  return { status: "saved", message: "Deleted." };
 }
