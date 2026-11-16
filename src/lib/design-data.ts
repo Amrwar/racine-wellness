@@ -148,8 +148,12 @@ export function parseDesign(raw: unknown): Design {
     const key = s?.key;
     if (isSectionKey(key) && !sections.some((x) => x.key === key) && sections.length < 30) sections.push({ key, visible: s.visible !== false });
   }
-  // Sections added to the site later appear at the end.
-  for (const key of designSectionKeys) if (!sections.some((x) => x.key === key)) sections.push({ key, visible: true });
+  // Sections added to the site later go just before Contact (or at the end).
+  for (const key of designSectionKeys) {
+    if (sections.some((x) => x.key === key)) continue;
+    const contact = sections.findIndex((x) => x.key === "contact");
+    sections.splice(contact < 0 ? sections.length : contact, 0, { key, visible: true });
+  }
   const st = (r.style ?? {}) as Record<string, Partial<SectionStyle>>;
   const l = (r.layout ?? {}) as Record<string, unknown>;
   const b = (r.buttons ?? {}) as Record<string, unknown>;

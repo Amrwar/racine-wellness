@@ -77,13 +77,17 @@ export async function startSession(version?: number) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    path: "/admin",
+    // Whole site, so editing on the website itself (Admin → Edit on the website) is recognised.
+    path: "/",
     expires: new Date(exp),
   });
 }
 
 export async function endSession() {
-  (await cookies()).delete({ name: SESSION_COOKIE, path: "/admin" });
+  const jar = await cookies();
+  // Sessions from before the whole-site cookie were scoped to /admin.
+  jar.delete({ name: SESSION_COOKIE, path: "/admin" });
+  jar.delete({ name: SESSION_COOKIE, path: "/" });
 }
 
 export async function isAdmin() {

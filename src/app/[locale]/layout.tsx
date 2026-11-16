@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { Suspense } from "react";
 import { PreviewBanner } from "@/components/PreviewBanner";
+import { SiteEditor } from "@/components/SiteEditor";
 import { fontVariables } from "@/lib/fonts";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
@@ -111,6 +112,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           {preview && (
             <Suspense>
               <PreviewBanner />
+              <SiteEditor />
             </Suspense>
           )}
         </LocaleProvider>

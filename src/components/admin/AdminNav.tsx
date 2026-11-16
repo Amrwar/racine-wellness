@@ -88,6 +88,11 @@ export function AdminNav({
 
   const footer = (
     <div className="space-y-1 border-t border-white/10 pt-4">
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- route handler: needs a full page load */}
+      <a href="/admin/edit" className={`${item} text-white/70 hover:bg-white/6 hover:text-white`}>
+        <Icon d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" />
+        Edit on the website
+      </a>
       <a href="/" target="_blank" rel="noopener" className={`${item} text-white/70 hover:bg-white/6 hover:text-white`}>
         <Icon d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" />
         View website

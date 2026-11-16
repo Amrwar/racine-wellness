@@ -16,13 +16,13 @@ import { localePath } from "@/i18n/config";
 import { site } from "@/lib/site";
 import { getBusiness, saveBusiness } from "@/lib/business";
 import { parseBusiness } from "@/lib/business-data";
-import { getText, saveContent, saveTextOverrides } from "@/lib/content";
+import { getContent, getText, saveContent, saveTextOverrides } from "@/lib/content";
 import { cleanOverrides, type TextOverrides } from "@/lib/text-data";
-import { saveDesign } from "@/lib/design";
+import { getDesign, saveDesign } from "@/lib/design";
 import { saveClientNotes } from "@/lib/clients";
 import { deleteUnused } from "@/lib/photos";
 import { historyKeys, writeDraft, writeSetting, type PreviewableKey } from "@/lib/settings";
-import { parseDesign, type Design } from "@/lib/design-data";
+import { designSectionNames, normalizeSections, parseDesign, type Design } from "@/lib/design-data";
 import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 import { parsePost } from "@/lib/post-data";
@@ -622,4 +622,62 @@ export async function removePhoto(url: string): Promise<SettingsState> {
   }
   revalidatePath("/admin/photos");
   return { status: "saved", message: "Deleted." };
+}
+
+/* ---------------- Editing on the website itself ---------------- */
+
+export type EditState = { sections: { key: string; name: string; visible: boolean }[] };
+
+/** Sections for the on-site editor's panel (including hidden ones). */
+export async function getEditState(): Promise<EditState> {
+  await requireAdmin();
+  const [design, content] = await Promise.all([getDesign(), getContent()]);
+  const names: Record<string, string> = {
+    ...designSectionNames,
+    ...Object.fromEntries(content.blocks.map((b) => [b.id, b.title.en || "Your section"])),
+  };
+  return {
+    sections: normalizeSections(design, content.blocks.map((b) => b.id)).map((s) => ({ key: s.key, name: names[s.key] ?? s.key, visible: s.visible })),
+  };
+}
+
+/**
+ * Publishes edits made directly on the website: changed texts (for the language being viewed)
+ * and the section order and visibility.
+ */
+export async function saveInlineEdits(input: {
+  locale: string;
+  texts: Record<string, string>;
+  sections?: { key: string; visible: boolean }[];
+}): Promise<SettingsState> {
+  await requireAdmin();
+  const locale = input.locale === "fr" ? "fr" : "en";
+  const entries = Object.entries(input.texts ?? {}).slice(0, 200);
+  try {
+    if (entries.length) {
+      const content = structuredClone(await getContent()) as unknown as Record<string, unknown>;
+      for (const [path, value] of entries) {
+        const keys = path.split(".");
+        if (keys.some((k) => !/^[a-zA-Z0-9]+$/.test(k))) continue;
+        let node: unknown = content;
+        for (const k of keys) node = (node as Record<string, unknown> | undefined)?.[k];
+        // Only existing English/French text pairs can be changed.
+        if (!node || typeof node !== "object" || typeof (node as Record<string, unknown>)[locale] !== "string") continue;
+        (node as Record<string, string>)[locale] = String(value).replace(/[ \t]+\n/g, "\n").trim().slice(0, 3000);
+      }
+      const next = parseContent(content);
+      const problems = contentProblems(next);
+      if (problems.length) return { status: "error", message: problems.join(" ") };
+      await saveContent(next);
+    }
+    if (input.sections?.length) {
+      const design = await getDesign();
+      await saveDesign(parseDesign({ ...design, sections: input.sections }));
+    }
+  } catch (err) {
+    console.error("[admin] inline save failed:", err);
+    return { status: "error", message: "Saving failed. Please try again." };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", message: "Saved. Visitors now see your changes." };
 }

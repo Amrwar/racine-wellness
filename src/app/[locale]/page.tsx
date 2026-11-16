@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,7 +38,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           />
           <Tint style={st("services")} />
           <Container>
-            <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
+            <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} edit={{ title: "services.title", lead: "services.lead" }} />
             <ul className={`mt-12 grid gap-5 ${columnsClass.services[design.layout.servicesColumns]}`}>
               {content.services.items.map((s, i) => {
                 return (
@@ -50,8 +49,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                     <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy text-green">
                       <ServiceIconView icon={s.icon} image={s.image} />
                     </span>
-                    <h3 className="mt-5 text-lg font-semibold text-navy">{s.title[locale]}</h3>
-                    <p className="mt-2 leading-relaxed text-muted">{s.text[locale]}</p>
+                    <h3 data-edit={`services.items.${i}.title`} className="mt-5 text-lg font-semibold text-navy">{s.title[locale]}</h3>
+                    <p data-edit={`services.items.${i}.text`} className="mt-2 leading-relaxed text-muted">{s.text[locale]}</p>
                   </li>
                 );
               })}
@@ -64,7 +63,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Tint style={st("pricing")} />
           <Container>
             <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
-              <SectionHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} />
+              <SectionHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} edit={{ title: "pricing.title", lead: "pricing.lead" }} />
               {pricing.promo.enabled && pricing.promo[locale] && (
                 <p className="inline-flex shrink-0 items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
                   <span aria-hidden className="h-2 w-2 rounded-full bg-green" />
@@ -127,10 +126,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </div>
             </div>
             <div className="lg:col-span-7 [text-shadow:0_1px_10px_rgba(0,30,50,0.55)]">
-              <SectionHeader light eyebrow={t.about.eyebrow} title={t.about.title} />
+              <SectionHeader light eyebrow={t.about.eyebrow} title={t.about.title} edit={{ title: "about.title" }} />
               <p className="mt-2 text-sm font-semibold text-white">{t.credentialsLine}</p>
-              <p className="mt-6 text-lg leading-relaxed text-white/90">{t.about.text1}</p>
-              <p className="mt-4 text-lg leading-relaxed text-white/90">{t.about.text2}</p>
+              <p data-edit="about.text1" className="mt-6 text-lg leading-relaxed text-white/90">{t.about.text1}</p>
+              <p data-edit="about.text2" className="mt-4 text-lg leading-relaxed text-white/90">{t.about.text2}</p>
               <ul className="mt-8 grid gap-3 sm:grid-cols-2">
                 {t.about.credentials.map((c) => (
                   <li key={c} className="flex items-start gap-3 font-medium text-white">
@@ -178,7 +177,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Tint style={st("contact")} />
           <Container className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <SectionHeader light eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} />
+              <SectionHeader light eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} edit={{ title: "contact.title", lead: "contact.lead" }} />
               <ul className="mt-10 space-y-6">
                 <Detail icon={Phone} label={t.contact.phone}>
                   <a href={tel} className="hover:text-green">
@@ -210,12 +209,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <section id="testimonials" className={`relative isolate overflow-hidden bg-surface ${spacingClass[st("testimonials").spacing]}`}>
         <Tint style={st("testimonials")} />
         <Container>
-          <SectionHeader title={content.testimonials.title[locale]} />
+          <SectionHeader title={content.testimonials.title[locale]} edit={{ title: "testimonials.title" }} />
           <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {content.testimonials.items.map((q, i) => (
               <li key={i} className="flex flex-col rounded-2xl bg-white p-7 shadow-card ring-1 ring-mist/70">
                 <span aria-hidden className="text-5xl leading-none text-blue">“</span>
-                <blockquote className="mt-1 flex-1 leading-relaxed text-ink">{q.quote[locale]}</blockquote>
+                <blockquote data-edit={`testimonials.items.${i}.quote`} className="mt-1 flex-1 leading-relaxed text-ink">{q.quote[locale]}</blockquote>
                 <p className="mt-5 font-semibold text-navy">{q.name}</p>
                 {q.detail[locale] && <p className="text-sm text-muted">{q.detail[locale]}</p>}
               </li>
@@ -229,7 +228,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Tint style={st("faq")} />
         <Container>
           <div className="mx-auto max-w-3xl">
-          <SectionHeader title={content.faq.title[locale]} />
+          <SectionHeader title={content.faq.title[locale]} edit={{ title: "faq.title" }} />
           <div className="mt-10 divide-y divide-mist/70 rounded-2xl bg-white shadow-card ring-1 ring-mist/70">
             {content.faq.items.map((f, i) => (
               <details key={i} className="group px-6 py-5">
@@ -257,7 +256,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </div>
             )}
             <div>
-              <SectionHeader eyebrow={b.eyebrow[locale] || undefined} title={b.title[locale]} />
+              <SectionHeader eyebrow={b.eyebrow[locale] || undefined} title={b.title[locale]} edit={{ title: `blocks.${content.blocks.indexOf(b)}.title` }} />
               {b.text[locale]
                 .split(/\n\s*\n/)
                 .filter(Boolean)
@@ -290,10 +289,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <Eyebrow light className="animate-fade-up">
               {t.tagline}
             </Eyebrow>
-            <h1 className={`animate-fade-up delay-1 font-medium leading-[1.08] tracking-[-0.03em] ${heroSizeClass[design.hero.size]}`}>
+            <h1 data-edit="hero.title" className={`animate-fade-up delay-1 font-medium leading-[1.08] tracking-[-0.03em] ${heroSizeClass[design.hero.size]}`}>
               {t.hero.title}
             </h1>
-            <p className={`animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80 ${design.hero.align === "center" ? "mx-auto" : ""}`}>
+            <p data-edit="hero.lead" className={`animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/80 ${design.hero.align === "center" ? "mx-auto" : ""}`}>
               {t.hero.lead}
             </p>
             <div className={`animate-fade-up delay-3 mt-10 flex flex-wrap gap-3 ${design.hero.align === "center" ? "justify-center" : ""}`}>
@@ -314,7 +313,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       )
         .filter((s) => s.visible)
         .map((s) => (
-          <Fragment key={s.key}>{sections[s.key]}</Fragment>
+          <div key={s.key} data-section={s.key}>{sections[s.key]}</div>
         ))}
     </>
   );

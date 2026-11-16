@@ -89,6 +89,7 @@ export function SectionHeader({
   lead,
   light = false,
   className = "",
+  edit,
 }: {
   eyebrow?: string;
   title: ReactNode;
@@ -96,15 +97,17 @@ export function SectionHeader({
   /** White text, for sections on a dark photo. */
   light?: boolean;
   className?: string;
+  /** Content paths for the on-site editor, e.g. { title: "services.title" }. */
+  edit?: { title?: string; lead?: string };
 }) {
   return (
     <div className={`max-w-2xl ${className}`}>
       {eyebrow && <Eyebrow light={light}>{eyebrow}</Eyebrow>}
-      <h2 className={`text-3xl font-semibold tracking-tight sm:text-4xl ${light ? "text-white" : "text-navy"}`}>
+      <h2 data-edit={edit?.title} className={`text-3xl font-semibold tracking-tight sm:text-4xl ${light ? "text-white" : "text-navy"}`}>
         {title}
       </h2>
       {lead && (
-        <p className={`mt-4 text-lg leading-relaxed ${light ? "text-white/75" : "text-muted"}`}>{lead}</p>
+        <p data-edit={edit?.lead} className={`mt-4 text-lg leading-relaxed ${light ? "text-white/75" : "text-muted"}`}>{lead}</p>
       )}
     </div>
   );
