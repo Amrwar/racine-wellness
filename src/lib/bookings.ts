@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { db, hasDatabase } from "./db";
-import { defaultAvailability, parseAvailability, type Availability, type Booking } from "./booking-data";
+import { defaultAvailability, parseAvailability, type Availability, type Booking, hoursOn } from "./booking-data";
 import { addDays, fromMinutes, localDay, toMinutes, weekday, zonedToDate } from "./time";
 import { googleBusy } from "./google";
 
@@ -39,8 +39,8 @@ async function busyBetween(from: Date, to: Date): Promise<Busy[]> {
 }
 
 function slotsForDay(a: Availability, busy: Busy[], date: string, minutes: number, now: number): string[] {
-  const hours = a.week[weekday(date)];
-  if (!hours?.open || a.closedDates.includes(date)) return [];
+  const hours = hoursOn(a, date);
+  if (!hours.open) return [];
   const earliest = now + a.minNoticeHours * 3600_000;
   const buffer = a.bufferMinutes * 60_000;
   const out: string[] = [];

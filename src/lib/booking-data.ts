@@ -13,7 +13,20 @@ export type Availability = {
   maxDaysAhead: number;
   /** Days Ziad is away, as "YYYY-MM-DD". */
   closedDates: string[];
+  /** One-off hours for a date (e.g. Dec 24, 9:00–12:00), replacing that weekday's usual hours. */
+  specialHours: SpecialHours[];
 };
+
+export type SpecialHours = { date: string; start: string; end: string };
+
+/** The hours that apply on a date: day off, special hours, or the usual weekday hours. */
+export function hoursOn(a: Availability, date: string): DayHours {
+  const usual = a.week[new Date(`${date}T12:00:00Z`).getUTCDay()];
+  if (a.closedDates.includes(date)) return { ...usual, open: false };
+  const special = a.specialHours.find((s) => s.date === date);
+  if (special) return { open: true, start: special.start, end: special.end };
+  return usual;
+}
 
 export const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -31,6 +44,7 @@ export const defaultAvailability: Availability = {
   minNoticeHours: 12,
   maxDaysAhead: 60,
   closedDates: [],
+  specialHours: [],
 };
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -64,6 +78,15 @@ export function parseAvailability(input: unknown): Availability | null {
     minNoticeHours: clamp(o.minNoticeHours, 0, 24 * 14, defaultAvailability.minNoticeHours),
     maxDaysAhead: clamp(o.maxDaysAhead, 1, 365, defaultAvailability.maxDaysAhead),
     closedDates: [...new Set(closedDates)].sort(),
+    specialHours: (Array.isArray(o.specialHours) ? o.specialHours : [])
+      .map((s) => {
+        const r = (s ?? {}) as Record<string, unknown>;
+        return { date: String(r.date ?? ""), start: String(r.start ?? ""), end: String(r.end ?? "") };
+      })
+      .filter((s) => DAY.test(s.date) && TIME.test(s.start) && TIME.test(s.end) && s.start < s.end)
+      .filter((s, i, all) => all.findIndex((x) => x.date === s.date) === i)
+      .sort((x, y) => x.date.localeCompare(y.date))
+      .slice(0, 366),
   };
 }
 

@@ -45,6 +45,7 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
   const saved = state.availability ?? initial;
   const dirty = JSON.stringify(a) !== JSON.stringify(saved);
   const [newDate, setNewDate] = useState("");
+  const [special, setSpecial] = useState({ date: "", start: "09:00", end: "12:00" });
   const upcoming = a.closedDates.filter((d) => d >= today);
 
   const setDay = (i: number, patch: Partial<Availability["week"][number]>) =>
@@ -97,6 +98,59 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
           <NumberField label="Calendar open for" suffix="days" min={1} max={365} value={a.maxDaysAhead} onChange={(n) => setA((x) => ({ ...x, maxDaysAhead: n }))} />
         </div>
         <p className="mt-4 text-sm text-muted">Time between appointments leaves room for travel and set-up, especially for home visits.</p>
+      </Section>
+
+      <Section title="Special hours" text="Different hours on one date, such as a holiday eve. They replace that day's usual hours.">
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Date</span>
+            <input type="date" min={today} value={special.date} onChange={(e) => setSpecial((s) => ({ ...s, date: e.target.value }))} className={input} />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">From</span>
+            <input type="time" step={900} value={special.start} onChange={(e) => setSpecial((s) => ({ ...s, start: e.target.value }))} className={input} />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">To</span>
+            <input type="time" step={900} value={special.end} onChange={(e) => setSpecial((s) => ({ ...s, end: e.target.value }))} className={input} />
+          </label>
+          <button
+            type="button"
+            disabled={!special.date || !special.start || !special.end || special.start >= special.end}
+            onClick={() => {
+              setA((x) => ({
+                ...x,
+                specialHours: [...x.specialHours.filter((s) => s.date !== special.date), special].sort((p, q) => p.date.localeCompare(q.date)),
+                closedDates: x.closedDates.filter((d) => d !== special.date),
+              }));
+              setSpecial({ date: "", start: "09:00", end: "12:00" });
+            }}
+            className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-deep disabled:opacity-40"
+          >
+            Add
+          </button>
+        </div>
+        {a.specialHours.filter((s) => s.date >= today).length > 0 ? (
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {a.specialHours
+              .filter((s) => s.date >= today)
+              .map((s) => (
+                <li key={s.date} className="flex items-center gap-1 rounded-full bg-surface py-1 pl-4 pr-1 text-sm text-navy ring-1 ring-mist/70">
+                  {fmt(s.date)} · {s.start}–{s.end}
+                  <button
+                    type="button"
+                    aria-label={`Remove special hours on ${fmt(s.date)}`}
+                    onClick={() => setA((x) => ({ ...x, specialHours: x.specialHours.filter((c) => c.date !== s.date) }))}
+                    className="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-white hover:text-danger"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+          </ul>
+        ) : (
+          <p className="mt-4 text-sm text-muted">No special hours coming up.</p>
+        )}
       </Section>
 
       <Section title="Time off" text="Days when no online bookings are accepted, such as holidays.">

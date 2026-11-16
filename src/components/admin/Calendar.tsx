@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Availability } from "@/lib/booking-data";
+import { hoursOn, type Availability } from "@/lib/booking-data";
 import { addDays, fromMinutes, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 
 /** One block on the calendar: a booking (confirmed or awaiting confirmation) or a Google Calendar block. */
@@ -58,8 +58,8 @@ function lanes<T extends { from: number; to: number }>(items: T[]) {
 }
 
 function openHours(a: Availability, day: string) {
-  const h = a.week[weekday(day)];
-  if (!h.open || a.closedDates.includes(day)) return null;
+  const h = hoursOn(a, day);
+  if (!h.open) return null;
   return { from: toMinutes(h.start), to: toMinutes(h.end) };
 }
 

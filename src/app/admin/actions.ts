@@ -8,7 +8,7 @@ import { authConfigured, changePassword, endSession, passwordMatches, requireAdm
 import { db, hasDatabase } from "@/lib/db";
 import { getPricing, savePricing } from "@/lib/pricing";
 import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
-import { parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
+import { hoursOn, parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
 import { getAvailability, getBooking, saveAvailability } from "@/lib/bookings";
 import { sendEmail, ownerEmail } from "@/lib/email";
 import { fill } from "@/i18n";
@@ -262,9 +262,9 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
         `${overlap ? "Overlaps" : `Leaves less than ${a.bufferMinutes} min before or after`} ${c.name}'s appointment (${localTime(s)}–${localTime(new Date(c.end_at))}).`,
       );
     }
-    const hours = a.week[weekday(date)];
+    const hours = hoursOn(a, date);
     const endDay = localDay(end);
-    if (!hours.open || a.closedDates.includes(date)) {
+    if (!hours.open) {
       warnings.push("That day is closed in your opening hours.");
     } else if (toMinutes(time) < toMinutes(hours.start) || endDay !== date || toMinutes(localTime(end)) > toMinutes(hours.end)) {
       warnings.push(`That time is outside your opening hours (${hours.start}–${hours.end}).`);
