@@ -3,7 +3,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { authConfigured, endSession, passwordMatches, requireAdmin, startSession } from "@/lib/auth";
+import { generateText } from "ai";
+import { authConfigured, changePassword, endSession, passwordMatches, requireAdmin, signOutEverywhere, startSession } from "@/lib/auth";
 import { db, hasDatabase } from "@/lib/db";
 import { getPricing, savePricing } from "@/lib/pricing";
 import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
@@ -13,6 +14,10 @@ import { sendEmail, ownerEmail } from "@/lib/email";
 import { fill, getDictionary } from "@/i18n";
 import { localePath } from "@/i18n/config";
 import { site } from "@/lib/site";
+import { getBusiness, saveBusiness } from "@/lib/business";
+import { parseBusiness } from "@/lib/business-data";
+import { getText, saveContent } from "@/lib/content";
+import { contentProblems, parseContent, type SiteContent } from "@/lib/content-data";
 import { addDays, formatWhen, isDay, isTime, localDay, localTime, toMinutes, weekday, zonedToDate } from "@/lib/time";
 import { parsePost } from "@/lib/post-data";
 import { deletePost, savePost, slugTaken } from "@/lib/posts";
@@ -44,7 +49,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     }
   }
 
-  if (!passwordMatches(password)) {
+  if (!(await passwordMatches(password))) {
     if (sql) await sql`INSERT INTO login_attempts (ip) VALUES (${ip})`;
     await new Promise((r) => setTimeout(r, 600));
     return { error: "That password isn't right." };
@@ -136,21 +141,21 @@ export async function updateBooking(formData: FormData) {
 
   if (booking.email && formData.get("notify") !== "no") {
     const locale = booking.locale === "fr" ? "fr" : "en";
-    const dict = getDictionary(locale);
+    const dict = await getText(locale);
     const t = dict.booking;
     const when = formatWhen(new Date(booking.start_at), locale);
     const pricing = await getPricing();
     const title = pricing.services.find((s) => s.id === booking.service_id)?.title[locale] ?? booking.service_title;
     await sendEmail({
       to: booking.email,
-      replyTo: ownerEmail(),
+      replyTo: await ownerEmail(),
       subject: t.emails[`${move.email}Subject`],
       text: fill(t.emails[move.email], {
         name: booking.name.split(" ")[0],
         when: `${when.day}, ${when.time}`,
         service: `${title}, ${booking.minutes} min (${formatPrice(Number(booking.price), locale)})`,
         where: booking.location === "home" ? `${t.home}: ${booking.address ?? ""}` : `${t.office} (${dict.contact.office})`,
-        phone: site.phone,
+        phone: (await getBusiness()).phone,
         link: `${site.url}${localePath(locale, "/book")}`,
       }),
     });
@@ -197,9 +202,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function editBooking(_prev: EditBookingState, formData: FormData): Promise<EditBookingState> {
   await requireAdmin();
   const get = (k: string, max = 500) => String(formData.get(k) ?? "").trim().slice(0, max);
-  const id = Number(formData.get("id"));
-  const booking = Number.isInteger(id) ? await getBooking(id) : null;
-  if (!booking || (booking.status !== "pending" && booking.status !== "confirmed")) {
+  // "new" adds an appointment Ziad took by phone or in person; it is confirmed straight away.
+  const isNew = formData.get("id") === "new";
+  const id = isNew ? -1 : Number(formData.get("id"));
+  const booking = !isNew && Number.isInteger(id) ? await getBooking(id) : null;
+  if (!isNew && (!booking || (booking.status !== "pending" && booking.status !== "confirmed"))) {
     return { status: "error", errors: ["This booking can no longer be edited."] };
   }
 
@@ -216,6 +223,7 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
   const notes = get("notes", 2000);
 
   const errors: string[] = [];
+  if (isNew && !serviceId) errors.push("Choose a treatment.");
   if (!isDay(date) || !isTime(time)) errors.push("Choose a date and start time.");
   if (!(minutes >= 15 && minutes <= 600)) errors.push("The length must be between 15 and 600 minutes.");
   if (!(price >= 0 && price <= 10000)) errors.push("Enter a price between $0 and $10,000.");
@@ -264,35 +272,45 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
 
   const pricing = await getPricing();
   const service = pricing.services.find((s) => s.id === serviceId);
-  const serviceTitle = service?.title.en ?? booking.service_title;
-  await sql`UPDATE bookings SET start_at = ${start.toISOString()}, end_at = ${end.toISOString()},
-      service_id = ${service?.id ?? booking.service_id}, service_title = ${serviceTitle}, minutes = ${minutes}, price = ${price},
+  const serviceTitle = service?.title.en ?? booking?.service_title ?? serviceId;
+  const locale = (isNew ? formData.get("locale") : booking?.locale) === "fr" ? "fr" : "en";
+  const receipt = formData.get("receipt") === "yes";
+  let bookingId = id;
+  if (isNew) {
+    if (!service) return { status: "error", errors: ["Choose a treatment."] };
+    const [row] = await sql`INSERT INTO bookings
+        (start_at, end_at, service_id, service_title, minutes, price, location, address, name, phone, email, notes, wants_receipt, locale, status)
+      VALUES (${start.toISOString()}, ${end.toISOString()}, ${service.id}, ${serviceTitle}, ${minutes}, ${price}, ${location},
+        ${location === "home" ? address : null}, ${name}, ${phone}, ${email || null}, ${notes || null}, ${receipt}, ${locale}, 'confirmed')
+      RETURNING id`;
+    bookingId = row.id;
+  } else await sql`UPDATE bookings SET start_at = ${start.toISOString()}, end_at = ${end.toISOString()},
+      service_id = ${service?.id ?? booking!.service_id}, service_title = ${serviceTitle}, minutes = ${minutes}, price = ${price},
       location = ${location}, address = ${location === "home" ? address : null}, name = ${name}, phone = ${phone},
-      email = ${email || null}, notes = ${notes || null}, wants_receipt = ${formData.get("receipt") === "yes"}
+      email = ${email || null}, notes = ${notes || null}, wants_receipt = ${receipt}
     WHERE id = ${id}`;
 
   if (email && formData.get("notify") === "yes") {
-    const locale = booking.locale === "fr" ? "fr" : "en";
-    const dict = getDictionary(locale);
+    const dict = await getText(locale);
     const t = dict.booking;
     const when = formatWhen(start, locale);
     await sendEmail({
       to: email,
-      replyTo: ownerEmail(),
-      subject: t.emails.updatedSubject,
-      text: fill(t.emails.updated, {
+      replyTo: await ownerEmail(),
+      subject: isNew ? t.emails.confirmedSubject : t.emails.updatedSubject,
+      text: fill(isNew ? t.emails.confirmed : t.emails.updated, {
         name: name.split(" ")[0],
         when: `${when.day}, ${when.time}`,
         service: `${service?.title[locale] ?? serviceTitle}, ${minutes} min (${formatPrice(price, locale)})`,
         where: location === "home" ? `${t.home}: ${address}` : `${t.office} (${dict.contact.office})`,
-        phone: site.phone,
+        phone: (await getBusiness()).phone,
       }),
     });
   }
 
   revalidatePath("/admin", "layout");
   const monday = addDays(date, -((weekday(date) + 6) % 7));
-  redirect(`/admin/bookings?week=${monday}&open=${id}#details`);
+  redirect(`/admin/bookings?week=${monday}&open=${bookingId}#details`);
 }
 
 /* ---------------- Google Calendar ---------------- */
@@ -375,4 +393,93 @@ export async function removePost(formData: FormData) {
   await deletePost(slug);
   refreshBlog([slug]);
   redirect("/admin/blog");
+}
+
+/* ---------------- Website text and photos ---------------- */
+
+export type ContentState = { status: "idle" | "saved" | "error"; message?: string; content?: SiteContent };
+
+export async function updateContent(prev: ContentState, formData: FormData): Promise<ContentState> {
+  await requireAdmin();
+  let content: SiteContent;
+  try {
+    content = parseContent(JSON.parse(String(formData.get("content") ?? "")));
+  } catch {
+    return { status: "error", message: "The form data couldn't be read. Please reload and try again.", content: prev.content };
+  }
+  const problems = contentProblems(content);
+  if (problems.length) return { status: "error", message: problems.join(" "), content: prev.content };
+  try {
+    await saveContent(content);
+  } catch (err) {
+    console.error("[admin] save content failed:", err);
+    return { status: "error", message: "Saving failed. Please try again in a moment.", content: prev.content };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", content };
+}
+
+/* ---------------- Automatic French translation ---------------- */
+
+export type TranslateResult = { text?: string; error?: string };
+
+/** Drafts the French version of a piece of website text. Ziad reviews it before saving. */
+export async function translateToFrench(english: string): Promise<TranslateResult> {
+  await requireAdmin();
+  const source = english.trim().slice(0, 4000);
+  if (!source) return { error: "Write the English text first." };
+  try {
+    const { text } = await generateText({
+      model: "anthropic/claude-sonnet-5.5",
+      instructions:
+        "You translate website text for HealthyZone, a registered massage therapy and personal training practice in Montréal's West Island, " +
+        "from English into natural Québec French. Keep a professional, clinical and warm tone and use the formal \"vous\" unless the English speaks as Ziad in the first person. " +
+        "Use standard Québec terms (massothérapeute agréé, massothérapie, reçus d'assurance, entraîneur personnel, Ouest-de-l'Île). " +
+        "Keep line breaks, numbers, prices, names and anything in {curly braces} exactly as they are. Reply with the French text only, with no quotes or notes.",
+      prompt: source,
+    });
+    const french = text.trim();
+    return french ? { text: french } : { error: "No translation came back. Please try again." };
+  } catch (err) {
+    console.error("[admin] translation failed:", err);
+    return { error: "The translation service isn't available right now. Please try again, or write the French yourself." };
+  }
+}
+
+/* ---------------- Settings: contact details and password ---------------- */
+
+export type SettingsState = { status: "idle" | "saved" | "error"; message?: string };
+
+export async function updateBusiness(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  await requireAdmin();
+  const { value, errors } = parseBusiness(Object.fromEntries(formData));
+  if (!value) return { status: "error", message: errors.join(" ") };
+  try {
+    await saveBusiness(value);
+  } catch (err) {
+    console.error("[admin] save business failed:", err);
+    return { status: "error", message: "Saving failed. Please try again in a moment." };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", message: "Saved. The website now shows these details." };
+}
+
+export async function updatePassword(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  await requireAdmin();
+  const current = String(formData.get("current") ?? "");
+  const next = String(formData.get("password") ?? "");
+  if (!(await passwordMatches(current))) return { status: "error", message: "Your current password isn't right." };
+  if (next.length < 10) return { status: "error", message: "Choose a new password of at least 10 characters." };
+  if (next.length > 200) return { status: "error", message: "That password is too long." };
+  if (next !== String(formData.get("confirm") ?? "")) return { status: "error", message: "The two new passwords don't match." };
+  if (next === current) return { status: "error", message: "The new password is the same as the current one." };
+  await changePassword(next);
+  revalidatePath("/admin", "layout");
+  return { status: "saved", message: "Password changed. Other phones and computers have been signed out." };
+}
+
+export async function signOutOtherDevices(): Promise<SettingsState> {
+  await requireAdmin();
+  await signOutEverywhere();
+  return { status: "saved", message: "Done. Every other phone and computer has been signed out." };
 }

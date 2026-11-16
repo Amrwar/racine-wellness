@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/lib/site";
 import { en } from "@/i18n/en";
+import { getBusiness } from "@/lib/business";
 
 export const alt = en.meta.titleDefault;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const { phone } = await getBusiness();
   return new ImageResponse(
     (
       <div
@@ -38,7 +40,7 @@ export default function OpenGraphImage() {
           }}
         />
         <div style={{ display: "flex", marginTop: 48, fontSize: 30, color: "#d9d9d9" }}>
-          {en.og.sub} · {site.phone}
+          {en.og.sub} · {phone}
         </div>
       </div>
     ),

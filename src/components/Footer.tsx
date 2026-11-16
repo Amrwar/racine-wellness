@@ -1,10 +1,11 @@
 import { site } from "@/lib/site";
+import { phoneHref, type Business } from "@/lib/business-data";
 import { LLink } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
 import { Logo } from "./Logo";
 import { Instagram } from "./icons";
 
-export function Footer({ t }: { t: Dictionary }) {
+export function Footer({ t, business }: { t: Dictionary; business: Business }) {
   return (
     <footer className="bg-navy-deep text-white">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
@@ -14,11 +15,11 @@ export function Footer({ t }: { t: Dictionary }) {
             <p className="mt-2 text-sm font-medium text-mist">{t.tagline}</p>
           </div>
           <div className="space-y-1.5 text-sm text-white/80 sm:text-right">
-            <a href={site.phoneHref} className="block hover:text-white">
-              {site.phone}
+            <a href={phoneHref(business.phone)} className="block hover:text-white">
+              {business.phone}
             </a>
-            <a href={`mailto:${site.email}`} className="block hover:text-white">
-              {site.email}
+            <a href={`mailto:${business.email}`} className="block hover:text-white">
+              {business.email}
             </a>
             <p>
               {t.contact.office}
@@ -37,8 +38,9 @@ export function Footer({ t }: { t: Dictionary }) {
             <LLink href="/privacy" className="hover:text-white">
               {t.footer.privacy}
             </LLink>
+            {business.instagram && (
             <a
-              href={site.socials.instagram}
+              href={business.instagram}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -46,6 +48,7 @@ export function Footer({ t }: { t: Dictionary }) {
             >
               <Instagram className="h-5 w-5" />
             </a>
+            )}
           </div>
         </div>
       </div>

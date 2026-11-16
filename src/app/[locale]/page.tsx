@@ -1,9 +1,12 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDictionary } from "@/i18n";
 import { isLocale, localePath } from "@/i18n/config";
-import { site, images } from "@/lib/site";
+import { images } from "@/lib/site";
+import { getText, getContent } from "@/lib/content";
+import { getBusiness } from "@/lib/business";
+import { phoneHref } from "@/lib/business-data";
+import type { SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
 import { PostCard } from "@/components/blog";
@@ -15,7 +18,8 @@ import { Mail, MapPin, Phone, serviceIcons } from "@/components/icons";
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const [t, content, business] = await Promise.all([getText(locale), getContent(), getBusiness()]);
+  const tel = phoneHref(business.phone);
   const pricing = await getPricing();
   const latestPosts = (await getPosts()).slice(0, 3);
 
@@ -24,7 +28,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* ---------- Hero: Ziad at work on a grey studio wall; text on the plain wall ---------- */}
       {/* Phones/tablets: the photo on top, fading into the text below. Desktop: full-bleed. */}
       <section className="relative isolate -mt-18 overflow-hidden bg-[#1a1b1d] pt-18 text-white">
-        <HeroImage alt={t.hero.imageAlt} />
+        <HeroImage alt={t.hero.imageAlt} photo={content.hero.photo} />
         <div
           aria-hidden
           className="absolute inset-x-0 top-18 -z-10 h-[78vw] bg-gradient-to-b from-transparent from-40% to-[#1a1b1d] lg:bottom-0 lg:h-auto lg:bg-gradient-to-r lg:from-black/65 lg:from-0% lg:via-black/20 lg:to-transparent"
@@ -44,7 +48,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               <Button href={localePath(locale, "/book")} size="lg">
                 {t.hero.book} <Arrow />
               </Button>
-              <Button href={site.phoneHref} variant="outline-light" size="lg">
+              <Button href={tel} variant="outline-light" size="lg">
                 <Phone className="h-5 w-5" /> {t.hero.call}
               </Button>
             </div>
@@ -136,7 +140,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <div className="relative mx-auto max-w-sm lg:max-w-none">
               <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl shadow-black/25 ring-4 ring-white">
                 <Image
-                  src={images.portrait}
+                  src={content.about.photo?.src ?? images.portrait}
                   alt={t.about.portraitAlt}
                   fill
                   sizes="(min-width: 1024px) 40vw, 90vw"
@@ -196,13 +200,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <SectionHeader light eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} />
             <ul className="mt-10 space-y-6">
               <Detail icon={Phone} label={t.contact.phone}>
-                <a href={site.phoneHref} className="hover:text-green">
-                  {site.phone}
+                <a href={tel} className="hover:text-green">
+                  {business.phone}
                 </a>
               </Detail>
               <Detail icon={Mail} label={t.contact.email}>
-                <a href={`mailto:${site.email}`} className="hover:text-green">
-                  {site.email}
+                <a href={`mailto:${business.email}`} className="hover:text-green">
+                  {business.email}
                 </a>
               </Detail>
               <Detail icon={MapPin} label={t.contact.area}>
@@ -230,7 +234,11 @@ function SectionPhoto({ src, className = "" }: { src: string; className?: string
 }
 
 /** Hero photo: the square shot for phones and tablets, the wide (extended wall) version on desktop. */
-function HeroImage({ alt }: { alt: string }) {
+function HeroImage({ alt, photo }: { alt: string; photo: SitePhoto | null }) {
+  const cls =
+    "absolute inset-x-0 top-18 -z-10 h-[78vw] w-full object-cover object-top lg:bottom-0 lg:h-[calc(100%-4.5rem)] lg:object-right";
+  // A photo uploaded from the admin is used for every screen size.
+  if (photo) return <Image src={photo.src} width={photo.width} height={photo.height} alt={alt} sizes="100vw" priority className={cls} />;
   const common = { alt, sizes: "100vw", loading: "eager", fetchPriority: "high" } as const;
   const {
     props: { srcSet: wide },
@@ -245,7 +253,7 @@ function HeroImage({ alt }: { alt: string }) {
         {...rest}
         alt={alt}
         srcSet={square}
-        className="absolute inset-x-0 top-18 -z-10 h-[78vw] w-full object-cover object-top lg:bottom-0 lg:h-[calc(100%-4.5rem)] lg:object-right"
+        className={cls}
       />
     </picture>
   );

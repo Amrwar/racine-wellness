@@ -32,7 +32,9 @@ export function BookingEditForm({
   date,
   time,
   services,
+  isNew = false,
 }: {
+  isNew?: boolean;
   booking: Booking;
   date: string;
   time: string;
@@ -73,7 +75,7 @@ export function BookingEditForm({
         submit(false);
       }}
     >
-      <input type="hidden" name="id" value={booking.id} />
+      <input type="hidden" name="id" value={isNew ? "new" : booking.id} />
 
       <Section title="Date and time">
         <div className="grid gap-4 sm:grid-cols-3">
@@ -168,9 +170,17 @@ export function BookingEditForm({
           <Field label="Phone">
             <input name="phone" type="tel" defaultValue={booking.phone} className={input} />
           </Field>
-          <Field label="Email" className="sm:col-span-2">
+          <Field label="Email (optional)" className={isNew ? "" : "sm:col-span-2"}>
             <input name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={input} />
           </Field>
+          {isNew && (
+            <Field label="Language for emails">
+              <select name="locale" defaultValue="en" className={input}>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </Field>
+          )}
           <Field label="Notes" className="sm:col-span-2">
             <textarea name="notes" rows={3} defaultValue={booking.notes ?? ""} className={`${input} resize-y`} />
           </Field>
@@ -199,7 +209,7 @@ export function BookingEditForm({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <label className={`flex items-center gap-2 text-sm ${email ? "text-ink" : "text-muted"}`}>
               <input type="checkbox" name="notify" value="yes" defaultChecked disabled={!email} className="h-4 w-4 accent-navy" />
-              Email the client the updated details
+              {isNew ? "Email the client a confirmation" : "Email the client the updated details"}
             </label>
             <div className="flex gap-2">
               <Link href="/admin/bookings" className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
@@ -219,7 +229,7 @@ export function BookingEditForm({
                   disabled={pending}
                   className="rounded-full bg-blue-dark px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue/25 hover:bg-[#00649f] disabled:opacity-50"
                 >
-                  {pending ? "Saving…" : "Save changes"}
+                  {pending ? "Saving…" : isNew ? "Add booking" : "Save changes"}
                 </button>
               )}
             </div>

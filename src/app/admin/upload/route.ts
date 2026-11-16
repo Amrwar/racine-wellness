@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       request,
       onBeforeGenerateToken: async (pathname) => {
         if (!(await isAdmin())) throw new Error("Not signed in");
-        if (!pathname.startsWith("blog/")) throw new Error("Invalid path");
+        if (!/^(blog|site)\//.test(pathname)) throw new Error("Invalid path");
         return {
           allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
           maximumSizeInBytes: 20 * 1024 * 1024,

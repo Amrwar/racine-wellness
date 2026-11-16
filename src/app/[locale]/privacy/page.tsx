@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
-import { site } from "@/lib/site";
+import { getBusiness } from "@/lib/business";
 import { Container, Eyebrow } from "@/components/ui";
 import { PageHeaderArt } from "@/components/art";
 import { alternatesFor } from "../layout";
@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/privacy"
   };
 }
 
-function withEmail(text: string) {
+function withEmail(text: string, email: string) {
   const [before, after] = text.split("{email}");
   if (after === undefined) return text;
   return (
     <>
       {before}
-      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={`mailto:${email}`}>{email}</a>
       {after}
     </>
   );
@@ -36,6 +36,7 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
   const p = t.privacy;
+  const { email } = await getBusiness();
 
   return (
     <>
@@ -61,7 +62,7 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
                     ))}
                   </ul>
                 ) : (
-                  <p>{withEmail(s.text ?? "")}</p>
+                  <p>{withEmail(s.text ?? "", email)}</p>
                 )}
               </div>
             ))}

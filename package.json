@@ -11,6 +11,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.2.1",
     "@vercel/blob": "^2.9.0",
+    "ai": "^7.0.173",
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8"

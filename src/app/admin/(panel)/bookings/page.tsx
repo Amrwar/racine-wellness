@@ -44,12 +44,20 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
         title="Bookings"
         lead="Appointment requests from the website and your week at a glance."
         action={
-          <Link
-            href="/admin/bookings/availability"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy shadow-card ring-1 ring-mist/60 hover:ring-blue"
-          >
-            Opening hours & time off
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/bookings/availability"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy shadow-card ring-1 ring-mist/60 hover:ring-blue"
+            >
+              Opening hours & time off
+            </Link>
+            <Link
+              href="/admin/bookings/new"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-dark px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue/25 hover:bg-[#00649f]"
+            >
+              + New booking
+            </Link>
+          </div>
         }
       />
 

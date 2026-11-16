@@ -1,6 +1,7 @@
 "use server";
 
 import { site } from "@/lib/site";
+import { getBusiness, notifyEmail } from "@/lib/business";
 import { fill, getDictionary } from "@/i18n";
 import { isLocale } from "@/i18n/config";
 import { db, hasDatabase } from "@/lib/db";
@@ -70,7 +71,7 @@ export async function sendContact(
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL ?? site.email;
+  const to = await notifyEmail();
   const from = process.env.CONTACT_FROM_EMAIL ?? `${site.name} <onboarding@resend.dev>`;
 
   try {
@@ -94,7 +95,7 @@ export async function sendContact(
   } catch (err) {
     console.error(err);
     // The enquiry is safe in the admin inbox even if the email notification failed.
-    if (!saved) return { status: "error", message: fill(t.failed, { email: site.email }) };
+    if (!saved) return { status: "error", message: fill(t.failed, { email: (await getBusiness()).email }) };
   }
 
   return {

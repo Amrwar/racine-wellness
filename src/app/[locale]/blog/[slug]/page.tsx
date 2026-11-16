@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/i18n";
+import { getText } from "@/lib/content";
 import { htmlLang, isLocale, localePath } from "@/i18n/config";
 import { getPost, getPosts } from "@/lib/posts";
 import { images, site } from "@/lib/site";
@@ -42,7 +43,7 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/blog/
   const { locale, slug } = await params;
   const post = await getPost(slug);
   if (!isLocale(locale) || !post) notFound();
-  const t = getDictionary(locale);
+  const t = await getText(locale);
   const c = post[locale];
   const related = (await getPosts())
     .filter((p) => p.slug !== slug)

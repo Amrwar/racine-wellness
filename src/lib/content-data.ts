@@ -1,0 +1,179 @@
+/** Website text and photos Ziad edits in Admin → Website. Safe to import on the client. */
+import { en, type Dictionary } from "@/i18n/en";
+import { fr } from "@/i18n/fr";
+import type { Locale } from "@/i18n/config";
+import type { Bilingual } from "./pricing-data";
+
+export const serviceIconKeys = ["hands", "posture", "mobility", "strength", "heart", "youth"] as const;
+export type ServiceIcon = (typeof serviceIconKeys)[number];
+export const serviceIconNames: Record<ServiceIcon, string> = {
+  hands: "Hands",
+  posture: "Posture",
+  mobility: "Mobility",
+  strength: "Dumbbell",
+  heart: "Heart",
+  youth: "Youth",
+};
+
+export type SitePhoto = { src: string; width: number; height: number };
+export type ServiceItem = { icon: ServiceIcon; title: Bilingual; text: Bilingual };
+
+export type SiteContent = {
+  tagline: Bilingual;
+  hero: { title: Bilingual; lead: Bilingual; photo: SitePhoto | null };
+  services: { title: Bilingual; lead: Bilingual; items: ServiceItem[] };
+  pricing: { title: Bilingual; lead: Bilingual };
+  about: {
+    title: Bilingual;
+    credentialsLine: Bilingual;
+    text1: Bilingual;
+    text2: Bilingual;
+    /** One per line. */
+    credentials: Bilingual;
+    photo: SitePhoto | null;
+  };
+  contact: { title: Bilingual; lead: Bilingual; office: Bilingual; areaNote: Bilingual };
+};
+
+const pair = (pick: (d: Dictionary) => string): Bilingual => ({ en: pick(en), fr: pick(fr) });
+
+export const defaultContent: SiteContent = {
+  tagline: pair((d) => d.tagline),
+  hero: { title: pair((d) => d.hero.title), lead: pair((d) => d.hero.lead), photo: null },
+  services: {
+    title: pair((d) => d.services.title),
+    lead: pair((d) => d.services.lead),
+    items: en.services.items.map((item, i) => ({
+      icon: item.icon,
+      title: { en: item.title, fr: fr.services.items[i]?.title ?? item.title },
+      text: { en: item.text, fr: fr.services.items[i]?.text ?? item.text },
+    })),
+  },
+  pricing: { title: pair((d) => d.pricing.title), lead: pair((d) => d.pricing.lead) },
+  about: {
+    title: pair((d) => d.about.title),
+    credentialsLine: pair((d) => d.credentialsLine),
+    text1: pair((d) => d.about.text1),
+    text2: pair((d) => d.about.text2),
+    credentials: pair((d) => d.about.credentials.join("\n")),
+    photo: null,
+  },
+  contact: {
+    title: pair((d) => d.contact.title),
+    lead: pair((d) => d.contact.lead),
+    office: pair((d) => d.contact.office),
+    areaNote: pair((d) => d.contact.areaNote),
+  },
+};
+
+/* ---------------- Reading and checking ---------------- */
+
+const text = (v: unknown, fallback: string, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : fallback);
+
+function bi(v: unknown, fallback: Bilingual, max = 600): Bilingual {
+  const o = (v ?? {}) as Partial<Bilingual>;
+  return { en: text(o.en, fallback.en, max), fr: text(o.fr, fallback.fr, max) };
+}
+
+const PHOTO_SRC = /^(\/images\/[\w./-]+|https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/[\w./%-]+)$/i;
+
+function photo(v: unknown): SitePhoto | null {
+  const p = v as Partial<SitePhoto> | null;
+  if (!p || typeof p.src !== "string" || !PHOTO_SRC.test(p.src)) return null;
+  const w = Math.round(Number(p.width));
+  const h = Math.round(Number(p.height));
+  return w > 0 && h > 0 ? { src: p.src, width: w, height: h } : null;
+}
+
+/** Reads saved content, filling anything missing from the built-in defaults. */
+export function parseContent(raw: unknown): SiteContent {
+  const r = (raw ?? {}) as Record<string, Record<string, unknown>>;
+  const d = defaultContent;
+  const items = Array.isArray(r.services?.items) ? (r.services.items as Record<string, unknown>[]) : null;
+  return {
+    tagline: bi(r.tagline, d.tagline, 120),
+    hero: { title: bi(r.hero?.title, d.hero.title, 120), lead: bi(r.hero?.lead, d.hero.lead), photo: photo(r.hero?.photo) },
+    services: {
+      title: bi(r.services?.title, d.services.title, 120),
+      lead: bi(r.services?.lead, d.services.lead),
+      items: items
+        ? items.slice(0, 12).map((item) => ({
+            icon: serviceIconKeys.includes(item.icon as ServiceIcon) ? (item.icon as ServiceIcon) : "hands",
+            title: bi(item.title, { en: "", fr: "" }, 80),
+            text: bi(item.text, { en: "", fr: "" }, 400),
+          }))
+        : d.services.items,
+    },
+    pricing: { title: bi(r.pricing?.title, d.pricing.title, 120), lead: bi(r.pricing?.lead, d.pricing.lead) },
+    about: {
+      title: bi(r.about?.title, d.about.title, 120),
+      credentialsLine: bi(r.about?.credentialsLine, d.about.credentialsLine, 160),
+      text1: bi(r.about?.text1, d.about.text1, 1200),
+      text2: bi(r.about?.text2, d.about.text2, 1200),
+      credentials: bi(r.about?.credentials, d.about.credentials, 1000),
+      photo: photo(r.about?.photo),
+    },
+    contact: {
+      title: bi(r.contact?.title, d.contact.title, 120),
+      lead: bi(r.contact?.lead, d.contact.lead),
+      office: bi(r.contact?.office, d.contact.office, 120),
+      areaNote: bi(r.contact?.areaNote, d.contact.areaNote, 160),
+    },
+  };
+}
+
+/** Fields that can't be left empty, with the name shown in the error. */
+export function contentProblems(c: SiteContent): string[] {
+  const required: [string, Bilingual][] = [
+    ["Tagline", c.tagline],
+    ["Main heading", c.hero.title],
+    ["Introduction", c.hero.lead],
+    ["Services heading", c.services.title],
+    ["Pricing heading", c.pricing.title],
+    ["About heading", c.about.title],
+    ["About paragraph 1", c.about.text1],
+    ["Contact heading", c.contact.title],
+    ["Office", c.contact.office],
+    ...c.services.items.flatMap((s, i): [string, Bilingual][] => [
+      [`Service ${i + 1} name`, s.title],
+      [`Service ${i + 1} description`, s.text],
+    ]),
+  ];
+  const missing = required.filter(([, v]) => !v.en || !v.fr).map(([name]) => name);
+  const problems = missing.length ? [`Fill in both English and French for: ${missing.join(", ")}.`] : [];
+  if (!c.services.items.length) problems.push("Keep at least one service.");
+  return problems;
+}
+
+const lines = (s: string) =>
+  s
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+/** The dictionary for one language with Ziad's edits applied. */
+export function applyContent(t: Dictionary, c: SiteContent, locale: Locale): Dictionary {
+  const L = (b: Bilingual) => b[locale];
+  return {
+    ...t,
+    tagline: L(c.tagline),
+    credentialsLine: L(c.about.credentialsLine),
+    hero: { ...t.hero, title: L(c.hero.title), lead: L(c.hero.lead) },
+    services: {
+      ...t.services,
+      title: L(c.services.title),
+      lead: L(c.services.lead),
+      items: c.services.items.map((s) => ({ icon: s.icon, title: L(s.title), text: L(s.text) })),
+    },
+    pricing: { ...t.pricing, title: L(c.pricing.title), lead: L(c.pricing.lead) },
+    about: {
+      ...t.about,
+      title: L(c.about.title),
+      text1: L(c.about.text1),
+      text2: L(c.about.text2),
+      credentials: lines(L(c.about.credentials)),
+    },
+    contact: { ...t.contact, title: L(c.contact.title), lead: L(c.contact.lead), office: L(c.contact.office), areaNote: L(c.contact.areaNote) },
+    booking: { ...t.booking, officeNote: L(c.contact.office) },
+  };
+}

@@ -9,6 +9,8 @@ import { openDays, slotsOn } from "@/lib/bookings";
 import { ownerEmail, sendEmail } from "@/lib/email";
 import { formatWhen, isDay, isTime, zonedToDate } from "@/lib/time";
 import { site } from "@/lib/site";
+import { getBusiness } from "@/lib/business";
+import { getText } from "@/lib/content";
 import { revalidatePath } from "next/cache";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,7 +44,7 @@ export type BookingState = {
 export async function requestBooking(_prev: BookingState, formData: FormData): Promise<BookingState> {
   const rawLocale = clean(formData.get("locale"), 5);
   const locale: Locale = isLocale(rawLocale) ? rawLocale : "en";
-  const dict = getDictionary(locale);
+  const dict = await getText(locale);
   const t = dict.booking;
 
   if (clean(formData.get("company"))) return { status: "success", message: fill(t.success, { name: "", when: "" }) };
@@ -96,7 +98,7 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
 
   await Promise.all([
     sendEmail({
-      to: ownerEmail(),
+      to: await ownerEmail(),
       replyTo: email,
       subject: `Booking request: ${name}, ${enWhen.day} at ${enWhen.time}`,
       text: [
@@ -117,14 +119,14 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
     }),
     sendEmail({
       to: email,
-      replyTo: ownerEmail(),
+      replyTo: await ownerEmail(),
       subject: t.emails.requestSubject,
       text: fill(t.emails.request, {
         name: name.split(" ")[0],
         when: whenText,
         service: serviceLine,
         where: location === "home" ? `${t.home}: ${address}` : `${t.office} (${dict.contact.office})`,
-        phone: site.phone,
+        phone: (await getBusiness()).phone,
       }),
     }),
   ]);

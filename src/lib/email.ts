@@ -1,4 +1,5 @@
 import { site } from "./site";
+import { notifyEmail } from "./business";
 
 /** Sends a plain-text email through Resend. Returns false (and logs) instead of throwing. */
 export async function sendEmail({
@@ -36,4 +37,4 @@ export async function sendEmail({
 }
 
 /** Where business notifications go. */
-export const ownerEmail = () => process.env.CONTACT_TO_EMAIL ?? site.email;
+export const ownerEmail = notifyEmail;

@@ -2,62 +2,8 @@
 
 import { useActionState, useState } from "react";
 import { updatePricing, type PricingState } from "@/app/admin/actions";
-import type { Bilingual, Pricing, PricedService } from "@/lib/pricing-data";
-
-const input =
-  "w-full rounded-xl border border-mist bg-white px-3.5 py-2.5 text-ink outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/15";
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-function BilingualFields({
-  label,
-  value,
-  onChange,
-  multiline = false,
-}: {
-  label: string;
-  value: Bilingual;
-  onChange: (v: Bilingual) => void;
-  multiline?: boolean;
-}) {
-  const Tag = multiline ? "textarea" : "input";
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {(["en", "fr"] as const).map((lang) => (
-        <Field key={lang} label={`${label} · ${lang === "en" ? "English" : "Français"}`}>
-          <Tag
-            value={value[lang]}
-            onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
-            rows={multiline ? 4 : undefined}
-            className={`${input} ${multiline ? "resize-y leading-relaxed" : ""}`}
-          />
-        </Field>
-      ))}
-    </div>
-  );
-}
-
-function Section({ title, text, children, action }: { title: string; text?: string; children: React.ReactNode; action?: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-mist/60 sm:p-7">
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-navy">{title}</h2>
-          {text && <p className="mt-0.5 text-sm text-muted">{text}</p>}
-        </div>
-        {action}
-      </div>
-      <div className="space-y-5">{children}</div>
-    </section>
-  );
-}
+import type { Pricing, PricedService } from "@/lib/pricing-data";
+import { BilingualFields, Field, Section, input } from "./fields";
 
 const newService = (): PricedService => ({
   id: `service-${Date.now().toString(36)}`,

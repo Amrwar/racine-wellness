@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/auth";
+import { getContent } from "@/lib/content";
+import { images } from "@/lib/site";
+import { PageHeader } from "@/components/admin/ui";
+import { ContentEditor } from "@/components/admin/ContentEditor";
+
+export const metadata: Metadata = { title: "Website" };
+
+export default async function WebsitePage() {
+  await requireAdmin();
+  const content = await getContent();
+  return (
+    <>
+      <PageHeader
+        title="Website text & photos"
+        lead={
+          <>
+            Edit what the{" "}
+            <a href="/" target="_blank" rel="noopener" className="font-medium text-blue-dark hover:underline">
+              home page
+            </a>{" "}
+            says, in English and French. Use “Translate from English” to draft the French, then read it over.
+          </>
+        }
+      />
+      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait }} />
+    </>
+  );
+}

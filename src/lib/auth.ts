@@ -1,17 +1,28 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { promisify } from "node:util";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { readSetting, writeSetting } from "./settings";
 
 /**
- * Single-owner admin login. The password lives in the ADMIN_PASSWORD environment variable
- * and sessions are HMAC-signed cookies keyed by SESSION_SECRET, so no user table is needed.
+ * Single-owner admin login. The first password comes from the ADMIN_PASSWORD environment variable;
+ * once Ziad changes it in Admin → Settings, a scrypt hash in the settings table takes over.
+ * Sessions are HMAC-signed cookies keyed by SESSION_SECRET and carry a version number:
+ * bumping it (password change, "sign out everywhere") ends every other session.
+ * To reset a forgotten password, delete the 'admin_auth' settings row: ADMIN_PASSWORD works again.
  */
 export const SESSION_COOKIE = "hz_admin";
 const SESSION_DAYS = 14;
+const scryptAsync = promisify(scrypt) as (pw: string, salt: Buffer, len: number) => Promise<Buffer>;
+
+type AuthRecord = { hash?: string; salt?: string; v: number; changedAt?: string };
 
 export function authConfigured() {
   return Boolean(process.env.ADMIN_PASSWORD && process.env.SESSION_SECRET);
 }
+
+const authRecord = cache(async () => readSetting<AuthRecord>("admin_auth"));
 
 function sign(payload: string) {
   return createHmac("sha256", process.env.SESSION_SECRET!).update(payload).digest("base64url");
@@ -23,14 +34,45 @@ function safeEqual(a: string, b: string) {
   return timingSafeEqual(ha, hb);
 }
 
-export function passwordMatches(input: string) {
+export async function passwordMatches(input: string) {
+  const record = await authRecord();
+  if (record?.hash && record.salt) {
+    const hash = await scryptAsync(input, Buffer.from(record.salt, "base64url"), 32);
+    return timingSafeEqual(hash, Buffer.from(record.hash, "base64url"));
+  }
   const expected = process.env.ADMIN_PASSWORD;
   return Boolean(expected) && safeEqual(input, expected!);
 }
 
-export async function startSession() {
+/** When the password was last changed from the admin (null = still the original one). */
+export async function passwordChangedAt() {
+  return (await authRecord())?.changedAt ?? null;
+}
+
+async function bumpVersion(changes: Partial<AuthRecord>) {
+  const record = await authRecord();
+  const next: AuthRecord = { ...record, ...changes, v: (record?.v ?? 0) + 1 };
+  await writeSetting("admin_auth", next);
+  return next.v;
+}
+
+/** Saves a new password, signs out every other device and keeps this one signed in. */
+export async function changePassword(password: string) {
+  const salt = randomBytes(16);
+  const hash = await scryptAsync(password, salt, 32);
+  const v = await bumpVersion({ hash: hash.toString("base64url"), salt: salt.toString("base64url"), changedAt: new Date().toISOString() });
+  await startSession(v);
+}
+
+/** Ends the session on every other phone or computer; this one stays signed in. */
+export async function signOutEverywhere() {
+  await startSession(await bumpVersion({}));
+}
+
+export async function startSession(version?: number) {
+  const v = version ?? (await authRecord())?.v ?? 0;
   const exp = Date.now() + SESSION_DAYS * 864e5;
-  const payload = Buffer.from(JSON.stringify({ exp })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({ exp, v })).toString("base64url");
   (await cookies()).set(SESSION_COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -51,8 +93,9 @@ export async function isAdmin() {
   const [payload, mac] = token.split(".");
   if (!payload || !mac || !safeEqual(mac, sign(payload))) return false;
   try {
-    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString());
-    return typeof exp === "number" && exp > Date.now();
+    const { exp, v = 0 } = JSON.parse(Buffer.from(payload, "base64url").toString());
+    if (typeof exp !== "number" || exp <= Date.now()) return false;
+    return v === ((await authRecord())?.v ?? 0);
   } catch {
     return false;
   }

@@ -5,6 +5,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SectionLinks } from "@/components/SectionLinks";
 import { site } from "@/lib/site";
+import { getText } from "@/lib/content";
+import { getBusiness } from "@/lib/business";
+import { phoneHref, type Business } from "@/lib/business-data";
+import type { Dictionary } from "@/i18n/en";
 import { getDictionary } from "@/i18n";
 import { htmlLang, isLocale, locales, localePath, ogLocale, type Locale } from "@/i18n/config";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
@@ -57,8 +61,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   };
 }
 
-function businessJsonLd(locale: Locale) {
-  const t = getDictionary(locale);
+function businessJsonLd(locale: Locale, t: Dictionary, business: Business) {
   return {
     "@context": "https://schema.org",
     "@type": ["HealthAndBeautyBusiness", "LocalBusiness"],
@@ -66,8 +69,8 @@ function businessJsonLd(locale: Locale) {
     description: t.meta.description,
     url: `${site.url}${localePath(locale, "/")}`,
     inLanguage: htmlLang[locale],
-    telephone: site.phoneHref.replace("tel:", ""),
-    email: site.email,
+    telephone: phoneHref(business.phone).replace("tel:", ""),
+    email: business.email,
     image: `${site.url}/opengraph-image`,
     address: {
       "@type": "PostalAddress",
@@ -77,14 +80,14 @@ function businessJsonLd(locale: Locale) {
     },
     founder: { "@type": "Person", name: site.owner, jobTitle: t.credentialsLine },
     areaServed: "Greater Montréal, QC",
-    sameAs: Object.values(site.socials),
+    sameAs: business.instagram ? [business.instagram] : [],
   };
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const [t, business] = await Promise.all([getText(locale), getBusiness()]);
 
   return (
     <html lang={htmlLang[locale]} className={`${poppins.variable} h-full`}>
@@ -100,12 +103,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer t={t} />
+          <Footer t={t} business={business} />
           <SectionLinks />
         </LocaleProvider>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd(locale)) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd(locale, t, business)) }}
         />
       </body>
     </html>
