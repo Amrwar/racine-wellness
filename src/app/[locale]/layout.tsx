@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SectionLinks } from "@/components/SectionLinks";
 import { site } from "@/lib/site";
-import { getText } from "@/lib/content";
+import { getContent, getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { getDesign } from "@/lib/design";
 import { designCss, hiddenMenuKeys } from "@/lib/design-data";
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = (await getText(locale));
+  const share = (await getContent()).share.home;
   return {
     metadataBase: new URL(site.url),
     title: { default: t.meta.titleDefault, template: `%s · ${site.name}` },
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
       siteName: site.name,
       title: t.meta.titleDefault,
       description: t.meta.description,
-      images: [{ url: `/opengraph-image?lang=${locale}`, width: 1200, height: 630 }],
+      images: share ? [{ url: share.src, width: share.width, height: share.height }] : [{ url: `/opengraph-image?lang=${locale}`, width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image" },
     robots: { index: true, follow: true },
@@ -79,7 +80,7 @@ function businessJsonLd(locale: Locale, t: Dictionary, business: Business) {
     },
     founder: { "@type": "Person", name: site.owner, jobTitle: t.credentialsLine },
     areaServed: "Greater Montréal, QC",
-    sameAs: business.instagram ? [business.instagram] : [],
+    sameAs: [business.instagram, business.facebook, business.google, business.linkedin, business.youtube, business.tiktok].filter(Boolean),
   };
 }
 

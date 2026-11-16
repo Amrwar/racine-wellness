@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { signOutOtherDevices, updateBusiness, updatePassword, type SettingsState } from "@/app/admin/actions";
-import type { Business } from "@/lib/business-data";
+import { socialFields, type Business } from "@/lib/business-data";
 import { Field, Section, input } from "./fields";
 
 function Status({ state }: { state: SettingsState }) {
@@ -36,9 +36,17 @@ export function BusinessForm({ initial, fallbackNotify }: { initial: Business; f
           >
             <input name="notifyEmail" type="email" defaultValue={initial.notifyEmail} placeholder={fallbackNotify} className={input} />
           </Field>
-          <Field label="Instagram link" hint="Leave empty to hide the Instagram icon." className="sm:col-span-2">
-            <input name="instagram" type="url" defaultValue={initial.instagram} placeholder="https://www.instagram.com/…" className={input} />
-          </Field>
+        </div>
+        <div>
+          <p className="mb-1 text-sm font-semibold text-navy">Social profiles</p>
+          <p className="mb-3 text-sm text-muted">Each link you fill in shows as an icon in the footer and helps Google connect your profiles. Leave empty to hide.</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {socialFields.map((f) => (
+              <Field key={f.key} label={f.label}>
+                <input name={f.key} type="url" defaultValue={initial[f.key]} placeholder="https://…" className={input} />
+              </Field>
+            ))}
+          </div>
         </div>
         <label className="flex items-start gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-mist/60">
           <input type="checkbox" name="reminders" value="yes" defaultChecked={initial.reminders} className="mt-1 h-4 w-4 accent-navy" />

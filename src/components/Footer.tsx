@@ -3,7 +3,7 @@ import { phoneHref, type Business } from "@/lib/business-data";
 import { LLink } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
 import { Logo } from "./Logo";
-import { Instagram } from "./icons";
+import { Facebook, GoogleG, Instagram, Linkedin, Tiktok, Youtube } from "./icons";
 
 export function Footer({ t, business }: { t: Dictionary; business: Business }) {
   return (
@@ -38,16 +38,21 @@ export function Footer({ t, business }: { t: Dictionary; business: Business }) {
             <LLink href="/privacy" className="hover:text-white">
               {t.footer.privacy}
             </LLink>
-            {business.instagram && (
-            <a
-              href={business.instagram}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="text-white/70 hover:text-green"
-            >
-              <Instagram className="h-5 w-5" />
-            </a>
+            {(
+              [
+                ["instagram", "Instagram", Instagram],
+                ["facebook", "Facebook", Facebook],
+                ["google", "Google", GoogleG],
+                ["linkedin", "LinkedIn", Linkedin],
+                ["youtube", "YouTube", Youtube],
+                ["tiktok", "TikTok", Tiktok],
+              ] as const
+            ).map(([key, label, Icon]) =>
+              business[key] ? (
+                <a key={key} href={business[key]} target="_blank" rel="noreferrer" aria-label={label} className="text-white/70 hover:text-green">
+                  <Icon className="h-5 w-5" />
+                </a>
+              ) : null,
             )}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { getText } from "@/lib/content";
+import { getContent, getText } from "@/lib/content";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -12,7 +12,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog">):
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const m = (await getText(locale)).meta.blog;
-  return { title: m.title, description: m.description, alternates: alternatesFor("/blog") };
+  const share = await getContent().then((c) => c.share.blog);
+  return {
+    title: m.title, description: m.description, alternates: alternatesFor("/blog"),
+    // A page-specific share picture; otherwise the home page's (from the layout) applies.
+    ...(share && { openGraph: { title: m.title, description: m.description, images: [{ url: share.src, width: share.width, height: share.height }] } }),
+  };
 }
 
 export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) {

@@ -9,6 +9,13 @@ export type Business = {
   notifyEmail: string;
   /** Instagram profile URL. Empty hides the icon. */
   instagram: string;
+  /** Other profiles shown as icons in the footer (empty = hidden). */
+  facebook: string;
+  linkedin: string;
+  youtube: string;
+  tiktok: string;
+  /** Google Business profile or reviews link. */
+  google: string;
   /** Email clients a reminder the day before a confirmed appointment. */
   reminders: boolean;
 };
@@ -18,8 +25,22 @@ export const defaultBusiness: Business = {
   email: "info@healthyzone.ca",
   notifyEmail: "",
   instagram: "https://www.instagram.com/healthyzone.ca/",
+  facebook: "",
+  linkedin: "",
+  youtube: "",
+  tiktok: "",
+  google: "",
   reminders: true,
 };
+
+export const socialFields = [
+  { key: "instagram", label: "Instagram" },
+  { key: "facebook", label: "Facebook" },
+  { key: "google", label: "Google Business profile" },
+  { key: "linkedin", label: "LinkedIn" },
+  { key: "youtube", label: "YouTube" },
+  { key: "tiktok", label: "TikTok" },
+] as const;
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -37,6 +58,11 @@ export function parseBusiness(raw: Record<string, unknown>): { value?: Business;
     email: s("email"),
     notifyEmail: s("notifyEmail"),
     instagram: s("instagram", 300),
+    facebook: s("facebook", 300),
+    linkedin: s("linkedin", 300),
+    youtube: s("youtube", 300),
+    tiktok: s("tiktok", 300),
+    google: s("google", 500),
     reminders: raw.reminders === "yes",
   };
   const errors: string[] = [];
@@ -46,6 +72,9 @@ export function parseBusiness(raw: Record<string, unknown>): { value?: Business;
   if (value.notifyEmail && !EMAIL_RE.test(value.notifyEmail)) errors.push("Enter a valid notification email, or leave it empty.");
   if (value.instagram && !/^https:\/\/(www\.)?instagram\.com\/[\w.]+\/?$/i.test(value.instagram)) {
     errors.push("The Instagram link should look like https://www.instagram.com/healthyzone.ca/, or leave it empty.");
+  }
+  for (const k of ["facebook", "linkedin", "youtube", "tiktok", "google"] as const) {
+    if (value[k] && !/^https:\/\/[^\s]+$/i.test(value[k])) errors.push(`The ${k === "google" ? "Google" : k[0].toUpperCase() + k.slice(1)} link must start with https://, or leave it empty.`);
   }
   return errors.length ? { errors } : { value, errors };
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getPricing } from "@/lib/pricing";
-import { getText } from "@/lib/content";
+import { getContent, getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { getDesign } from "@/lib/design";
 import { phoneHref } from "@/lib/business-data";
@@ -15,7 +15,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/book">):
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = (await getText(locale)).booking;
-  return { title: t.metaTitle, description: t.metaDescription, alternates: alternatesFor("/book") };
+  const share = await getContent().then((c) => c.share.book);
+  return {
+    title: t.metaTitle, description: t.metaDescription, alternates: alternatesFor("/book"),
+    // A page-specific share picture; otherwise the home page's (from the layout) applies.
+    ...(share && { openGraph: { title: t.metaTitle, description: t.metaDescription, images: [{ url: share.src, width: share.width, height: share.height }] } }),
+  };
 }
 
 export default async function BookPage({ params }: PageProps<"/[locale]/book">) {

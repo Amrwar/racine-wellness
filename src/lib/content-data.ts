@@ -102,6 +102,8 @@ export type SiteContent = {
   faq: { title: Bilingual; items: FaqItem[] };
   /** Ziad's own sections (heading, text, optional photo), shown on the home page. */
   blocks: Block[];
+  /** Pictures shown when a page is shared (Facebook, WhatsApp, iMessage…); null = the built-in card. */
+  share: { home: SitePhoto | null; book: SitePhoto | null; blog: SitePhoto | null };
   /** Uploaded section backgrounds; null keeps the built-in photo. */
   backgrounds: Record<BackgroundKey, SitePhoto | null>;
   framing: Record<BackgroundKey, Framing>;
@@ -140,6 +142,7 @@ export const defaultContent: SiteContent = {
   testimonials: { title: { en: "What clients say", fr: "Ce que disent nos clients" }, items: [] },
   faq: { title: { en: "Frequently asked questions", fr: "Questions fréquentes" }, items: [] },
   blocks: [],
+  share: { home: null, book: null, blog: null },
   backgrounds: { services: null, about: null, blog: null, contact: null },
   framing: defaultFraming,
 };
@@ -233,6 +236,7 @@ export function parseContent(raw: unknown): SiteContent {
         photo: photo(b.photo),
         photoSide: b.photoSide === "left" ? "left" : "right",
       })),
+    share: { home: photo(r.share?.home), book: photo(r.share?.book), blog: photo(r.share?.blog) },
     backgrounds: {
       services: photo(r.backgrounds?.services),
       about: photo(r.backgrounds?.about),

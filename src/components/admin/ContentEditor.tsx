@@ -35,6 +35,7 @@ const jump = [
   ["testimonials", "Testimonials"],
   ["faq", "Questions"],
   ["own", "Your own sections"],
+  ["share", "Link previews"],
   ["contact", "Contact"],
 ] as const;
 
@@ -296,6 +297,27 @@ export function ContentEditor({
             );
           }}
         />
+      </Section>
+
+      <Section id="share" title="Link previews" text="The picture shown when someone shares a page on Facebook, WhatsApp, Messenger or by text. Without one, a HealthyZone card with your name and phone is used.">
+        {(
+          [
+            ["home", "Home page"],
+            ["book", "Booking page"],
+            ["blog", "Blog"],
+          ] as const
+        ).map(([key, label]) => (
+          <PhotoField
+            key={key}
+            label={label}
+            kind="hero"
+            name={`share-${key}`}
+            note={key === "home" ? "1200 × 630 pixels works best. Also used for other pages without their own." : "Leave empty to use the home page picture."}
+            photo={content.share[key]}
+            fallback=""
+            onChange={(photo) => setContent((c) => ({ ...c, share: { ...c.share, [key]: photo } }))}
+          />
+        ))}
       </Section>
 
       <Section
