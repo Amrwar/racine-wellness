@@ -32,7 +32,7 @@ export default async function OverviewPage() {
     {
       done: keys.has("availability"),
       title: "Set your real opening hours",
-      text: "The booking page uses sample hours until you save yours. Add your days off there too.",
+      text: "Online booking is paused until you save your hours: clients are asked to call or write instead. Add your days off there too.",
       href: "/admin/bookings/availability",
       action: "Set hours",
     },

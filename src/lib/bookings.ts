@@ -8,6 +8,18 @@ import { googleBusy } from "./google";
 /** Slots start on the half hour. */
 const STEP = 30;
 
+/** True once Ziad has saved his own hours. Until then the sample hours are never offered to clients. */
+export async function hoursSaved() {
+  if (!hasDatabase()) return false;
+  try {
+    const sql = await db();
+    const [row] = await sql`SELECT 1 FROM settings WHERE key = 'availability'`;
+    return Boolean(row);
+  } catch {
+    return false;
+  }
+}
+
 export async function getAvailability(): Promise<Availability> {
   if (!hasDatabase()) return defaultAvailability;
   try {
@@ -61,6 +73,7 @@ function windowFor(a: Availability, now: number) {
 
 /** Days in the booking window with at least one free slot for this duration. */
 export async function openDays(minutes: number, now = Date.now()) {
+  if (!(await hoursSaved())) return [];
   const a = await getAvailability();
   const { first, last } = windowFor(a, now);
   const busy = await busyBetween(zonedToDate(first, "00:00"), zonedToDate(addDays(last, 1), "00:00"));
@@ -73,6 +86,7 @@ export async function openDays(minutes: number, now = Date.now()) {
 
 /** Free start times ("HH:MM", Montréal) on a day for this duration. */
 export async function slotsOn(date: string, minutes: number, now = Date.now()) {
+  if (!(await hoursSaved())) return [];
   const a = await getAvailability();
   const { first, last } = windowFor(a, now);
   if (date < first || date > last) return [];
