@@ -76,6 +76,11 @@ export function framingStyle(f: Framing) {
   return { objectPosition: origin, transformOrigin: origin, transform: f.zoom > 100 ? `scale(${f.zoom / 100})` : undefined };
 }
 /** image: an uploaded icon, shown instead of the built-in one. */
+export type Testimonial = { quote: Bilingual; name: string; detail: Bilingual };
+export type FaqItem = { q: Bilingual; a: Bilingual };
+export type Block = { id: string; eyebrow: Bilingual; title: Bilingual; text: Bilingual; photo: SitePhoto | null; photoSide: "left" | "right" };
+export const newBlockId = () => `block-${Math.random().toString(36).slice(2, 10)}`;
+
 export type ServiceItem = { icon: ServiceIcon; image: SitePhoto | null; title: Bilingual; text: Bilingual };
 
 export type SiteContent = {
@@ -93,6 +98,10 @@ export type SiteContent = {
     photo: SitePhoto | null;
   };
   contact: { title: Bilingual; lead: Bilingual; office: Bilingual; areaNote: Bilingual };
+  testimonials: { title: Bilingual; items: Testimonial[] };
+  faq: { title: Bilingual; items: FaqItem[] };
+  /** Ziad's own sections (heading, text, optional photo), shown on the home page. */
+  blocks: Block[];
   /** Uploaded section backgrounds; null keeps the built-in photo. */
   backgrounds: Record<BackgroundKey, SitePhoto | null>;
   framing: Record<BackgroundKey, Framing>;
@@ -128,6 +137,9 @@ export const defaultContent: SiteContent = {
     office: pair((d) => d.contact.office),
     areaNote: pair((d) => d.contact.areaNote),
   },
+  testimonials: { title: { en: "What clients say", fr: "Ce que disent nos clients" }, items: [] },
+  faq: { title: { en: "Frequently asked questions", fr: "Questions fréquentes" }, items: [] },
+  blocks: [],
   backgrounds: { services: null, about: null, blog: null, contact: null },
   framing: defaultFraming,
 };
@@ -195,6 +207,32 @@ export function parseContent(raw: unknown): SiteContent {
       office: bi(r.contact?.office, d.contact.office, 120),
       areaNote: bi(r.contact?.areaNote, d.contact.areaNote, 160),
     },
+    testimonials: {
+      title: bi(r.testimonials?.title, d.testimonials.title, 120),
+      items: (Array.isArray(r.testimonials?.items) ? (r.testimonials.items as Record<string, unknown>[]) : []).slice(0, 20).map((t) => ({
+        quote: bi(t.quote, { en: "", fr: "" }, 800),
+        name: text(t.name, "", 80),
+        detail: bi(t.detail, { en: "", fr: "" }, 80),
+      })),
+    },
+    faq: {
+      title: bi(r.faq?.title, d.faq.title, 120),
+      items: (Array.isArray(r.faq?.items) ? (r.faq.items as Record<string, unknown>[]) : []).slice(0, 30).map((f) => ({
+        q: bi(f.q, { en: "", fr: "" }, 200),
+        a: bi(f.a, { en: "", fr: "" }, 1500),
+      })),
+    },
+    blocks: (Array.isArray(r.blocks) ? (r.blocks as unknown as Record<string, unknown>[]) : [])
+      .filter((b) => typeof b.id === "string" && /^block-[a-z0-9]{4,16}$/.test(b.id))
+      .slice(0, 12)
+      .map((b) => ({
+        id: b.id as string,
+        eyebrow: bi(b.eyebrow, { en: "", fr: "" }, 60),
+        title: bi(b.title, { en: "", fr: "" }, 140),
+        text: bi(b.text, { en: "", fr: "" }, 3000),
+        photo: photo(b.photo),
+        photoSide: b.photoSide === "left" ? "left" : "right",
+      })),
     backgrounds: {
       services: photo(r.backgrounds?.services),
       about: photo(r.backgrounds?.about),
@@ -227,6 +265,11 @@ export function contentProblems(c: SiteContent): string[] {
       [`Service ${i + 1} description`, s.text],
     ]),
   ];
+  c.testimonials.items.forEach((t, i) => required.push([`Testimonial ${i + 1}`, t.quote]));
+  c.faq.items.forEach((f, i) => {
+    required.push([`Question ${i + 1}`, f.q], [`Answer ${i + 1}`, f.a]);
+  });
+  c.blocks.forEach((b, i) => required.push([`Your section ${i + 1} heading`, b.title]));
   const missing = required.filter(([, v]) => !v.en || !v.fr).map(([name]) => name);
   const problems = missing.length ? [`Fill in both English and French for: ${missing.join(", ")}.`] : [];
   if (!c.services.items.length) problems.push("Keep at least one service.");

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
+import { discardDraft } from "@/lib/settings";
 import { getContent } from "@/lib/content";
 import { images } from "@/lib/site";
 import { PageHeader } from "@/components/admin/ui";
@@ -10,6 +11,7 @@ export const metadata: Metadata = { title: "Website" };
 
 export default async function WebsitePage() {
   await requireAdmin();
+  await discardDraft("content");
   const content = await getContent();
   return (
     <>

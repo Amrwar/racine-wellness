@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { updateText, type TextState } from "@/app/admin/actions";
 import { placeholders, textFields, textGroups, type TextOverrides } from "@/lib/text-data";
 import type { Bilingual } from "@/lib/pricing-data";
+import { PreviewButton } from "./PreviewButton";
 import { BilingualFields, input } from "./fields";
 
 const same = (a: Bilingual, b: Bilingual) => a.en === b.en && a.fr === b.fr;
@@ -124,6 +125,7 @@ export function TextEditor({ initial }: { initial: TextOverrides }) {
             )}
           </p>
           <div className="flex shrink-0 gap-2">
+            {dirty && <PreviewButton kind="text" value={overrides} />}
             {dirty && (
               <button type="button" onClick={() => setOverrides(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
                 Undo changes

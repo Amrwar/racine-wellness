@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateContent, type ContentState } from "@/app/admin/actions";
-import { defaultFraming, framingStyle, serviceIconChoices, type BackgroundKey, type Framing, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
+import { defaultFraming, framingStyle, newBlockId, serviceIconChoices, type BackgroundKey, type Framing, type ServiceItem, type SiteContent, type SitePhoto } from "@/lib/content-data";
 import { ServiceIconView, serviceIcons } from "@/components/icons";
 import type { Bilingual } from "@/lib/pricing-data";
+import { PreviewButton } from "./PreviewButton";
 import { BilingualFields, DragHandle, Section, useDragReorder } from "./fields";
 
 type Path = (string | number)[];
@@ -31,6 +32,9 @@ const jump = [
   ["pricing", "Pricing"],
   ["about", "About"],
   ["blog", "Blog preview"],
+  ["testimonials", "Testimonials"],
+  ["faq", "Questions"],
+  ["own", "Your own sections"],
   ["contact", "Contact"],
 ] as const;
 
@@ -212,6 +216,88 @@ export function ContentEditor({
         {background("blog", " It is lightened slightly so the dark heading stays readable.")}
       </Section>
 
+      <Section id="testimonials" title="Testimonials" text="Short quotes from happy clients. The section appears on the home page once there is at least one (with their permission).">
+        <BilingualFields label="Heading" {...bi("testimonials", "title")} />
+        <ListEditor
+          items={content.testimonials.items}
+          noun="testimonial"
+          onChange={(items) => setContent((c) => ({ ...c, testimonials: { ...c.testimonials, items: items(c.testimonials.items) } }))}
+          blank={() => ({ quote: { en: "", fr: "" }, name: "", detail: { en: "", fr: "" } })}
+          render={(t, i) => (
+            <>
+              <BilingualFields label="Quote" multiline rows={3} {...bi("testimonials", "items", i, "quote")} />
+              <div className="grid gap-4 sm:grid-cols-3">
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Name</span>
+                  <input
+                    value={t.name}
+                    placeholder="e.g. Marie T."
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      setContent((c) => ({ ...c, testimonials: { ...c.testimonials, items: c.testimonials.items.map((x, j) => (j === i ? { ...x, name } : x)) } }));
+                    }}
+                    className="w-full rounded-xl border border-mist bg-white px-3.5 py-2.5 text-ink outline-none focus:border-blue focus:ring-4 focus:ring-blue/15"
+                  />
+                </label>
+                <div className="sm:col-span-2">
+                  <BilingualFields label="Detail (optional)" hint="e.g. Office worker, Pointe-Claire" {...bi("testimonials", "items", i, "detail")} />
+                </div>
+              </div>
+            </>
+          )}
+        />
+      </Section>
+
+      <Section id="faq" title="Questions & answers" text="Common questions, shown as an expandable list. Appears once there is at least one.">
+        <BilingualFields label="Heading" {...bi("faq", "title")} />
+        <ListEditor
+          items={content.faq.items}
+          noun="question"
+          onChange={(items) => setContent((c) => ({ ...c, faq: { ...c.faq, items: items(c.faq.items) } }))}
+          blank={() => ({ q: { en: "", fr: "" }, a: { en: "", fr: "" } })}
+          render={(_, i) => (
+            <>
+              <BilingualFields label="Question" {...bi("faq", "items", i, "q")} />
+              <BilingualFields label="Answer" multiline rows={3} {...bi("faq", "items", i, "a")} />
+            </>
+          )}
+        />
+      </Section>
+
+      <Section id="own" title="Your own sections" text="Add a section about anything: a heading, text and an optional photo. Order and style them on the Design page.">
+        <ListEditor
+          items={content.blocks}
+          noun="section"
+          onChange={(items) => setContent((c) => ({ ...c, blocks: items(c.blocks) }))}
+          blank={() => ({ id: newBlockId(), eyebrow: { en: "", fr: "" }, title: { en: "", fr: "" }, text: { en: "", fr: "" }, photo: null, photoSide: "right" as const })}
+          render={(b, i) => {
+            const setBlock = (change: Partial<typeof b>) => setContent((c) => ({ ...c, blocks: c.blocks.map((x, j) => (j === i ? { ...x, ...change } : x)) }));
+            return (
+              <>
+                <BilingualFields label="Small label above (optional)" {...bi("blocks", i, "eyebrow")} />
+                <BilingualFields label="Heading" {...bi("blocks", i, "title")} />
+                <BilingualFields label="Text" hint="Leave an empty line between paragraphs." multiline rows={5} {...bi("blocks", i, "text")} />
+                <PhotoField label="Photo (optional)" kind="hero" name="section" note="Shown beside the text on computers, above it on phones." photo={b.photo} fallback="" onChange={(photo) => setBlock({ photo })} />
+                {b.photo && (
+                  <div className="flex gap-2">
+                    {(["left", "right"] as const).map((side) => (
+                      <button
+                        key={side}
+                        type="button"
+                        onClick={() => setBlock({ photoSide: side })}
+                        className={`rounded-full px-4 py-1.5 text-sm font-semibold ${b.photoSide === side ? "bg-navy text-white" : "bg-white text-navy ring-1 ring-mist"}`}
+                      >
+                        Photo on the {side}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          }}
+        />
+      </Section>
+
       <Section
         id="contact"
         title="Contact section"
@@ -250,6 +336,7 @@ export function ContentEditor({
             )}
           </p>
           <div className="flex shrink-0 gap-2">
+            {dirty && <PreviewButton kind="content" value={content} />}
             {dirty && (
               <button type="button" onClick={() => setContent(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
                 Undo changes
@@ -282,6 +369,60 @@ function SmallButton({ label, d, onClick, disabled, danger = false }: { label: s
         <path d={d} />
       </svg>
     </button>
+  );
+}
+
+/** A list of cards with drag-to-reorder, remove and add. */
+function ListEditor<T>({
+  items,
+  noun,
+  onChange,
+  blank,
+  render,
+}: {
+  items: T[];
+  noun: string;
+  /** Receives an updater so it always applies to the latest list. */
+  onChange: (change: (list: T[]) => T[]) => void;
+  blank: () => T;
+  render: (item: T, i: number) => React.ReactNode;
+}) {
+  const drag = useDragReorder((from, to) =>
+    onChange((list) => {
+      const next = [...list];
+      const [it] = next.splice(from, 1);
+      next.splice(to, 0, it);
+      return next;
+    }),
+  );
+  return (
+    <div className="space-y-4">
+      {items.length > 0 && (
+        <ol className="space-y-4">
+          {items.map((item, i) => (
+            <li key={i} {...drag.item(i)} className={`rounded-2xl bg-surface p-5 ring-1 transition ${drag.dragging === i ? "opacity-60 ring-2 ring-blue" : "ring-mist/60"}`}>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <p className="flex items-center gap-2 font-semibold text-navy">
+                  <DragHandle {...drag.handle(i)} />
+                  {noun[0].toUpperCase() + noun.slice(1)} {i + 1}
+                </p>
+                <button type="button" onClick={() => onChange((list) => list.filter((_, j) => j !== i))} className="rounded-full px-3 py-1.5 text-sm font-medium text-danger hover:bg-danger/10">
+                  Remove
+                </button>
+              </div>
+              <div className="space-y-4">{render(item, i)}</div>
+            </li>
+          ))}
+        </ol>
+      )}
+      <button
+        type="button"
+        onClick={() => onChange((list) => [...list, blank()])}
+        className="rounded-full border-2 border-dashed border-blue/50 px-5 py-2.5 text-sm font-semibold text-blue-dark hover:border-blue"
+      >
+        + Add a {noun}
+      </button>
+    </div>
   );
 }
 
@@ -488,7 +629,11 @@ function PhotoField({
       <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</p>
       <div className="flex flex-wrap items-center gap-5">
         {kind !== "background" && <div className={`relative shrink-0 overflow-hidden rounded-xl bg-surface ring-1 ring-mist/70 ${kind === "portrait" ? "h-36 w-28" : "h-28 w-48"}`}>
-          <Image src={photo?.src ?? fallback} alt="" fill sizes="200px" className="object-cover object-top" />
+          {photo?.src || fallback ? (
+            <Image src={photo?.src ?? fallback} alt="" fill sizes="200px" className="object-cover object-top" />
+          ) : (
+            <span className="grid h-full place-items-center text-xs text-muted">No photo</span>
+          )}
         </div>}
         <div className="space-y-2">
           <input
@@ -509,7 +654,7 @@ function PhotoField({
             </button>
             {photo && (
               <button type="button" onClick={() => onChange(null)} className="rounded-full px-4 py-2 text-sm font-medium text-muted hover:text-navy">
-                Use the original photo
+                {fallback ? "Use the original photo" : "Remove photo"}
               </button>
             )}
           </div>

@@ -16,13 +16,14 @@ import {
   type Layout,
   type SectionStyle,
   type Spacing,
+  styleFor,
 } from "@/lib/design-data";
 import { DragHandle, useDragReorder } from "./fields";
 import { LivePreview } from "./LivePreview";
 
 const menuNames: Record<string, string> = { services: "Services", pricing: "Pricing", about: "About", blog: "Blog", contact: "Contact" };
 /** Element ids on the home page, so the preview can scroll to the section being edited. */
-const anchors: Record<DesignSection, string> = { services: "services", pricing: "pricing", about: "about", blog: "latest", contact: "contact" };
+const anchorFor = (key: DesignSection) => (key === "blog" ? "latest" : key);
 
 const tabs = [
   { key: "brand", label: "Brand", d: "M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-.8-.8-1.3-.8-2.2 0-.8.7-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.4-4-7.8-9-7.8z" },
@@ -130,7 +131,17 @@ const fontFamily = (k: FontKey) => `var(--font-${k}), ${k === "lora" || k === "p
 
 /* ---------------- Editor ---------------- */
 
-export function DesignEditor({ initial, backgrounds }: { initial: Design; backgrounds: Partial<Record<DesignSection, string>> }) {
+export function DesignEditor({
+  initial,
+  backgrounds,
+  names = {},
+}: {
+  initial: Design;
+  backgrounds: Partial<Record<DesignSection, string>>;
+  /** Names of Ziad's own sections (their headings). */
+  names?: Record<string, string>;
+}) {
+  const nameOf = (key: DesignSection) => (designSectionNames as Record<string, string>)[key] ?? names[key] ?? "Your section";
   const [design, setDesign] = useState(initial);
   const [state, action, pending] = useActionState<DesignState, FormData>(updateDesign, { status: "idle" });
   const [tab, setTab] = useState<Tab>("brand");
@@ -144,7 +155,7 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
   const setLayout = (l: Partial<Layout>) => setDesign((d) => ({ ...d, layout: { ...d.layout, ...l } }));
   const setForms = (f: Partial<FormFields>) => setDesign((d) => ({ ...d, forms: { ...d.forms, ...f } }));
   const setHero = (h: Partial<Design["hero"]>) => setDesign((d) => ({ ...d, hero: { ...d.hero, ...h } }));
-  const setStyle = (key: DesignSection, s: Partial<SectionStyle>) => setDesign((d) => ({ ...d, style: { ...d.style, [key]: { ...d.style[key], ...s } } }));
+  const setStyle = (key: DesignSection, s: Partial<SectionStyle>) => setDesign((d) => ({ ...d, style: { ...d.style, [key]: { ...styleFor(d, key), ...s } } }));
   const move = (from: number, to: number) =>
     setDesign((d) => {
       if (to < 0 || to >= d.sections.length || from === to) return d;
@@ -189,6 +200,7 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
         />
       );
     }
+    if (key !== "about" && key !== "contact") return null;
     const field = key === "about" ? "aboutPhoto" : "contactForm";
     const thing = key === "about" ? "Photo" : "Form";
     return (
@@ -366,7 +378,8 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
             <Panel title="Home page sections" text="Drag to reorder, switch off to hide, open a section to change its look. The top of the page always comes first.">
               <ol className="space-y-2">
                 {design.sections.map((s, i) => {
-                  const st = design.style[s.key];
+                  const st = styleFor(design, s.key);
+                  const layout = layoutControl(s.key);
                   const bg = backgrounds[s.key];
                   const open = openStyle === s.key;
                   return (
@@ -388,26 +401,28 @@ export function DesignEditor({ initial, backgrounds }: { initial: Design; backgr
                           type="button"
                           onClick={() => {
                             setOpenStyle(open ? null : s.key);
-                            setFocus(anchors[s.key]);
+                            setFocus(anchorFor(s.key));
                           }}
                           aria-expanded={open}
                           className={`min-w-0 flex-1 text-left text-sm font-semibold ${s.visible ? "text-navy" : "text-muted line-through"}`}
                         >
-                          {designSectionNames[s.key]}
+                          {nameOf(s.key)}
                           <span className="block text-xs font-normal text-muted">{open ? "Close" : "Change look"}</span>
                         </button>
                         <Toggle
                           on={s.visible}
-                          label={`Show the ${designSectionNames[s.key]} section`}
+                          label={`Show the ${nameOf(s.key)} section`}
                           onChange={() => setDesign((d) => ({ ...d, sections: d.sections.map((x) => (x.key === s.key ? { ...x, visible: !x.visible } : x)) }))}
                         />
                       </div>
                       {open && (
                         <div className="space-y-4 border-t border-mist/60 bg-surface/60 p-4">
-                          <div>
-                            <Label>Layout on computers</Label>
-                            {layoutControl(s.key)}
-                          </div>
+                          {layout && (
+                            <div>
+                              <Label>Layout on computers</Label>
+                              {layout}
+                            </div>
+                          )}
                           <div>
                             <Label>Height</Label>
                             <Choice<Spacing>

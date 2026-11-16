@@ -90,7 +90,7 @@ export function SectionHeader({
   light = false,
   className = "",
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   lead?: ReactNode;
   /** White text, for sections on a dark photo. */
@@ -99,7 +99,7 @@ export function SectionHeader({
 }) {
   return (
     <div className={`max-w-2xl ${className}`}>
-      <Eyebrow light={light}>{eyebrow}</Eyebrow>
+      {eyebrow && <Eyebrow light={light}>{eyebrow}</Eyebrow>}
       <h2 className={`text-3xl font-semibold tracking-tight sm:text-4xl ${light ? "text-white" : "text-navy"}`}>
         {title}
       </h2>

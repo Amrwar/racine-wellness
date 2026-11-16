@@ -7,7 +7,7 @@ import { images } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
 import { getDesign } from "@/lib/design";
-import { columnsClass, heroSizeClass, spacingClass, type DesignSection, type SectionStyle } from "@/lib/design-data";
+import { columnsClass, heroSizeClass, normalizeSections, spacingClass, styleFor, type DesignSection, type SectionStyle } from "@/lib/design-data";
 import { phoneHref } from "@/lib/business-data";
 import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container, Eyebrow, SectionHeader } from "@/components/ui";
@@ -27,16 +27,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const latestPosts = (await getPosts()).slice(0, 3);
 
   /** Home-page sections; Admin → Design sets their order, visibility, spacing and tint. */
-  const sections: Record<DesignSection, React.ReactNode> = {
+  const st = (key: DesignSection) => styleFor(design, key);
+  const sections: Record<string, React.ReactNode> = {
     services: (
-        <section id="services" className={`relative isolate overflow-hidden bg-white ${spacingClass[design.style.services.spacing]}`}>
+        <section id="services" className={`relative isolate overflow-hidden bg-white ${spacingClass[st("services").spacing]}`}>
           <SectionPhoto src={content.backgrounds.services?.src ?? images.sections.services} framing={content.framing.services} />
           {/* White fade at the top only, behind the heading; the photo shows untouched below */}
           <div
             aria-hidden
             className="absolute inset-x-0 top-0 -z-10 h-96 bg-gradient-to-b from-white from-30% via-white/70 to-transparent sm:h-[26rem]"
           />
-          <Tint style={design.style.services} />
+          <Tint style={st("services")} />
           <Container>
             <SectionHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} />
             <ul className={`mt-12 grid gap-5 ${columnsClass.services[design.layout.servicesColumns]}`}>
@@ -59,8 +60,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
     ),
     pricing: (
-        <section id="pricing" className={`relative isolate bg-surface ${spacingClass[design.style.pricing.spacing]}`}>
-          <Tint style={design.style.pricing} />
+        <section id="pricing" className={`relative isolate bg-surface ${spacingClass[st("pricing").spacing]}`}>
+          <Tint style={st("pricing")} />
           <Container>
             <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
               <SectionHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} />
@@ -106,11 +107,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
     ),
     about: (
-        <section id="about" className={`relative isolate overflow-hidden bg-ink ${spacingClass[design.style.about.spacing]}`}>
+        <section id="about" className={`relative isolate overflow-hidden bg-ink ${spacingClass[st("about").spacing]}`}>
           <SectionPhoto src={content.backgrounds.about?.src ?? images.sections.about} framing={content.framing.about} />
           {/* An uploaded photo isn't pre-toned like the built-in one: darken it so the white text stays readable. */}
           {content.backgrounds.about && <div aria-hidden className="absolute inset-0 -z-10 bg-ink/45" />}
-          <Tint style={design.style.about} />
+          <Tint style={st("about")} />
           <Container className="grid items-center gap-12 lg:grid-cols-12">
             <div className={`lg:col-span-5 ${design.layout.aboutPhoto === "right" ? "lg:order-last" : ""}`}>
               <div className="relative mx-auto max-w-sm lg:max-w-none">
@@ -145,11 +146,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
     ),
     blog: (
-        <section id="latest" className={`relative isolate overflow-hidden bg-ink ${spacingClass[design.style.blog.spacing]}`}>
+        <section id="latest" className={`relative isolate overflow-hidden bg-ink ${spacingClass[st("blog").spacing]}`}>
           <SectionPhoto src={content.backgrounds.blog?.src ?? images.sections.blog} framing={content.framing.blog} />
           {/* Lighten an uploaded photo so the dark heading stays readable. */}
           {content.backgrounds.blog && <div aria-hidden className="absolute inset-0 -z-10 bg-white/60" />}
-          <Tint style={design.style.blog} />
+          <Tint style={st("blog")} />
           <Container>
             <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
               <SectionHeader eyebrow={t.blog.latestEyebrow} title={t.blog.latestTitle} />
@@ -171,10 +172,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
     ),
     contact: (
-        <section id="contact" className={`relative isolate overflow-hidden bg-ink ${spacingClass[design.style.contact.spacing]}`}>
+        <section id="contact" className={`relative isolate overflow-hidden bg-ink ${spacingClass[st("contact").spacing]}`}>
           <SectionPhoto src={content.backgrounds.contact?.src ?? images.sections.contact} framing={content.framing.contact} />
           <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/95 via-ink/85 to-ink/70" />
-          <Tint style={design.style.contact} />
+          <Tint style={st("contact")} />
           <Container className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <SectionHeader light eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} />
@@ -204,6 +205,71 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </div>
           </Container>
         </section>
+    ),
+    testimonials: content.testimonials.items.length > 0 && (
+      <section id="testimonials" className={`relative isolate overflow-hidden bg-surface ${spacingClass[st("testimonials").spacing]}`}>
+        <Tint style={st("testimonials")} />
+        <Container>
+          <SectionHeader title={content.testimonials.title[locale]} />
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {content.testimonials.items.map((q, i) => (
+              <li key={i} className="flex flex-col rounded-2xl bg-white p-7 shadow-card ring-1 ring-mist/70">
+                <span aria-hidden className="text-5xl leading-none text-blue">“</span>
+                <blockquote className="mt-1 flex-1 leading-relaxed text-ink">{q.quote[locale]}</blockquote>
+                <p className="mt-5 font-semibold text-navy">{q.name}</p>
+                {q.detail[locale] && <p className="text-sm text-muted">{q.detail[locale]}</p>}
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    ),
+    faq: content.faq.items.length > 0 && (
+      <section id="faq" className={`relative isolate overflow-hidden bg-white ${spacingClass[st("faq").spacing]}`}>
+        <Tint style={st("faq")} />
+        <Container>
+          <div className="mx-auto max-w-3xl">
+          <SectionHeader title={content.faq.title[locale]} />
+          <div className="mt-10 divide-y divide-mist/70 rounded-2xl bg-white shadow-card ring-1 ring-mist/70">
+            {content.faq.items.map((f, i) => (
+              <details key={i} className="group px-6 py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy">
+                  {f.q[locale]}
+                  <span aria-hidden className="text-xl text-blue-dark transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 whitespace-pre-line leading-relaxed text-muted">{f.a[locale]}</p>
+              </details>
+            ))}
+          </div>
+          </div>
+        </Container>
+      </section>
+    ),
+    ...Object.fromEntries(
+      content.blocks.map((b) => [
+        b.id,
+        <section key={b.id} id={b.id} className={`relative isolate overflow-hidden bg-white ${spacingClass[st(b.id as DesignSection).spacing]}`}>
+          <Tint style={st(b.id as DesignSection)} />
+          <Container className={b.photo ? "grid items-center gap-12 lg:grid-cols-2" : "[&>div]:max-w-3xl"}>
+            {b.photo && (
+              <div className={`relative aspect-[4/3] overflow-hidden rounded-3xl shadow-xl ${b.photoSide === "right" ? "lg:order-last" : ""}`}>
+                <Image src={b.photo.src} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+              </div>
+            )}
+            <div>
+              <SectionHeader eyebrow={b.eyebrow[locale] || undefined} title={b.title[locale]} />
+              {b.text[locale]
+                .split(/\n\s*\n/)
+                .filter(Boolean)
+                .map((para, i) => (
+                  <p key={i} className="mt-4 whitespace-pre-line text-lg leading-relaxed text-muted">
+                    {para}
+                  </p>
+                ))}
+            </div>
+          </Container>
+        </section>,
+      ]),
     ),
   };
 
@@ -242,7 +308,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Container>
       </section>
 
-      {design.sections
+      {normalizeSections(
+        design,
+        content.blocks.map((b) => b.id),
+      )
         .filter((s) => s.visible)
         .map((s) => (
           <Fragment key={s.key}>{sections[s.key]}</Fragment>

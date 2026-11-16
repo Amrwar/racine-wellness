@@ -4,16 +4,37 @@
  * Safe to import on the client.
  */
 
-export const designSectionKeys = ["services", "pricing", "about", "blog", "contact"] as const;
-export type DesignSection = (typeof designSectionKeys)[number];
+/** Built-in home-page sections. Ziad's own sections use keys like "block-k3x9a2". */
+export const designSectionKeys = ["services", "pricing", "about", "blog", "testimonials", "faq", "contact"] as const;
+export type BuiltInSection = (typeof designSectionKeys)[number];
+export type DesignSection = BuiltInSection | `block-${string}`;
 
-export const designSectionNames: Record<DesignSection, string> = {
+export const designSectionNames: Record<BuiltInSection, string> = {
   services: "Services",
   pricing: "Pricing",
   about: "About",
   blog: "Blog preview",
+  testimonials: "Testimonials",
+  faq: "Questions & answers",
   contact: "Contact",
 };
+
+export const isBlockKey = (k: unknown): k is `block-${string}` => typeof k === "string" && /^block-[a-z0-9]{4,16}$/.test(k);
+const isSectionKey = (k: unknown): k is DesignSection => designSectionKeys.includes(k as BuiltInSection) || isBlockKey(k);
+
+/** The style for a section (sections added later start plain). */
+export const styleFor = (d: Design, key: DesignSection): SectionStyle => d.style[key] ?? plainStyle;
+
+/** Section order with Ziad's own sections matched to the ones that exist: new ones go before Contact. */
+export function normalizeSections(d: Design, blockKeys: string[]): Design["sections"] {
+  const list = d.sections.filter((s) => !isBlockKey(s.key) || blockKeys.includes(s.key));
+  for (const key of blockKeys) {
+    if (list.some((s) => s.key === key)) continue;
+    const contact = list.findIndex((s) => s.key === "contact");
+    list.splice(contact < 0 ? list.length : contact, 0, { key: key as DesignSection, visible: true });
+  }
+  return list;
+}
 
 export type Spacing = "compact" | "normal" | "spacious";
 export type SectionStyle = { overlay: string; strength: number; spacing: Spacing };
@@ -23,7 +44,7 @@ export type Design = {
   /** Root text size in percent: everything on the site scales with it. */
   textScale: number;
   sections: { key: DesignSection; visible: boolean }[];
-  style: Record<DesignSection, SectionStyle>;
+  style: Partial<Record<DesignSection, SectionStyle>>;
   /** Top bar and footer background colours (their text is white, so dark colours work best). */
   header: { bg: string };
   footer: { bg: string };
@@ -87,12 +108,13 @@ export const menuKeys = ["services", "pricing", "about", "blog", "contact"] as c
 export const defaultColors = { navy: "#004575", blue: "#009ffb", green: "#00ee81" };
 
 const plain: SectionStyle = { overlay: "#004575", strength: 0, spacing: "normal" };
+export const plainStyle = plain;
 
 export const defaultDesign: Design = {
   colors: defaultColors,
   textScale: 100,
   sections: designSectionKeys.map((key) => ({ key, visible: true })),
-  style: { services: plain, pricing: plain, about: plain, blog: plain, contact: plain },
+  style: {},
   header: { bg: "#004575" },
   footer: { bg: "#00304f" },
   hiddenMenu: [],
@@ -123,8 +145,8 @@ export function parseDesign(raw: unknown): Design {
   const listed = Array.isArray(r.sections) ? (r.sections as { key?: unknown; visible?: unknown }[]) : [];
   const sections: Design["sections"] = [];
   for (const s of listed) {
-    const key = s?.key as DesignSection;
-    if (designSectionKeys.includes(key) && !sections.some((x) => x.key === key)) sections.push({ key, visible: s.visible !== false });
+    const key = s?.key;
+    if (isSectionKey(key) && !sections.some((x) => x.key === key) && sections.length < 30) sections.push({ key, visible: s.visible !== false });
   }
   // Sections added to the site later appear at the end.
   for (const key of designSectionKeys) if (!sections.some((x) => x.key === key)) sections.push({ key, visible: true });
@@ -135,7 +157,7 @@ export function parseDesign(raw: unknown): Design {
   const f = (r.forms ?? {}) as Record<string, unknown>;
   const fo = (r.fonts ?? {}) as Record<string, unknown>;
   const style = Object.fromEntries(
-    designSectionKeys.map((k) => {
+    sections.map(({ key: k }) => {
       const v = st[k] ?? {};
       const spacing: Spacing = v.spacing === "compact" || v.spacing === "spacious" ? v.spacing : "normal";
       return [k, { overlay: hex(v.overlay, plain.overlay), strength: num(v.strength, 0, 90, 0), spacing }];
@@ -174,7 +196,7 @@ export function parseDesign(raw: unknown): Design {
 
 /** Menu links that shouldn't show: hidden by hand, or pointing at a hidden section. */
 export function hiddenMenuKeys(d: Design) {
-  return [...new Set([...d.hiddenMenu, ...d.sections.filter((s) => !s.visible).map((s) => s.key)])];
+  return [...new Set([...d.hiddenMenu, ...d.sections.filter((s) => !s.visible).map((s) => s.key as string)])];
 }
 
 /** CSS that applies the colours and text size on top of the built-in theme. */

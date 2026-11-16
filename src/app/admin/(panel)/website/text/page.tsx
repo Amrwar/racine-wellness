@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
+import { discardDraft } from "@/lib/settings";
 import { getTextOverrides } from "@/lib/content";
 import { PageHeader } from "@/components/admin/ui";
 import { TextEditor } from "@/components/admin/TextEditor";
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: "All other text" };
 
 export default async function AllTextPage() {
   await requireAdmin();
+  await discardDraft("text");
   const overrides = await getTextOverrides();
   return (
     <>
