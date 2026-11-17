@@ -6,55 +6,83 @@ import { Logo } from "./Logo";
 import { Facebook, GoogleG, Instagram, Linkedin, Tiktok, Youtube } from "./icons";
 
 export function Footer({ t, business }: { t: Dictionary; business: Business }) {
+  const socials = (
+    [
+      ["instagram", "Instagram", Instagram],
+      ["facebook", "Facebook", Facebook],
+      ["google", "Google", GoogleG],
+      ["linkedin", "LinkedIn", Linkedin],
+      ["youtube", "YouTube", Youtube],
+      ["tiktok", "TikTok", Tiktok],
+    ] as const
+  ).filter(([key]) => business[key]);
+
   return (
-    <footer className="bg-[var(--footer-bg,var(--color-navy-deep))] text-white">
-      <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+    <footer className="relative overflow-hidden bg-[var(--footer-bg,var(--color-navy-deep))] text-white">
+      <div className="mx-auto max-w-6xl px-5 pb-10 pt-16 sm:px-8">
+        <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+          <div className="space-y-4 lg:col-span-5">
             <Logo label={t.header.home} />
-            <p className="mt-2 text-sm font-medium text-mist">{t.tagline}</p>
+            <p className="max-w-sm text-sm leading-relaxed text-white/75">{t.meta.description}</p>
+            <span className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-green" />
+              {t.credentialsLine}
+            </span>
           </div>
-          <div className="space-y-1.5 text-sm text-white/80 sm:text-right">
-            <a href={phoneHref(business.phone)} className="block hover:text-white">
-              {business.phone}
-            </a>
-            <a href={`mailto:${business.email}`} className="block hover:text-white">
-              {business.email}
-            </a>
-            <p>
-              {t.contact.office}
-            </p>
+
+          <div className="space-y-4 lg:col-span-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wider">{t.contact.area}</h2>
+            <p className="text-sm text-white/85">{t.contact.office}</p>
+            <p className="text-sm text-white/60">{t.contact.areaNote}</p>
+          </div>
+
+          <div className="space-y-4 lg:col-span-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider">{t.nav.contact}</h2>
+            <div className="space-y-3 text-sm">
+              <div>
+                <span className="block text-white/60">{t.contact.phone}</span>
+                <a href={phoneHref(business.phone)} className="font-medium hover:text-green">
+                  {business.phone}
+                </a>
+              </div>
+              <div>
+                <span className="block text-white/60">{t.contact.email}</span>
+                <a href={`mailto:${business.email}`} className="break-all font-medium hover:text-green">
+                  {business.email}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 lg:col-span-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider">{site.name}</h2>
+            <div className="flex flex-col gap-2 text-sm text-white/80">
+              <LLink href="/book" className="hover:text-white">
+                {t.header.book}
+              </LLink>
+              <LLink href="/blog" className="hover:text-white">
+                {t.nav.blog}
+              </LLink>
+            </div>
+            {socials.length > 0 && (
+              <div className="flex items-center gap-4 pt-1">
+                {socials.map(([key, label, Icon]) => (
+                  <a key={key} href={business[key]} target="_blank" rel="noreferrer" aria-label={label} className="text-white/70 hover:text-green">
+                    <Icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-center justify-between gap-4 pt-8 text-xs text-white/60 md:flex-row">
           <p>
             © {new Date().getFullYear()} {site.name}. {t.footer.rights}
           </p>
-          <div className="flex items-center gap-5">
-            <LLink href="/blog" className="hover:text-white">
-              {t.nav.blog}
-            </LLink>
-            <LLink href="/privacy" className="hover:text-white">
-              {t.footer.privacy}
-            </LLink>
-            {(
-              [
-                ["instagram", "Instagram", Instagram],
-                ["facebook", "Facebook", Facebook],
-                ["google", "Google", GoogleG],
-                ["linkedin", "LinkedIn", Linkedin],
-                ["youtube", "YouTube", Youtube],
-                ["tiktok", "TikTok", Tiktok],
-              ] as const
-            ).map(([key, label, Icon]) =>
-              business[key] ? (
-                <a key={key} href={business[key]} target="_blank" rel="noreferrer" aria-label={label} className="text-white/70 hover:text-green">
-                  <Icon className="h-5 w-5" />
-                </a>
-              ) : null,
-            )}
-          </div>
+          <LLink href="/privacy" className="hover:text-white">
+            {t.footer.privacy}
+          </LLink>
         </div>
       </div>
     </footer>

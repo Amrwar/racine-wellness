@@ -10,7 +10,7 @@ import type { Dictionary } from "@/i18n/en";
 import { Logo } from "./Logo";
 import { Button } from "./ui";
 
-export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header">; hidden?: string[] }) {
+export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header" | "tagline">; hidden?: string[] }) {
   const items = navItems.filter((item) => !hidden.includes(item.key));
   const locale = useLocale();
   const { path: barePath } = splitLocale(usePathname());
@@ -38,9 +38,12 @@ export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--header-bg,var(--color-navy))]">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--header-bg,var(--color-navy))]/95 shadow-[0_16px_36px_-12px_rgba(0,48,79,0.25)] backdrop-blur-xl">
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Logo label={t.header.home} />
+        <div className="flex flex-col">
+          <Logo label={t.header.home} className="leading-tight" />
+          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60 sm:block">{t.tagline}</span>
+        </div>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
           {items.map((item) => (
@@ -59,7 +62,10 @@ export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header
 
         <div className="hidden items-center gap-3 md:flex">
           {langSwitch}
-          <Button href={localePath(locale, "/book")}>{t.header.book}</Button>
+          <Button href={localePath(locale, "/book")}>
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green transition-transform group-hover:scale-125" />
+            {t.header.book}
+          </Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">

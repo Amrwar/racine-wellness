@@ -28,7 +28,7 @@ export default async function WebsitePage() {
         }
       />
       <WebsiteTabs active="home" />
-      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: images.sections }} />
+      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: { services: "", about: "", blog: "", contact: "" } }} />
     </>
   );
 }

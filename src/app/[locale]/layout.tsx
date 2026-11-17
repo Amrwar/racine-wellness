@@ -103,7 +103,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           >
             {t.header.skip}
           </a>
-          <Header t={{ nav: t.nav, header: t.header }} hidden={hiddenMenuKeys(design)} />
+          <Header t={{ nav: t.nav, header: t.header, tagline: t.tagline }} hidden={hiddenMenuKeys(design)} />
           <main id="main" className="flex-1">
             {children}
           </main>

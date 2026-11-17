@@ -65,17 +65,17 @@ export function ContentEditor({
         label="Background photo"
         kind="background"
         name={`background-${key}`}
-        note={`A wide landscape photo works best; the text sits on top of it, so calm photos without busy detail read best.${note}`}
+        note={`Optional. Without one, the section has a plain light background. A calm, wide photo works best; it is softened so the text stays readable.${note}`}
         photo={content.backgrounds[key]}
         fallback={defaults.backgrounds[key]}
         onChange={(photo) => setContent((c) => ({ ...c, backgrounds: { ...c.backgrounds, [key]: photo } }))}
       />
-      <FramingControls
-        src={content.backgrounds[key]?.src ?? defaults.backgrounds[key]}
+      {content.backgrounds[key] && <FramingControls
+        src={content.backgrounds[key].src}
         value={content.framing[key]}
         fallback={defaultFraming[key]}
         onChange={(f) => setContent((c) => ({ ...c, framing: { ...c.framing, [key]: f } }))}
-      />
+      />}
     </div>
   );
   const items = content.services.items;
@@ -210,11 +210,11 @@ export function ContentEditor({
           fallback={defaults.portrait}
           onChange={(photo) => setPhoto("about", photo)}
         />
-        {background("about", " It is darkened slightly so the white text stays readable.")}
+        {background("about")}
       </Section>
 
       <Section id="blog" title="Blog preview" text="The “From the blog” section with your three latest articles. The articles themselves are edited on the Blog page.">
-        {background("blog", " It is lightened slightly so the dark heading stays readable.")}
+        {background("blog")}
       </Section>
 
       <Section id="testimonials" title="Testimonials" text="Short quotes from happy clients. The section appears on the home page once there is at least one (with their permission).">
