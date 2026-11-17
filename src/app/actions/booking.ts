@@ -13,6 +13,7 @@ import { getBusiness } from "@/lib/business";
 import { getDesign } from "@/lib/design";
 import { getText } from "@/lib/content";
 import { revalidatePath } from "next/cache";
+import { bookingReference } from "@/lib/booking-ui";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean = (v: FormDataEntryValue | null, max = 500) => String(v ?? "").trim().slice(0, max);
@@ -39,7 +40,19 @@ export async function availableTimes(serviceId: string, minutes: number, date: s
 export type BookingState = {
   status: "idle" | "success" | "error" | "taken";
   message?: string;
-  errors?: Partial<Record<"name" | "phone" | "email" | "address" | "slot", string>>;
+  errors?: Partial<Record<"name" | "phone" | "email" | "address" | "slot" | "consent", string>>;
+  /** What the client asked for, shown on the confirmation screen (only to the person who sent it). */
+  request?: {
+    reference: string;
+    service: string;
+    minutes: number;
+    price: string;
+    when: string;
+    where: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
 };
 
 export async function requestBooking(_prev: BookingState, formData: FormData): Promise<BookingState> {
@@ -68,6 +81,7 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
   if (phone.replace(/\D/g, "").length < 10) errors.phone = dict.form.errors.phone;
   if (!EMAIL_RE.test(email)) errors.email = dict.form.errors.email;
   if (location === "home" && address.length < 6) errors.address = t.errors.address;
+  if (formData.get("consent") !== "yes") errors.consent = t.errors.consent;
   const found = await findRate(serviceId, minutes);
   if (!found || !isDay(date) || !isTime(time)) errors.slot = t.errors.slot;
   if (Object.keys(errors).length) return { status: "error", message: dict.form.fixFields, errors };
@@ -134,5 +148,19 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
   ]);
 
   revalidatePath("/admin", "layout");
-  return { status: "success", message: fill(t.success, { name: name.split(" ")[0], when: whenText }) };
+  return {
+    status: "success",
+    message: fill(t.success, { name: name.split(" ")[0], when: whenText }),
+    request: {
+      reference: bookingReference(Number(row.id)),
+      service: service.title[locale],
+      minutes,
+      price: formatPrice(rate.price, locale),
+      when: whenText,
+      where: location === "home" ? `${t.home}: ${address}` : `${t.office}, ${t.officeNote}`,
+      name,
+      email,
+      phone,
+    },
+  };
 }
