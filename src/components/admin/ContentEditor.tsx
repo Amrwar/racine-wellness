@@ -154,6 +154,15 @@ export function ContentEditor({
                 />
                 <BilingualFields label="Name" {...bi("services", "items", i, "title")} />
                 <BilingualFields label="Description" multiline rows={3} {...bi("services", "items", i, "text")} />
+                <PhotoField
+                  label="Card photo (optional)"
+                  kind="hero"
+                  name={`service-${i}`}
+                  note="Shown on the left of the service card. Without one, the card shows the icon on a blue panel."
+                  photo={item.photo}
+                  fallback=""
+                  onChange={(photo) => setItems((list) => list.map((x, j) => (j === i ? { ...x, photo } : x)))}
+                />
               </div>
             </li>
           ))}
@@ -161,7 +170,7 @@ export function ContentEditor({
         <button
           type="button"
           disabled={items.length >= 12}
-          onClick={() => setItems((list) => [...list, { icon: "hands", image: null, title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
+          onClick={() => setItems((list) => [...list, { icon: "hands", image: null, photo: null, title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
           className="rounded-full border-2 border-dashed border-blue/50 px-5 py-2.5 text-sm font-semibold text-blue-dark hover:border-blue disabled:opacity-40"
         >
           + Add a service

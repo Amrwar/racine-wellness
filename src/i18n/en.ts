@@ -53,6 +53,15 @@ export const en = {
 
   services: {
     eyebrow: "Services",
+    search: "Search services...",
+    all: "All services",
+    categories: { massage: "Massage therapy", movement: "Movement & mobility", strength: "Strength & fitness", aging: "Healthy aging" },
+    noMatch: "No service matches your search.",
+    learnMore: "Learn more",
+    showLess: "Show less",
+    guideTitle: "Not sure which service is right for you?",
+    guideText: "Tell Ziad about your goals and how you feel, and he'll suggest the best place to start.",
+    guideButton: "Ask Ziad",
     title: "Care tailored to your body",
     lead: "Every session starts with your goals and how you move today. Choose one service or combine them.",
     items: [

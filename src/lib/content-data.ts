@@ -81,7 +81,8 @@ export type FaqItem = { q: Bilingual; a: Bilingual };
 export type Block = { id: string; eyebrow: Bilingual; title: Bilingual; text: Bilingual; photo: SitePhoto | null; photoSide: "left" | "right" };
 export const newBlockId = () => `block-${Math.random().toString(36).slice(2, 10)}`;
 
-export type ServiceItem = { icon: ServiceIcon; image: SitePhoto | null; title: Bilingual; text: Bilingual };
+/** photo: an optional picture shown on the service card (a branded panel with the icon otherwise). */
+export type ServiceItem = { icon: ServiceIcon; image: SitePhoto | null; photo: SitePhoto | null; title: Bilingual; text: Bilingual };
 
 export type SiteContent = {
   tagline: Bilingual;
@@ -120,6 +121,7 @@ export const defaultContent: SiteContent = {
     items: en.services.items.map((item, i) => ({
       icon: item.icon,
       image: null,
+      photo: null,
       title: { en: item.title, fr: fr.services.items[i]?.title ?? item.title },
       text: { en: item.text, fr: fr.services.items[i]?.text ?? item.text },
     })),
@@ -190,6 +192,7 @@ export function parseContent(raw: unknown): SiteContent {
         ? items.slice(0, 12).map((item) => ({
             icon: iconKeys.includes(String(item.icon)) ? (item.icon as ServiceIcon) : "hands",
             image: photo(item.image),
+            photo: photo(item.photo),
             title: bi(item.title, { en: "", fr: "" }, 80),
             text: bi(item.text, { en: "", fr: "" }, 400),
           }))

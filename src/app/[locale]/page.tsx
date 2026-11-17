@@ -1,7 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, Gift, Quote, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, Gift, Leaf, Quote, ShieldCheck } from "lucide-react";
 import { isLocale, localePath } from "@/i18n/config";
 import { images, site } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
@@ -12,11 +12,12 @@ import { phoneHref } from "@/lib/business-data";
 import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
+import { ServicesExplorer } from "@/components/ServicesExplorer";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/posts";
 import { getPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/pricing-data";
-import { Mail, MapPin, Phone, Receipt, ServiceIconView } from "@/components/icons";
+import { Mail, MapPin, Phone, Receipt } from "@/components/icons";
 
 /** Icons for the hero's trust row, matched to Ziad's credentials in order. */
 const trustIcons = [BadgeCheck, ShieldCheck, MapPin, Receipt];
@@ -39,40 +40,48 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const st = (key: DesignSection) => styleFor(design, key);
   const sections: Record<string, React.ReactNode> = {
     services: (
-      <section id="services" className={`relative isolate overflow-hidden bg-white ${spacingClass[st("services").spacing]}`}>
+      <section id="services" className={`relative isolate overflow-hidden bg-surface ${spacingClass[st("services").spacing]}`}>
         <UploadedBackground photo={content.backgrounds.services} framing={content.framing.services} />
         <Glow className="-right-24 -top-24 h-[34rem] w-[34rem] bg-blue/10" />
         <Tint style={st("services")} />
         <Container>
           <SplitHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} edit={{ title: "services.title", lead: "services.lead" }} />
-          <ul className={`mt-14 grid gap-6 lg:gap-8 ${columnsClass.services[design.layout.servicesColumns]}`}>
-            {content.services.items.map((s, i) => (
-              <li
-                key={i}
-                className="group flex flex-col justify-between rounded-2xl border border-navy/10 bg-surface p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:shadow-navy/10"
-              >
+          <ServicesExplorer
+            items={content.services.items}
+            locale={locale}
+            bookHref={book}
+            columns={design.layout.servicesColumns}
+            t={{
+              search: t.services.search,
+              all: t.services.all,
+              categories: t.services.categories,
+              noMatch: t.services.noMatch,
+              learnMore: t.services.learnMore,
+              showLess: t.services.showLess,
+              book: t.header.book,
+            }}
+          />
+          {/* Not sure which service? → the contact form */}
+          <div className="relative mt-10 overflow-hidden rounded-2xl bg-navy px-6 py-6 text-white shadow-lg sm:px-8">
+            <div aria-hidden className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-blue/25 blur-2xl" />
+            <div className="relative flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+              <div className="flex items-center gap-5">
+                <span className="hidden h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 text-green ring-1 ring-white/15 sm:grid">
+                  <Leaf aria-hidden className="h-6 w-6" />
+                </span>
                 <div>
-                  <span className="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-navy text-green transition-transform group-hover:scale-110">
-                    <ServiceIconView icon={s.icon} image={s.image} className="h-6 w-6" />
-                  </span>
-                  <h3 data-edit={`services.items.${i}.title`} className="mb-3 text-xl font-semibold text-navy">
-                    {s.title[locale]}
-                  </h3>
-                  <p data-edit={`services.items.${i}.text`} className="mb-6 leading-relaxed text-muted">
-                    {s.text[locale]}
-                  </p>
+                  <p className="text-xl font-semibold">{t.services.guideTitle}</p>
+                  <p className="mt-1 text-white/80">{t.services.guideText}</p>
                 </div>
-                <div className="border-t border-navy/10 pt-6">
-                  <Link
-                    href={book}
-                    className="block w-full rounded-[var(--btn-radius,9999px)] border border-navy/15 bg-white py-2.5 text-center text-sm font-semibold text-navy transition-colors group-hover:border-navy group-hover:bg-navy group-hover:text-white"
-                  >
-                    {t.header.book}
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+              <Link
+                href="#contact"
+                className="group inline-flex shrink-0 items-center gap-2 rounded-[var(--btn-radius,9999px)] bg-green px-6 py-3 font-semibold text-navy-deep transition hover:-translate-y-0.5 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+              >
+                {t.services.guideButton} <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </div>
         </Container>
       </section>
     ),

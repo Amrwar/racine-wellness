@@ -54,6 +54,15 @@ export const fr: Dictionary = {
 
   services: {
     eyebrow: "Services",
+    search: "Rechercher un service...",
+    all: "Tous les services",
+    categories: { massage: "Massothérapie", movement: "Mouvement et mobilité", strength: "Force et forme physique", aging: "Vieillir en santé" },
+    noMatch: "Aucun service ne correspond à votre recherche.",
+    learnMore: "En savoir plus",
+    showLess: "Voir moins",
+    guideTitle: "Vous ne savez pas quel service vous convient?",
+    guideText: "Parlez à Ziad de vos objectifs et de ce que vous ressentez, et il vous suggérera par où commencer.",
+    guideButton: "Écrire à Ziad",
     title: "Des soins adaptés à votre corps",
     lead: "Chaque séance part de vos objectifs et de votre façon de bouger aujourd'hui. Choisissez un service ou combinez-les.",
     items: [
