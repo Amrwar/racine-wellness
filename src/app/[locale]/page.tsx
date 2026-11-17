@@ -213,6 +213,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <div>
               <DotEyebrow>{t.blog.latestEyebrow}</DotEyebrow>
               <h2 className="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">{t.blog.latestTitle}</h2>
+              <p className="mt-3 max-w-xl text-lg leading-relaxed text-muted">{t.blog.lead}</p>
             </div>
             <Link
               href={localePath(locale, "/blog")}

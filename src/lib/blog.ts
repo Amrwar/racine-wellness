@@ -37,7 +37,7 @@ export type Post = {
   fr: Localized;
 };
 
-import { P } from "./blog-photos";
+import { P } from "./blog-photos.ts";
 
 /** The original articles. They seed the database the first time the blog is read. */
 export const seedPosts: Post[] = [
