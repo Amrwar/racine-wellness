@@ -44,6 +44,7 @@ export const textGroups: Record<string, { title: string; text: string }> = {
   hero: { title: "Top of the page", text: "Buttons and the photo description." },
   services: { title: "Services section", text: "The small label above the heading." },
   pricing: { title: "Pricing section", text: "Labels and button." },
+  pricingPage: { title: "Pricing page", text: "The separate Pricing & services page (prices themselves are edited on the Pricing page of the admin)." },
   booking: { title: "Booking page and client emails", text: "Everything on the booking page, and the emails clients receive." },
   about: { title: "About section", text: "Small label and the portrait description." },
   contact: { title: "Contact section", text: "Labels next to your phone, email and office." },

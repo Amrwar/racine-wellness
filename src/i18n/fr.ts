@@ -277,6 +277,39 @@ export const fr: Dictionary = {
     ],
   },
 
+  pricingPage: {
+    metaTitle: "Tarifs et services",
+    metaDescription:
+      "Tarifs de massothérapie dans l'Ouest-de-l'Île, Montréal : massage suédois de détente et massage thérapeutique, de 60 à 120 minutes. Reçu pour assurances remis pour chaque massage.",
+    eyebrow: "Tarifs et services",
+    title: "Des tarifs simples et transparents.",
+    lead: "Choisissez votre soin, puis la durée de votre séance. Les séances ont lieu au bureau de Saint-Jean ou à votre domicile, et un reçu pour assurances est remis pour chaque massage.",
+    highlights: ["Reçus pour assurances remis", "Bureau à Saint-Jean, Ouest-de-l'Île", "Visites à domicile dans le Grand Montréal", "Séances adaptées à vos besoins"],
+    choose: "Choisissez un soin",
+    perSession: "par séance",
+    select: "Réserver {n} min",
+    included: ["Reçu pour assurances remis", "Au bureau ou à votre domicile", "Adapté à vos besoins et objectifs"],
+    compareEyebrow: "Tous les tarifs",
+    compareTitle: "Tous les soins en un coup d'œil",
+    compareLead: "Prix par séance, selon le soin et la durée.",
+    treatment: "Soin",
+    stepsEyebrow: "La réservation",
+    stepsTitle: "Réservez en ligne en quatre étapes",
+    stepsLead: "Demandez votre rendez-vous en quelques minutes. Ziad confirme chaque demande personnellement.",
+    steps: [
+      { title: "Choisissez votre soin", text: "Sélectionnez un massage et la durée de votre séance." },
+      { title: "Choisissez une date et une heure", text: "Consultez les plages disponibles et choisissez celle qui vous convient." },
+      { title: "Ajoutez vos coordonnées", text: "Indiquez où se déroule la séance et tout ce que Ziad devrait savoir." },
+      { title: "Ziad confirme", text: "Ziad examine votre demande et confirme votre rendez-vous par courriel." },
+    ],
+    insuranceEyebrow: "Assurances",
+    insuranceTitle: "Un reçu pour assurances pour chaque massage",
+    insuranceText:
+      "Ziad est massothérapeute agréé. Après chaque séance de massage, vous recevez un reçu à soumettre à votre régime d'assurance. Cochez simplement la case lors de la réservation.",
+    ctaTitle: "Prêt à réserver votre séance?",
+    ctaText: "Choisissez une plage en ligne, ou appelez-nous et nous trouverons un moment qui vous convient.",
+  },
+
   notFound: {
     title: "Page introuvable",
     lead: "La page que vous cherchez n'existe pas ou a été déplacée.",

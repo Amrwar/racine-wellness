@@ -20,16 +20,18 @@ type Props = {
   /** Optional fields switched on or off in Admin → Design. */
   fields?: Pick<FormFields, "bookingHomeVisits" | "bookingNotes" | "bookingReceipt">;
   promo: string;
+  /** Treatment and length chosen on the pricing page (from the link). */
+  initial?: { service?: string; minutes?: number };
 };
 
-export function BookingForm({ t, form, durationLabel, services, promo, fields }: Props) {
+export function BookingForm({ t, form, durationLabel, services, promo, fields, initial }: Props) {
   const show = { home: fields?.bookingHomeVisits !== false, notes: fields?.bookingNotes !== false, receipt: fields?.bookingReceipt !== false };
   const locale = useLocale();
   const tag = locale === "fr" ? "fr-CA" : "en-CA";
   const [step, setStep] = useState(0);
-  const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
+  const [serviceId, setServiceId] = useState(services.find((s) => s.id === initial?.service)?.id ?? services[0]?.id ?? "");
   const service = services.find((s) => s.id === serviceId) ?? services[0];
-  const [minutes, setMinutes] = useState(service?.rates[0]?.minutes ?? 60);
+  const [minutes, setMinutes] = useState(service?.rates.find((r) => r.minutes === initial?.minutes)?.minutes ?? service?.rates[0]?.minutes ?? 60);
   const rate = service?.rates.find((r) => r.minutes === minutes) ?? service?.rates[0];
 
   const [days, setDays] = useState<string[] | null>(null);

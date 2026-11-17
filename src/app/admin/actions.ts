@@ -118,9 +118,10 @@ export async function updatePricing(prev: PricingState, formData: FormData): Pro
     console.error("[admin] save pricing failed:", err);
     return { status: "error", message: "Saving failed. Please try again in a moment.", pricing: prev.pricing };
   }
-  // Re-render the public home pages (EN and FR) with the new prices.
+  // Re-render the public pages (EN and FR) that show prices.
   revalidatePath("/[locale]", "page");
   revalidatePath("/[locale]/book", "page");
+  revalidatePath("/[locale]/pricing", "page");
   revalidatePath("/admin", "layout");
   return { status: "saved", pricing };
 }

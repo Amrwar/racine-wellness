@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   return [
     ...entries("/", now, 1),
+    ...entries("/pricing", now, 0.9),
     ...entries("/book", now, 0.9),
     ...entries("/blog", now, 0.8),
     ...posts.flatMap((p) => entries(`/blog/${p.slug}`, new Date(p.date), 0.7)),

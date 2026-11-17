@@ -23,8 +23,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/book">):
   };
 }
 
-export default async function BookPage({ params }: PageProps<"/[locale]/book">) {
+export default async function BookPage({ params, searchParams }: PageProps<"/[locale]/book">) {
   const { locale } = await params;
+  const q = await searchParams;
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
   if (!isLocale(locale)) notFound();
   const [t, pricing, business, design] = await Promise.all([getText(locale), getPricing(), getBusiness(), getDesign()]);
 
@@ -48,6 +50,7 @@ export default async function BookPage({ params }: PageProps<"/[locale]/book">) 
             services={pricing.services}
             promo={pricing.promo.enabled ? pricing.promo[locale] : ""}
             fields={design.forms}
+            initial={{ service: one(q.service), minutes: Number(one(q.minutes)) || undefined }}
           />
         </div>
       </Container>

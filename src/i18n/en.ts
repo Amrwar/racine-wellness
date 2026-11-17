@@ -276,6 +276,39 @@ export const en = {
     ],
   },
 
+  pricingPage: {
+    metaTitle: "Pricing & services",
+    metaDescription:
+      "Massage therapy rates in the West Island, Montréal: Swedish relaxation and therapeutic massage, 60 to 120 minutes. Insurance receipts provided for every massage.",
+    eyebrow: "Pricing & services",
+    title: "Simple, transparent pricing.",
+    lead: "Choose your treatment, then the length of your session. Sessions take place at the Saint-Jean office or at your home, and an insurance receipt is provided for every massage.",
+    highlights: ["Insurance receipts provided", "Office in Saint-Jean, West Island", "Home visits across Greater Montréal", "Sessions adapted to your needs"],
+    choose: "Choose a treatment",
+    perSession: "per session",
+    select: "Book {n} min",
+    included: ["Insurance receipt provided", "At the office or at your home", "Adapted to your needs and goals"],
+    compareEyebrow: "All rates",
+    compareTitle: "Every treatment at a glance",
+    compareLead: "Prices per session, by treatment and length.",
+    treatment: "Treatment",
+    stepsEyebrow: "How booking works",
+    stepsTitle: "Book online in four steps",
+    stepsLead: "Request your appointment in a few minutes. Ziad confirms every request personally.",
+    steps: [
+      { title: "Choose your treatment", text: "Pick a massage and the length of your session." },
+      { title: "Pick a date and time", text: "See the times that are open and choose the one that suits you." },
+      { title: "Add your details", text: "Tell us where the session takes place and anything Ziad should know." },
+      { title: "Ziad confirms", text: "Ziad reviews your request and confirms your appointment by email." },
+    ],
+    insuranceEyebrow: "Insurance",
+    insuranceTitle: "Insurance receipts for every massage",
+    insuranceText:
+      "Ziad is a registered massage therapist. After every massage session you receive a receipt you can submit to your insurance plan. Just check the box when you book.",
+    ctaTitle: "Ready to book your session?",
+    ctaText: "Choose a time online, or call us and we'll find a time that works for you.",
+  },
+
   notFound: {
     title: "Page not found",
     lead: "The page you're looking for doesn't exist or has moved.",
