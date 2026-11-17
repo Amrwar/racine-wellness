@@ -107,7 +107,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer t={t} business={business} />
+          <Footer t={t} business={business} locale={locale} />
           <SectionLinks />
           {preview && (
             <Suspense>
