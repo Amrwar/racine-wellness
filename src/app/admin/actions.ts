@@ -7,7 +7,7 @@ import { generateText } from "ai";
 import { authConfigured, changePassword, endSession, passwordMatches, requireAdmin, signOutEverywhere, startSession } from "@/lib/auth";
 import { db, hasDatabase } from "@/lib/db";
 import { getPricing, savePricing } from "@/lib/pricing";
-import { formatPrice, parsePricing, type Pricing } from "@/lib/pricing-data";
+import { serviceLine, parsePricing, type Pricing } from "@/lib/pricing-data";
 import { hoursOn, parseAvailability, type Availability, type BookingStatus } from "@/lib/booking-data";
 import { getAvailability, getBooking, saveAvailability } from "@/lib/bookings";
 import { sendEmail, ownerEmail } from "@/lib/email";
@@ -152,7 +152,8 @@ export async function updateBooking(formData: FormData) {
     const t = dict.booking;
     const when = formatWhen(new Date(booking.start_at), locale);
     const pricing = await getPricing();
-    const title = pricing.services.find((s) => s.id === booking.service_id)?.title[locale] ?? booking.service_title;
+    const priced = pricing.services.find((s) => s.id === booking.service_id);
+    const title = priced?.title[locale] ?? booking.service_title;
     await sendEmail({
       to: booking.email,
       replyTo: await ownerEmail(),
@@ -160,7 +161,7 @@ export async function updateBooking(formData: FormData) {
       text: fill(t.emails[move.email], {
         name: booking.name.split(" ")[0],
         when: `${when.day}, ${when.time}`,
-        service: `${title}, ${booking.minutes} min (${formatPrice(Number(booking.price), locale)})`,
+        service: serviceLine(priced, title, booking.minutes, Number(booking.price), locale, dict.pricing.perSession),
         where: booking.location === "home" ? `${t.home}: ${booking.address ?? ""}` : `${t.office} (${dict.contact.office})`,
         phone: (await getBusiness()).phone,
         link: `${site.url}${localePath(locale, "/book")}`,
@@ -308,7 +309,7 @@ export async function editBooking(_prev: EditBookingState, formData: FormData): 
       text: fill(isNew ? t.emails.confirmed : t.emails.updated, {
         name: name.split(" ")[0],
         when: `${when.day}, ${when.time}`,
-        service: `${service?.title[locale] ?? serviceTitle}, ${minutes} min (${formatPrice(price, locale)})`,
+        service: serviceLine(service, service?.title[locale] ?? serviceTitle, minutes, price, locale, dict.pricing.perSession),
         where: location === "home" ? `${t.home}: ${address}` : `${t.office} (${dict.contact.office})`,
         phone: (await getBusiness()).phone,
       }),

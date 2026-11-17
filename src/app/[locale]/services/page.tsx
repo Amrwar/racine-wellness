@@ -6,6 +6,7 @@ import { isLocale, localePath } from "@/i18n/config";
 import { LLink } from "@/i18n/LocaleProvider";
 import { getContent, getText } from "@/lib/content";
 import { getDesign } from "@/lib/design";
+import { getPricing } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { BlogCta } from "@/components/blog";
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/services
 export default async function ServicesPage({ params }: PageProps<"/[locale]/services">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const [t, content, design] = await Promise.all([getText(locale), getContent(), getDesign()]);
+  const [t, content, design, pricing] = await Promise.all([getText(locale), getContent(), getDesign(), getPricing()]);
   const items = content.services.items;
 
   const breadcrumbLd = {
@@ -72,7 +73,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
       <section className="bg-surface py-12 sm:py-16">
         <Container>
           <h2 className="mb-6 text-3xl font-semibold tracking-tight text-navy">{t.services.explore}</h2>
-          <ServicesExplorer items={items} locale={locale} links={serviceLinks(locale, items)} columns={design.layout.servicesColumns} t={serviceLabels(t)} />
+          <ServicesExplorer items={items} locale={locale} links={serviceLinks(locale, items, pricing, t)} columns={items.length === 4 ? 2 : design.layout.servicesColumns} t={serviceLabels(t)} />
           <div className="mt-12">
             <ServiceGuide locale={locale} t={t} />
           </div>

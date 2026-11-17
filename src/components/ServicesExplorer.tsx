@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowRight, Dumbbell, Footprints, Hand, Leaf, Search, Sparkles, Trophy, X } from "lucide-react";
 import type { ServiceItem } from "@/lib/content-data";
 import type { Locale } from "@/i18n/config";
-import { categoryOf, categoryOrder, defaultServicePhoto, filterServices, isBookable, type ServiceCategory } from "@/lib/services";
+import { categoryOf, categoryOrder, filterServices, isBookable, servicePhoto, type ServiceCategory } from "@/lib/services";
 import { ServiceIconView } from "./icons";
 
 export type ServicesLabels = {
@@ -19,25 +19,28 @@ export type ServicesLabels = {
   book: string;
   requestInfo: string;
 };
-export type ServiceLinks = { detail: string[]; book: string; contact: string };
+/** Per service (same order as the items): its page, its main action (booking or contact) and a price summary. */
+export type ServiceLinks = { detail: string[]; action: string[]; price: string[] };
 
 const chipIcons: Record<ServiceCategory, typeof Hand> = { massage: Hand, movement: Footprints, strength: Dumbbell, aging: Leaf, youth: Trophy };
 
 /** One service: photo (or icon panel), category, name, short description, Learn more and the main action. */
 export function ServiceCard({ s, index, locale, links, t }: { s: ServiceItem; index: number; locale: Locale; links: ServiceLinks; t: ServicesLabels }) {
   const cat = categoryOf(s);
-  const photo = s.photo?.src ?? defaultServicePhoto(s);
   const bookable = isBookable(s);
+  const price = links.price[index];
   return (
     <article className="group relative flex h-full overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-navy/10 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-navy/10 motion-reduce:hover:translate-y-0">
-      <div className="relative w-[38%] shrink-0 overflow-hidden bg-navy">
-        {photo ? (
-          <Image src={photo} alt="" fill sizes="(min-width: 1280px) 180px, (min-width: 768px) 25vw, 38vw" className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100" />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-navy to-navy-deep text-green">
-            <div aria-hidden className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-blue/25 blur-2xl" />
-            <ServiceIconView icon={s.icon} image={s.image} className="relative h-12 w-12" />
-          </div>
+      <div className="relative w-[40%] shrink-0 overflow-hidden bg-surface">
+        <Image
+          src={servicePhoto(s)}
+          alt=""
+          fill
+          sizes="(min-width: 1280px) 200px, (min-width: 768px) 25vw, 40vw"
+          className="object-cover object-[50%_25%] transition duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100"
+        />
+        {price && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-navy shadow-sm backdrop-blur">{price}</span>
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col p-5">
@@ -60,7 +63,7 @@ export function ServiceCard({ s, index, locale, links, t }: { s: ServiceItem; in
             <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover/more:translate-x-0.5" />
           </Link>
           <Link
-            href={bookable ? links.book : links.contact}
+            href={links.action[index]}
             className={`rounded-[var(--btn-radius,9999px)] px-4 py-2 text-sm font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2 ${
               bookable ? "bg-blue-dark text-white hover:bg-navy" : "bg-white text-navy ring-1 ring-navy/20 hover:ring-blue-dark"
             }`}

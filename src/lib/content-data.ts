@@ -81,8 +81,26 @@ export type FaqItem = { q: Bilingual; a: Bilingual };
 export type Block = { id: string; eyebrow: Bilingual; title: Bilingual; text: Bilingual; photo: SitePhoto | null; photoSide: "left" | "right" };
 export const newBlockId = () => `block-${Math.random().toString(36).slice(2, 10)}`;
 
-/** photo: an optional picture shown on the service card (a branded panel with the icon otherwise). */
-export type ServiceItem = { icon: ServiceIcon; image: SitePhoto | null; photo: SitePhoto | null; title: Bilingual; text: Bilingual };
+/**
+ * photo: the picture on the service card and page.
+ * bookingId: the priced treatment (Admin → Pricing) this service books; null = by request only.
+ */
+export type ServiceItem = {
+  icon: ServiceIcon;
+  image: SitePhoto | null;
+  photo: SitePhoto | null;
+  bookingId: string | null;
+  title: Bilingual;
+  text: Bilingual;
+};
+
+/** Real photos of Ziad used for the original four services. */
+export const servicePhotos: Record<string, SitePhoto> = {
+  swedish: { src: "/images/blog/swedish.webp", width: 1400, height: 1400 },
+  therapeutic: { src: "/images/blog/sports-massage.webp", width: 1600, height: 1600 },
+  "active-aging": { src: "/images/blog/ziad-studio.webp", width: 1400, height: 1086 },
+  "fitness-coaching": { src: "/images/portrait.jpg", width: 728, height: 1030 },
+};
 
 export type SiteContent = {
   tagline: Bilingual;
@@ -121,7 +139,8 @@ export const defaultContent: SiteContent = {
     items: en.services.items.map((item, i) => ({
       icon: item.icon,
       image: null,
-      photo: null,
+      photo: servicePhotos[item.booking] ?? null,
+      bookingId: item.booking,
       title: { en: item.title, fr: fr.services.items[i]?.title ?? item.title },
       text: { en: item.text, fr: fr.services.items[i]?.text ?? item.text },
     })),
@@ -193,8 +212,9 @@ export function parseContent(raw: unknown): SiteContent {
             icon: iconKeys.includes(String(item.icon)) ? (item.icon as ServiceIcon) : "hands",
             image: photo(item.image),
             photo: photo(item.photo),
+            bookingId: typeof item.bookingId === "string" && /^[\w-]{1,40}$/.test(item.bookingId) ? item.bookingId : null,
             title: bi(item.title, { en: "", fr: "" }, 80),
-            text: bi(item.text, { en: "", fr: "" }, 400),
+            text: bi(item.text, { en: "", fr: "" }, 1200),
           }))
         : d.services.items,
     },
@@ -302,7 +322,7 @@ export function applyContent(t: Dictionary, c: SiteContent, locale: Locale): Dic
       title: L(c.services.title),
       lead: L(c.services.lead),
       // The home page draws icons from the content itself (which can hold more icon types and uploads).
-      items: c.services.items.map((s) => ({ icon: "hands" as const, title: L(s.title), text: L(s.text) })),
+      items: c.services.items.map((s) => ({ icon: "hands" as const, booking: s.bookingId ?? "", title: L(s.title), text: L(s.text) })),
     },
     pricing: { ...t.pricing, title: L(c.pricing.title), lead: L(c.pricing.lead) },
     about: {

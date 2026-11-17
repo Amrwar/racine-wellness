@@ -7,8 +7,8 @@ import { htmlLang, isLocale, localePath, sectionHref, type Locale } from "@/i18n
 import { LLink } from "@/i18n/LocaleProvider";
 import { getContent, getText } from "@/lib/content";
 import { getPricing } from "@/lib/pricing";
-import { formatPrice } from "@/lib/pricing-data";
-import { categoryOf, defaultServicePhoto, isBookable, serviceSlugs } from "@/lib/services";
+import { formatPrice, rateLabel } from "@/lib/pricing-data";
+import { categoryOf, servicePhoto, serviceSlugs } from "@/lib/services";
 import { serviceDetails } from "@/lib/service-details";
 import { site } from "@/lib/site";
 import { Container } from "@/components/ui";
@@ -52,12 +52,12 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
   const [t, content, pricing] = await Promise.all([getText(locale), getContent(), getPricing()]);
   const ts = t.services;
   const cat = categoryOf(s);
-  const bookable = isBookable(s);
+  const priced = pricing.services.find((p) => p.id === s.bookingId);
   const detail = serviceDetails[slug];
-  const photo = s.photo?.src ?? defaultServicePhoto(s);
-  const links = serviceLinks(locale, items);
+  const photo = servicePhoto(s);
+  const links = serviceLinks(locale, items, pricing, t);
   const others = items.map((x, i) => ({ x, i })).filter(({ i }) => i !== index).slice(0, 3);
-  const primary = bookable ? { href: localePath(locale, "/book"), label: t.header.book } : { href: sectionHref(locale, "contact"), label: ts.requestInfo };
+  const primary = priced ? { href: `${localePath(locale, "/book")}?service=${encodeURIComponent(priced.id)}`, label: t.header.book } : { href: sectionHref(locale, "contact"), label: ts.requestInfo };
   const L = (list?: Record<Locale, string[]>) => list?.[locale] ?? [];
 
   const jsonLd = [
@@ -134,14 +134,10 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
             </div>
           </div>
           <div className="lg:col-span-5">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy shadow-2xl shadow-navy/20 ring-1 ring-navy/10">
-              {photo ? (
-                <Image src={photo} alt="" fill preload sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
-              ) : (
-                <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-navy to-navy-deep text-green">
-                  <div aria-hidden className="absolute -right-12 -top-12 h-56 w-56 rounded-full bg-blue/25 blur-3xl" />
-                  <ServiceIconView icon={s.icon} image={s.image} className="relative h-24 w-24" />
-                </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-surface shadow-2xl shadow-navy/20 ring-1 ring-navy/10">
+              <Image src={photo} alt="" fill preload sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-[50%_25%]" />
+              {links.price[index] && (
+                <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3.5 py-1.5 text-sm font-bold text-navy shadow-md backdrop-blur">{links.price[index]}</span>
               )}
             </div>
           </div>
@@ -191,26 +187,20 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
           )}
           <div className="rounded-2xl bg-surface p-6 ring-1 ring-navy/10 sm:p-8">
             <h2 className="text-xl font-semibold text-navy">{ts.optionsTitle}</h2>
-            {bookable ? (
+            {priced ? (
               <>
-                <ul className="mt-4 space-y-4">
-                  {pricing.services.map((p) => (
-                    <li key={p.id}>
-                      <p className="font-semibold text-ink">{p.title[locale]}</p>
-                      <p className="mt-1 flex flex-wrap gap-2">
-                        {p.rates.map((r) => (
-                          <Link
-                            key={r.minutes}
-                            href={`${localePath(locale, "/book")}?service=${encodeURIComponent(p.id)}&minutes=${r.minutes}`}
-                            className="rounded-full bg-white px-3 py-1 text-sm text-navy ring-1 ring-navy/15 hover:ring-blue-dark"
-                          >
-                            {t.pricing.duration.replace("{n}", String(r.minutes))} · <span className="font-semibold">{formatPrice(r.price, locale)}</span>
-                          </Link>
-                        ))}
-                      </p>
-                    </li>
+                {priced.perSession && <p className="mt-3 text-sm text-muted">{t.pricing.lengthAdapted}</p>}
+                <p className="mt-4 flex flex-wrap gap-2">
+                  {priced.rates.map((r) => (
+                    <Link
+                      key={r.minutes}
+                      href={`${localePath(locale, "/book")}?service=${encodeURIComponent(priced.id)}&minutes=${r.minutes}`}
+                      className="rounded-full bg-white px-3.5 py-1.5 text-sm text-navy ring-1 ring-navy/15 hover:ring-blue-dark"
+                    >
+                      {rateLabel(priced, r, t.pricing)} · <span className="font-semibold">{formatPrice(r.price, locale)}</span>
+                    </Link>
                   ))}
-                </ul>
+                </p>
                 <LLink href="/pricing" className="mt-4 inline-flex text-sm font-semibold text-blue-dark underline underline-offset-4">
                   {ts.seePricing}
                 </LLink>

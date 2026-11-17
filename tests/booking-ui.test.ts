@@ -24,7 +24,9 @@ test("search with no match returns nothing", () => {
 test("default prices match the published rates", () => {
   const rates = Object.fromEntries(services.map((s) => [s.id, s.rates.map((r) => `${r.minutes}:${r.price}`).join(" ")]));
   assert.equal(rates.swedish, "60:100 90:135 120:170");
-  assert.equal(rates.therapeutic, "60:135 90:180 120:230");
+  assert.equal(rates.therapeutic, "60:130 90:180 120:230");
+  assert.equal(rates["active-aging"], "60:65");
+  assert.equal(rates["fitness-coaching"], "60:80");
 });
 
 test("prices are formatted per language", () => {

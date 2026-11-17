@@ -9,10 +9,10 @@ type List = Record<Lang, string[]>;
 export type ServiceDetail = { includes: List; benefits: List; suitability: Text; preparation: List };
 
 export const serviceDetails: Record<string, ServiceDetail> = {
-  "massage-therapy": {
+  "swedish-relaxation-massage": {
     includes: {
-      en: ["A short conversation about your goals, areas of tension and health history", "Swedish relaxation or therapeutic massage, adapted to you", "An insurance receipt, on request"],
-      fr: ["Une courte discussion sur vos objectifs, vos zones de tension et vos antécédents de santé", "Un massage suédois de détente ou thérapeutique, adapté à vous", "Un reçu pour assurances, sur demande"],
+      en: ["A short conversation about your goals, areas of tension and health history", "Long, flowing strokes with pressure adapted to your comfort", "An insurance receipt, on request"],
+      fr: ["Une courte discussion sur vos objectifs, vos zones de tension et vos antécédents de santé", "De longs mouvements fluides, avec une pression adaptée à votre confort", "Un reçu pour assurances, sur demande"],
     },
     benefits: {
       en: ["Helps relieve muscle tension and stiffness", "Supports relaxation and recovery after activity", "Can make everyday movement feel more comfortable"],
@@ -25,6 +25,24 @@ export const serviceDetails: Record<string, ServiceDetail> = {
     preparation: {
       en: ["Wear comfortable clothing", "Drink water and avoid a heavy meal just before your session", "For a home visit, clear a quiet space for the massage table"],
       fr: ["Portez des vêtements confortables", "Buvez de l'eau et évitez un repas copieux juste avant la séance", "Pour une visite à domicile, libérez un espace calme pour la table de massage"],
+    },
+  },
+  "sports-therapeutic-massage": {
+    includes: {
+      en: ["A short conversation about your goals, activity and areas of tension", "Targeted techniques such as sports massage, deep tissue work, myofascial release and passive stretching", "An insurance receipt, on request"],
+      fr: ["Une courte discussion sur vos objectifs, vos activités et vos zones de tension", "Des techniques ciblées comme le massage sportif, les tissus profonds, le relâchement myofascial et les étirements passifs", "Un reçu pour assurances, sur demande"],
+    },
+    benefits: {
+      en: ["Helps ease muscle tension and discomfort", "Supports recovery from training and physical work", "Can help restore comfortable movement"],
+      fr: ["Aide à soulager les tensions et l'inconfort musculaires", "Favorise la récupération après l'entraînement et l'effort physique", "Peut aider à retrouver un mouvement confortable"],
+    },
+    suitability: {
+      en: "Active adults, athletes and people with tension from daily activities, repetitive movements or long hours sitting. Tell Ziad about any injury or health condition before your session.",
+      fr: "Les adultes actifs, les athlètes et les personnes tendues par les activités quotidiennes, les mouvements répétitifs ou la position assise prolongée. Informez Ziad de toute blessure ou condition de santé avant votre séance.",
+    },
+    preparation: {
+      en: ["Wear comfortable clothing", "Note when and where you feel tension or discomfort", "Avoid an intense workout just before your session"],
+      fr: ["Portez des vêtements confortables", "Notez quand et où vous ressentez des tensions ou de l'inconfort", "Évitez un entraînement intense juste avant la séance"],
     },
   },
   "posture-correction": {
@@ -63,18 +81,18 @@ export const serviceDetails: Record<string, ServiceDetail> = {
       fr: ["Portez des vêtements confortables qui permettent de bouger", "Notez les mouvements limités ou inconfortables", "Prévoyez un peu d'espace au sol pour une séance à domicile"],
     },
   },
-  strength: {
+  "fitness-and-healthy-lifestyle-coaching": {
     includes: {
-      en: ["A review of your level, goals and injury history", "Progressive, supervised strength training", "A plan that fits your schedule"],
-      fr: ["Un portrait de votre niveau, de vos objectifs et de vos blessures passées", "Un entraînement en force progressif et supervisé", "Un plan adapté à votre horaire"],
+      en: ["A review of your level, goals, habits and injury history", "Supervised strength and fitness training", "Practical guidance on healthy daily habits, and a plan that fits your schedule"],
+      fr: ["Un portrait de votre niveau, de vos objectifs, de vos habitudes et de vos blessures passées", "Un entraînement supervisé en force et en forme physique", "Des conseils pratiques sur les saines habitudes et un plan adapté à votre horaire"],
     },
     benefits: {
-      en: ["Builds functional strength for daily life", "Improves stability and control", "Supports long-term health and activity"],
-      fr: ["Développe une force fonctionnelle pour le quotidien", "Améliore la stabilité et le contrôle", "Soutient la santé et l'activité à long terme"],
+      en: ["Builds functional strength and fitness for daily life", "Helps you build habits you can keep", "Supports long-term health and activity"],
+      fr: ["Développe la force et la forme physique pour le quotidien", "Vous aide à adopter des habitudes durables", "Soutient la santé et l'activité à long terme"],
     },
     suitability: {
-      en: "Beginners and experienced adults who want safe, structured strength training.",
-      fr: "Les adultes, débutants ou expérimentés, qui veulent un entraînement en force sécuritaire et structuré.",
+      en: "Beginners and experienced adults who want safe, structured coaching to get fitter and live more actively.",
+      fr: "Les adultes, débutants ou expérimentés, qui veulent un coaching sécuritaire et structuré pour être en meilleure forme et plus actifs.",
     },
     preparation: {
       en: ["Wear athletic clothing and shoes", "Bring water", "Mention any injury or pain before you start"],

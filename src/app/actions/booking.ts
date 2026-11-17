@@ -46,6 +46,8 @@ export type BookingState = {
     reference: string;
     service: string;
     minutes: number;
+    /** "90 min", or "Length adapted to you" for a per-session price. */
+    length?: string;
     price: string;
     when: string;
     where: string;
@@ -110,7 +112,8 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
   const when = formatWhen(start, locale);
   const whenText = `${when.day}, ${when.time}`;
   const enWhen = formatWhen(start, "en");
-  const serviceLine = `${service.title[locale]}, ${minutes} min (${formatPrice(rate.price, locale)})`;
+  const lengthText = service.perSession ? dict.pricing.lengthAdapted : `${minutes} min`;
+  const serviceLine = `${service.title[locale]}, ${service.perSession ? dict.pricing.perSession : `${minutes} min`} (${formatPrice(rate.price, locale)})`;
 
   await Promise.all([
     sendEmail({
@@ -122,7 +125,7 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
         `${site.url}/admin/bookings`,
         "",
         `When: ${enWhen.day}, ${enWhen.time}`,
-        `Treatment: ${service.title.en}, ${minutes} min (${formatPrice(rate.price, "en")})`,
+        `Treatment: ${service.title.en}, ${service.perSession ? `per session (${minutes} min reserved)` : `${minutes} min`} (${formatPrice(rate.price, "en")})`,
         `Where: ${location === "home" ? `Home visit, ${address}` : "Office"}`,
         `Name: ${name}`,
         `Phone: ${phone}`,
@@ -155,6 +158,7 @@ export async function requestBooking(_prev: BookingState, formData: FormData): P
       reference: bookingReference(Number(row.id)),
       service: service.title[locale],
       minutes,
+      length: lengthText,
       price: formatPrice(rate.price, locale),
       when: whenText,
       where: location === "home" ? `${t.home}: ${address}` : `${t.office}, ${t.officeNote}`,

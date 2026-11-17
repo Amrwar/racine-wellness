@@ -97,8 +97,28 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
           <BilingualFields label="Name" value={s.title} onChange={(v) => patchService(i, (x) => ({ ...x, title: { ...x.title, ...v } }))} />
           <BilingualFields label="Description" value={s.text} onChange={(v) => patchService(i, (x) => ({ ...x, text: { ...x.text, ...v } }))} multiline />
 
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-surface px-4 py-3 ring-1 ring-mist/60">
+            <input
+              type="checkbox"
+              checked={s.perSession === true}
+              onChange={(e) =>
+                setService(i, e.target.checked ? { ...s, perSession: true, rates: [s.rates[0] ?? { minutes: 60, price: 0 }] } : { ...s, perSession: false })
+              }
+              className="mt-0.5 h-5 w-5 shrink-0 accent-navy"
+            />
+            <span>
+              <span className="block text-sm font-semibold text-navy">Fixed price per session</span>
+              <span className="block text-xs text-muted">
+                The length depends on the client. Clients see one price &ldquo;per session&rdquo;; the minutes below only set how much time is reserved in
+                your calendar when someone books online.
+              </span>
+            </span>
+          </label>
+
           <div>
-            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Durations and prices</span>
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+              {s.perSession ? "Time to reserve in your calendar, and the price" : "Durations and prices"}
+            </span>
             <ul className="space-y-2">
               {s.rates.map((r, k) => (
                 <li key={k} className="flex items-center gap-3">
@@ -146,7 +166,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
                 </li>
               ))}
             </ul>
-            {s.rates.length < 8 && (
+            {!s.perSession && s.rates.length < 8 && (
               <button
                 type="button"
                 onClick={() => {
@@ -169,7 +189,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
           onClick={() => setPricing((p) => ({ ...p, services: [...p.services, newService()] }))}
           className="w-full rounded-2xl border-2 border-dashed border-mist px-6 py-5 font-semibold text-navy transition hover:border-blue hover:bg-white"
         >
-          + Add a massage service
+          + Add a service
         </button>
       )}
 

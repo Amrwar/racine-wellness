@@ -20,6 +20,8 @@ type Props = {
   t: Dictionary["booking"];
   form: Dictionary["form"];
   durationLabel: string;
+  /** "Per session" and "Length adapted to you", for fixed per-session prices. */
+  perSession: { title: string; length: string };
   services: PricedService[];
   /** Optional fields switched on or off in Admin → Design. */
   fields?: Pick<FormFields, "bookingHomeVisits" | "bookingNotes" | "bookingReceipt">;
@@ -31,7 +33,7 @@ type Props = {
   privacyHref: string;
 };
 
-export function BookingForm({ t, form, durationLabel, services, promo, fields, initial, phone, privacyHref }: Props) {
+export function BookingForm({ t, form, durationLabel, perSession, services, promo, fields, initial, phone, privacyHref }: Props) {
   const show = { home: fields?.bookingHomeVisits !== false, notes: fields?.bookingNotes !== false, receipt: fields?.bookingReceipt !== false };
   const locale = useLocale();
   const tag = locale === "fr" ? "fr-CA" : "en-CA";
@@ -137,7 +139,7 @@ export function BookingForm({ t, form, durationLabel, services, promo, fields, i
               <div className="mt-6 grid gap-6 md:grid-cols-2">
                 <dl className="divide-y divide-navy/10 rounded-2xl bg-surface px-5 py-2">
                   {line(t.chooseService, req.service)}
-                  {line(t.durationLabel, `${dur(req.minutes)} · ${req.price}`)}
+                  {line(t.durationLabel, `${req.length ?? dur(req.minutes)} · ${req.price}`)}
                   {line(t.preferredTime, <span className="capitalize">{req.when}</span>)}
                   {line(t.where, req.where)}
                 </dl>
@@ -191,7 +193,7 @@ export function BookingForm({ t, form, durationLabel, services, promo, fields, i
               </button>
             )}
           </div>
-          {row(t.durationLabel, dur(rate.minutes))}
+          {row(t.durationLabel, service.perSession ? perSession.length : dur(rate.minutes))}
           {row(t.priceLabel, `${formatPrice(rate.price, locale)} CAD`)}
           {date && row(t.dateLabel, <span className="capitalize">{longDay(date)}</span>)}
           {time && row(t.chooseTime, clock(time))}
@@ -322,7 +324,7 @@ export function BookingForm({ t, form, durationLabel, services, promo, fields, i
                                 <Check aria-hidden className="h-3 w-3" strokeWidth={3} />
                               </span>
                             )}
-                            <span className="block font-semibold">{dur(r.minutes)}</span>
+                            <span className="block font-semibold">{s.perSession ? perSession.title : dur(r.minutes)}</span>
                             <span className={`block text-sm ${on ? "text-white/85" : "text-muted"}`}>{formatPrice(r.price, locale)}</span>
                           </button>
                         );

@@ -48,14 +48,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Container>
           <SplitHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} edit={{ title: "services.title", lead: "services.lead" }} />
           {/* A short preview; the full list with search and filters is on /services */}
-          <ul className={`mt-12 grid gap-6 md:grid-cols-2 ${design.layout.servicesColumns === 3 ? "xl:grid-cols-3" : ""}`}>
-            {content.services.items.slice(0, 3).map((s, i) => (
+          <ul className={`mt-12 grid gap-6 md:grid-cols-2 ${design.layout.servicesColumns === 3 && content.services.items.length !== 4 ? "xl:grid-cols-3" : ""}`}>
+            {content.services.items.slice(0, 4).map((s, i) => (
               <li key={i}>
-                <ServiceCard s={s} index={i} locale={locale} links={serviceLinks(locale, content.services.items)} t={serviceLabels(t)} />
+                <ServiceCard s={s} index={i} locale={locale} links={serviceLinks(locale, content.services.items, pricing, t)} t={serviceLabels(t)} />
               </li>
             ))}
           </ul>
-          {content.services.items.length > 3 && (
+          {content.services.items.length > 4 && (
             <div className="mt-8 flex justify-center">
               <Link
                 href={localePath(locale, "/services")}
@@ -97,10 +97,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </div>
           )}
           <CenterHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} edit={{ title: "pricing.title", lead: "pricing.lead" }} />
-          <ul className={`mt-14 grid items-stretch gap-8 ${columnsClass.pricing[pricing.services.length > 2 ? design.layout.pricingColumns : 2]} ${pricing.services.length <= 2 ? "mx-auto max-w-5xl" : ""}`}>
+          <ul className={`mt-14 grid items-stretch gap-8 ${columnsClass.pricing[pricing.services.length > 2 && pricing.services.length !== 4 ? design.layout.pricingColumns : 2]} ${pricing.services.length <= 2 || pricing.services.length === 4 ? "mx-auto max-w-5xl" : ""}`}>
             {pricing.services.map((item) => {
               const mins = item.rates.map((r) => r.minutes);
-              const range = mins.length > 1 ? `${Math.min(...mins)}–${Math.max(...mins)} min` : `${mins[0]} min`;
+              const range = item.perSession ? t.pricing.perSessionTitle : mins.length > 1 ? `${Math.min(...mins)}–${Math.max(...mins)} min` : `${mins[0]} min`;
               return (
                 <li key={item.id} className="flex flex-col justify-between rounded-2xl border border-navy/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-lg sm:p-10">
                   <div>
@@ -114,7 +114,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                         <div key={r.minutes} className="flex items-baseline justify-between rounded-xl bg-surface px-5 py-4">
                           <dt className="flex items-center gap-2.5 font-medium text-ink">
                             <Check className="h-4 w-4 text-blue-dark" />
-                            {t.pricing.duration.replace("{n}", String(r.minutes))}
+                            {item.perSession ? t.pricing.lengthAdapted : t.pricing.duration.replace("{n}", String(r.minutes))}
                           </dt>
                           <dd className="text-3xl font-bold tracking-tight text-navy">{formatPrice(r.price, locale)}</dd>
                         </div>

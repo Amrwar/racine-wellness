@@ -16,8 +16,8 @@ const byIcon: Partial<Record<string, ServiceCategory>> = {
 export const categoryOf = (s: Pick<ServiceItem, "icon">): ServiceCategory | undefined => byIcon[s.icon];
 export const categoryOrder: ServiceCategory[] = ["massage", "movement", "strength", "aging", "youth"];
 
-/** Massage is the only service with published prices and online booking; the others are by request. */
-export const isBookable = (s: Pick<ServiceItem, "icon">) => categoryOf(s) === "massage";
+/** A service can be booked online when it is linked to a priced treatment; otherwise it's by request. */
+export const isBookable = (s: Pick<ServiceItem, "bookingId">) => Boolean(s.bookingId);
 
 export const fold = (s: string) =>
   s
@@ -60,5 +60,5 @@ export function filterServices<T extends Pick<ServiceItem, "icon" | "title" | "t
   });
 }
 
-/** A real HealthyZone photo for massage cards when no photo was uploaded; other services show their icon. */
-export const defaultServicePhoto = (s: Pick<ServiceItem, "icon">) => (categoryOf(s) === "massage" ? "/images/blog/swedish.webp" : null);
+/** Every card shows a photo of Ziad: the one chosen in the admin, or his treatment photo. */
+export const servicePhoto = (s: Pick<ServiceItem, "photo">) => s.photo?.src ?? "/images/hero-massage-square.webp";

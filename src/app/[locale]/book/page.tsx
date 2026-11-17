@@ -73,6 +73,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
             t={t.booking}
             form={t.form}
             durationLabel={t.pricing.duration}
+            perSession={{ title: t.pricing.perSessionTitle, length: t.pricing.lengthAdapted }}
             services={pricing.services}
             promo={pricing.promo.enabled ? pricing.promo[locale] : ""}
             fields={design.forms}

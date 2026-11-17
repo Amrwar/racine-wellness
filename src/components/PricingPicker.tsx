@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
-import { formatPrice, type PricedService } from "@/lib/pricing-data";
+import { formatPrice, rateLabel, type PricedService } from "@/lib/pricing-data";
 import type { Locale } from "@/i18n/config";
 
-type Labels = { choose: string; perSession: string; select: string; duration: string; included: string[] };
+type Labels = { choose: string; perSession: string; perSessionTitle: string; lengthAdapted: string; book: string; select: string; duration: string; included: string[] };
 
 /** Treatment switch with one card per session length, as on the Stitch pricing page. */
 export function PricingPicker({ services, locale, bookHref, t }: { services: PricedService[]; locale: Locale; bookHref: string; t: Labels }) {
@@ -40,10 +40,10 @@ export function PricingPicker({ services, locale, bookHref, t }: { services: Pri
         </div>
       )}
 
-      <ul className={`grid items-stretch gap-8 ${service.rates.length >= 3 ? "lg:grid-cols-3" : "md:grid-cols-2"} ${service.rates.length < 3 ? "mx-auto max-w-4xl" : ""}`}>
+      <ul className={`grid items-stretch gap-8 ${service.rates.length >= 3 ? "lg:grid-cols-3" : service.rates.length === 2 ? "mx-auto max-w-4xl md:grid-cols-2" : "mx-auto max-w-md"}`}>
         {service.rates.map((r, i) => {
           const featured = i === mid;
-          const duration = t.duration.replace("{n}", String(r.minutes));
+          const duration = rateLabel(service, r, t);
           return (
             <li
               key={`${service.id}-${r.minutes}`}
@@ -63,7 +63,7 @@ export function PricingPicker({ services, locale, bookHref, t }: { services: Pri
                   <span className="text-sm text-muted">{t.perSession}</span>
                 </div>
                 <ul className="mb-8 space-y-3">
-                  {t.included.map((line) => (
+                  {(service.perSession ? [t.lengthAdapted, ...t.included] : t.included).map((line) => (
                     <li key={line} className="flex items-start gap-3 text-sm text-ink">
                       <Check aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-blue-dark" />
                       {line}
@@ -77,7 +77,7 @@ export function PricingPicker({ services, locale, bookHref, t }: { services: Pri
                   featured ? "bg-navy text-white shadow-md hover:bg-navy-deep" : "bg-surface text-navy hover:bg-navy hover:text-white"
                 }`}
               >
-                {t.select.replace("{n}", String(r.minutes))}
+                {service.perSession ? t.book : t.select.replace("{n}", String(r.minutes))}
                 <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </li>

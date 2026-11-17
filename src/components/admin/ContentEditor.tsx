@@ -9,7 +9,7 @@ import { defaultFraming, framingStyle, newBlockId, serviceIconChoices, type Back
 import { ServiceIconView, serviceIcons } from "@/components/icons";
 import type { Bilingual } from "@/lib/pricing-data";
 import { PreviewButton } from "./PreviewButton";
-import { BilingualFields, DragHandle, Section, useDragReorder } from "./fields";
+import { BilingualFields, DragHandle, Field, Section, input, useDragReorder } from "./fields";
 
 type Path = (string | number)[];
 
@@ -42,9 +42,12 @@ const jump = [
 export function ContentEditor({
   initial,
   defaults,
+  bookingOptions = [],
 }: {
   initial: SiteContent;
   defaults: { hero: string; portrait: string; backgrounds: Record<BackgroundKey, string> };
+  /** The priced treatments (Admin → Pricing) a service can be booked as. */
+  bookingOptions?: { id: string; label: string }[];
 }) {
   const [content, setContent] = useState(initial);
   const [state, action, pending] = useActionState<ContentState, FormData>(updateContent, { status: "idle" });
@@ -154,11 +157,26 @@ export function ContentEditor({
                 />
                 <BilingualFields label="Name" {...bi("services", "items", i, "title")} />
                 <BilingualFields label="Description" multiline rows={3} {...bi("services", "items", i, "text")} />
+                <Field label="Online booking" hint="Which price from the Pricing page clients book for this service. Without one, the card asks clients to request information.">
+                  <select
+                    value={item.bookingId ?? ""}
+                    onChange={(e) => setItems((list) => list.map((x, j) => (j === i ? { ...x, bookingId: e.target.value || null } : x)))}
+                    className={input}
+                  >
+                    <option value="">Not bookable online (request information)</option>
+                    {bookingOptions.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.label}
+                      </option>
+                    ))}
+                    {item.bookingId && !bookingOptions.some((o) => o.id === item.bookingId) && <option value={item.bookingId}>Removed price ({item.bookingId})</option>}
+                  </select>
+                </Field>
                 <PhotoField
-                  label="Card photo (optional)"
+                  label="Card photo"
                   kind="hero"
                   name={`service-${i}`}
-                  note="Shown on the left of the service card. Without one, the card shows the icon on a blue panel."
+                  note="A photo of you giving this service works best. Without one, your treatment photo is used."
                   photo={item.photo}
                   fallback=""
                   onChange={(photo) => setItems((list) => list.map((x, j) => (j === i ? { ...x, photo } : x)))}
@@ -170,7 +188,7 @@ export function ContentEditor({
         <button
           type="button"
           disabled={items.length >= 12}
-          onClick={() => setItems((list) => [...list, { icon: "hands", image: null, photo: null, title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
+          onClick={() => setItems((list) => [...list, { icon: "hands", image: null, photo: null, bookingId: null, title: { en: "", fr: "" }, text: { en: "", fr: "" } }])}
           className="rounded-full border-2 border-dashed border-blue/50 px-5 py-2.5 text-sm font-semibold text-blue-dark hover:border-blue disabled:opacity-40"
         >
           + Add a service

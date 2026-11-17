@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
 import { discardDraft } from "@/lib/settings";
 import { getContent } from "@/lib/content";
+import { getPricing } from "@/lib/pricing";
 import { images } from "@/lib/site";
 import { PageHeader } from "@/components/admin/ui";
 import { ContentEditor } from "@/components/admin/ContentEditor";
@@ -28,7 +29,10 @@ export default async function WebsitePage() {
         }
       />
       <WebsiteTabs active="home" />
-      <ContentEditor initial={content} defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: { services: "", about: "", blog: "", contact: "" } }} />
+      <ContentEditor
+        bookingOptions={(await getPricing()).services.map((p) => ({ id: p.id, label: p.title.en }))}
+        initial={content}
+        defaults={{ hero: images.hero.square.src, portrait: images.portrait, backgrounds: { services: "", about: "", blog: "", contact: "" } }} />
     </>
   );
 }

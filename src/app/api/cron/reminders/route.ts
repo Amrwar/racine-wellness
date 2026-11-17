@@ -3,7 +3,7 @@ import { fill } from "@/i18n";
 import { getText } from "@/lib/content";
 import { getBusiness, notifyEmail } from "@/lib/business";
 import { sendEmail } from "@/lib/email";
-import { formatPrice } from "@/lib/pricing-data";
+import { serviceLine } from "@/lib/pricing-data";
 import { getPricing } from "@/lib/pricing";
 import { addDays, formatWhen, localDay, zonedToDate } from "@/lib/time";
 
@@ -37,7 +37,8 @@ export async function GET(request: Request) {
     const dict = await getText(locale);
     const t = dict.booking;
     const when = formatWhen(new Date(b.start_at), locale);
-    const title = pricing.services.find((s) => s.id === b.service_id)?.title[locale] ?? b.service_title;
+    const priced = pricing.services.find((s) => s.id === b.service_id);
+    const title = priced?.title[locale] ?? b.service_title;
     const ok = await sendEmail({
       to: b.email,
       replyTo: await notifyEmail(),
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
       text: fill(t.emails.reminder, {
         name: String(b.name).split(" ")[0],
         when: `${when.day}, ${when.time}`,
-        service: `${title}, ${b.minutes} min (${formatPrice(Number(b.price), locale)})`,
+        service: serviceLine(priced, title, b.minutes, Number(b.price), locale, dict.pricing.perSession),
         where: b.location === "home" ? `${t.home}: ${b.address ?? ""}` : `${t.office} (${dict.contact.office})`,
         phone: business.phone,
       }),

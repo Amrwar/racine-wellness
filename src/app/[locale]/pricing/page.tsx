@@ -29,7 +29,8 @@ export default async function PricingPage({ params }: PageProps<"/[locale]/prici
   const [t, content, business, pricing] = await Promise.all([getText(locale), getContent(), getBusiness(), getPricing()]);
   const p = t.pricingPage;
   const book = localePath(locale, "/book");
-  const durations = [...new Set(pricing.services.flatMap((s) => s.rates.map((r) => r.minutes)))].sort((a, b) => a - b);
+  // Table columns: the session lengths of the treatments priced by length (per-session prices span the row).
+  const durations = [...new Set(pricing.services.filter((s) => !s.perSession).flatMap((s) => s.rates.map((r) => r.minutes)))].sort((a, b) => a - b);
 
   return (
     <>
@@ -73,7 +74,7 @@ export default async function PricingPage({ params }: PageProps<"/[locale]/prici
             services={pricing.services}
             locale={locale}
             bookHref={book}
-            t={{ choose: p.choose, perSession: p.perSession, select: p.select, duration: t.pricing.duration, included: p.included }}
+            t={{ choose: p.choose, perSession: p.perSession, perSessionTitle: t.pricing.perSessionTitle, lengthAdapted: t.pricing.lengthAdapted, book: t.pricing.book, select: p.select, duration: t.pricing.duration, included: p.included }}
           />
           {pricing.homeVisits[locale] && (
             <p className="mx-auto mt-10 flex max-w-3xl items-start justify-center gap-3 text-center text-lg font-medium text-ink">
@@ -131,7 +132,11 @@ export default async function PricingPage({ params }: PageProps<"/[locale]/prici
                   {pricing.services.map((s) => (
                     <tr key={s.id}>
                       <th scope="row" className="px-4 py-5 font-semibold text-navy">{s.title[locale]}</th>
-                      {durations.map((m) => {
+                      {s.perSession ? (
+                        <td colSpan={Math.max(durations.length, 1)} className="px-4 py-5 text-right text-xl font-bold text-navy">
+                          {formatPrice(s.rates[0].price, locale)} <span className="text-base font-normal text-muted">{t.pricing.perSession} · {t.pricing.lengthAdapted}</span>
+                        </td>
+                      ) : durations.map((m) => {
                         const rate = s.rates.find((r) => r.minutes === m);
                         return (
                           <td key={m} className="px-4 py-5 text-right text-xl font-bold text-navy">

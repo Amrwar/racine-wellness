@@ -1,44 +1,55 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoryOf, filterServices, isBookable, serviceSlugs } from "../src/lib/services.ts";
+import { categoryOf, filterServices, isBookable, serviceSlugs, servicePhoto } from "../src/lib/services.ts";
+import { defaultPricing, priceSummary, rateLabel } from "../src/lib/pricing-data.ts";
+import type { ServiceItem } from "../src/lib/content-data.ts";
 
 const t = (en: string, fr = en) => ({ en, fr });
-const items = [
-  { icon: "hands", title: t("Massage Therapy", "Massothérapie"), text: t("Therapeutic massage to relieve pain and tension.", "Massage thérapeutique.") },
-  { icon: "posture", title: t("Posture Correction"), text: t("Exercises to ease back and neck strain.") },
-  { icon: "mobility", title: t("Mobility"), text: t("Restore range of motion in stiff joints.") },
-  { icon: "strength", title: t("Strength"), text: t("Progressive, safe strength training.") },
-  { icon: "heart", title: t("Active Aging"), text: t("Keep balance, strength and independence.") },
-  { icon: "youth", title: t("Youth Fitness"), text: t("Good movement habits for young athletes.") },
-] as const;
-const labels = { massage: "Massage therapy", movement: "Movement & mobility", strength: "Strength & fitness", aging: "Healthy aging", youth: "Youth fitness" };
-const names = (l: readonly { title: { en: string } }[]) => l.map((s) => s.title.en);
+const items: Pick<ServiceItem, "icon" | "bookingId" | "photo" | "title" | "text">[] = [
+  { icon: "hands", bookingId: "swedish", photo: null, title: t("Swedish Relaxation Massage", "Massage suédois de détente"), text: t("A flowing, relaxing massage.", "Un massage fluide.") },
+  { icon: "hands", bookingId: "therapeutic", photo: null, title: t("Sports / Therapeutic Massage"), text: t("Deep tissue work and myofascial release.") },
+  { icon: "heart", bookingId: "active-aging", photo: null, title: t("Active Aging"), text: t("Keep balance, strength and independence.") },
+  { icon: "strength", bookingId: "fitness-coaching", photo: null, title: t("Fitness and Healthy Lifestyle Coaching"), text: t("Coaching for strength and healthy habits.") },
+  { icon: "posture", bookingId: null, photo: null, title: t("Posture Correction"), text: t("Exercises for the back and neck.") },
+];
+const labels = { massage: "Massage therapy", movement: "Movement & mobility", strength: "Fitness & lifestyle", aging: "Healthy aging", youth: "Youth fitness" };
+const names = (l: { title: { en: string } }[]) => l.map((s) => s.title.en);
+const prices = { duration: "{n} min", perSession: "per session", perSessionTitle: "Per session", from: "From {price}" };
 
-test("every built-in service has a category", () => {
-  assert.deepEqual(items.map((s) => categoryOf(s)), ["massage", "movement", "movement", "strength", "aging", "youth"]);
+test("categories from the service icons", () => {
+  assert.deepEqual(items.map((s) => categoryOf(s)), ["massage", "massage", "aging", "strength", "movement"]);
 });
 
-test("only massage is bookable online", () => {
-  assert.deepEqual(items.filter(isBookable).map((s) => s.title.en), ["Massage Therapy"]);
+test("services linked to a priced treatment can be booked; others are by request", () => {
+  assert.deepEqual(items.filter(isBookable).length, 4);
+  assert.equal(isBookable(items[4]), false);
 });
 
 test("web addresses come from the English name and never collide", () => {
-  assert.deepEqual(serviceSlugs([...items]), ["massage-therapy", "posture-correction", "mobility", "strength", "active-aging", "youth-fitness"]);
+  assert.deepEqual(serviceSlugs(items.slice(0, 4)), ["swedish-relaxation-massage", "sports-therapeutic-massage", "active-aging", "fitness-and-healthy-lifestyle-coaching"]);
   assert.deepEqual(serviceSlugs([{ title: t("Mobility") }, { title: t("Mobility") }, { title: t("") }]), ["mobility", "mobility-2", "service-3"]);
 });
 
-test("category filter", () => {
-  assert.deepEqual(names(filterServices([...items], "", "movement", "en", labels)), ["Posture Correction", "Mobility"]);
-  assert.equal(filterServices([...items], "", "all", "en", labels).length, 6);
+test("search and category filters combine", () => {
+  assert.deepEqual(names(filterServices(items, "", "massage", "en", labels)), ["Swedish Relaxation Massage", "Sports / Therapeutic Massage"]);
+  assert.deepEqual(names(filterServices(items, "deep tissue", "all", "en", labels)), ["Sports / Therapeutic Massage"]);
+  assert.deepEqual(names(filterServices(items, "suedois", "all", "fr", labels)), ["Swedish Relaxation Massage"]);
+  assert.deepEqual(names(filterServices(items, "fitness", "all", "en", labels)), ["Fitness and Healthy Lifestyle Coaching"]);
+  assert.equal(filterServices(items, "massage", "aging", "en", labels).length, 0);
 });
 
-test("search by name, description or category label, accents ignored", () => {
-  assert.deepEqual(names(filterServices([...items], "neck", "all", "en", labels)), ["Posture Correction"]);
-  assert.deepEqual(names(filterServices([...items], "healthy aging", "all", "en", labels)), ["Active Aging"]);
-  assert.deepEqual(names(filterServices([...items], "massotherapie", "all", "fr", labels)), ["Massage Therapy"]);
+test("every card has a photo, never an icon", () => {
+  assert.equal(servicePhoto({ photo: null }), "/images/hero-massage-square.webp");
+  assert.equal(servicePhoto({ photo: { src: "/images/blog/swedish.webp", width: 1, height: 1 } }), "/images/blog/swedish.webp");
 });
 
-test("search and category combine; no match gives nothing", () => {
-  assert.deepEqual(names(filterServices([...items], "strength", "aging", "en", labels)), ["Active Aging"]);
-  assert.equal(filterServices([...items], "yoga", "all", "en", labels).length, 0);
+test("the four priced treatments and their prices", () => {
+  const byId = Object.fromEntries(defaultPricing.services.map((s) => [s.id, s]));
+  assert.deepEqual(Object.keys(byId), ["swedish", "therapeutic", "active-aging", "fitness-coaching"]);
+  assert.deepEqual(byId.therapeutic.rates.map((r) => r.price), [130, 180, 230]);
+  assert.equal(priceSummary(byId["active-aging"], "en", prices), "$65 per session");
+  assert.equal(priceSummary(byId["fitness-coaching"], "fr", { ...prices, perSession: "par séance" }), "80 $ par séance");
+  assert.equal(priceSummary(byId.swedish, "en", prices), "From $100");
+  assert.equal(rateLabel(byId["active-aging"], byId["active-aging"].rates[0], prices), "Per session");
+  assert.equal(rateLabel(byId.swedish, byId.swedish.rates[1], prices), "90 min");
 });
