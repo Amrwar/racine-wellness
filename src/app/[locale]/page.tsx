@@ -1,7 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, Gift, Leaf, Quote, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, Gift, Quote, ShieldCheck } from "lucide-react";
 import { isLocale, localePath } from "@/i18n/config";
 import { images, site } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
@@ -12,7 +12,8 @@ import { phoneHref } from "@/lib/business-data";
 import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
 import { Arrow, Button, Check, Container } from "@/components/ui";
 import { ContactForm } from "@/components/ContactForm";
-import { ServicesExplorer } from "@/components/ServicesExplorer";
+import { ServiceCard } from "@/components/ServicesExplorer";
+import { ServiceGuide, serviceLabels, serviceLinks } from "@/components/ServicesShared";
 import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/posts";
 import { getPricing } from "@/lib/pricing";
@@ -46,41 +47,27 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Tint style={st("services")} />
         <Container>
           <SplitHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} edit={{ title: "services.title", lead: "services.lead" }} />
-          <ServicesExplorer
-            items={content.services.items}
-            locale={locale}
-            bookHref={book}
-            columns={design.layout.servicesColumns}
-            t={{
-              search: t.services.search,
-              all: t.services.all,
-              categories: t.services.categories,
-              noMatch: t.services.noMatch,
-              learnMore: t.services.learnMore,
-              showLess: t.services.showLess,
-              book: t.header.book,
-            }}
-          />
-          {/* Not sure which service? → the contact form */}
-          <div className="relative mt-10 overflow-hidden rounded-2xl bg-navy px-6 py-6 text-white shadow-lg sm:px-8">
-            <div aria-hidden className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-blue/25 blur-2xl" />
-            <div className="relative flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
-              <div className="flex items-center gap-5">
-                <span className="hidden h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 text-green ring-1 ring-white/15 sm:grid">
-                  <Leaf aria-hidden className="h-6 w-6" />
-                </span>
-                <div>
-                  <p className="text-xl font-semibold">{t.services.guideTitle}</p>
-                  <p className="mt-1 text-white/80">{t.services.guideText}</p>
-                </div>
-              </div>
+          {/* A short preview; the full list with search and filters is on /services */}
+          <ul className={`mt-12 grid gap-6 md:grid-cols-2 ${design.layout.servicesColumns === 3 ? "xl:grid-cols-3" : ""}`}>
+            {content.services.items.slice(0, 3).map((s, i) => (
+              <li key={i}>
+                <ServiceCard s={s} index={i} locale={locale} links={serviceLinks(locale, content.services.items)} t={serviceLabels(t)} />
+              </li>
+            ))}
+          </ul>
+          {content.services.items.length > 3 && (
+            <div className="mt-8 flex justify-center">
               <Link
-                href="#contact"
-                className="group inline-flex shrink-0 items-center gap-2 rounded-[var(--btn-radius,9999px)] bg-green px-6 py-3 font-semibold text-navy-deep transition hover:-translate-y-0.5 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+                href={localePath(locale, "/services")}
+                className="group inline-flex items-center gap-2 rounded-[var(--btn-radius,9999px)] bg-white px-6 py-3 font-semibold text-navy shadow-sm ring-1 ring-navy/15 transition hover:ring-blue-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue"
               >
-                {t.services.guideButton} <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                {t.services.viewAll} ({content.services.items.length})
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
+          )}
+          <div className="mt-10">
+            <ServiceGuide locale={locale} t={t} />
           </div>
         </Container>
       </section>

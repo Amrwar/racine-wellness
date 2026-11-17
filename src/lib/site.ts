@@ -18,7 +18,7 @@ export const site = {
 
 /** Navigation, in order: home-page sections (`section`) and separate pages (`page`). */
 export const navItems = [
-  { key: "services", section: "services" },
+  { key: "services", page: "/services" },
   { key: "pricing", page: "/pricing" },
   { key: "about", section: "about" },
   { key: "blog", page: "/blog" },
