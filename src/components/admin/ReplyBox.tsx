@@ -28,11 +28,11 @@ export function ReplyBox({ id, name, locale }: { id: number; name: string; local
         <button disabled={pending} className="rounded-full bg-blue-dark px-5 py-2 text-sm font-semibold text-white hover:bg-[#00649f] disabled:opacity-50">
           {pending ? "Sending…" : "Send reply"}
         </button>
-        <button type="button" onClick={() => setOpen(false)} className="rounded-full px-4 py-2 text-sm font-medium text-muted hover:text-navy">
+        <button type="button" onClick={() => setOpen(false)} className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground hover:text-navy">
           Cancel
         </button>
         {state.status === "error" && <span className="text-sm text-danger">{state.message}</span>}
-        <span className="text-xs text-muted">Their replies come back to your inbox.</span>
+        <span className="text-xs text-muted-foreground">Their replies come back to your inbox.</span>
       </div>
     </form>
   );

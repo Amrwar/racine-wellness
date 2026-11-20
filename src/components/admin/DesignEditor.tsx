@@ -41,7 +41,7 @@ function Panel({ title, text, children, action }: { title: string; text?: string
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="font-semibold text-navy">{title}</h2>
-          {text && <p className="mt-0.5 text-sm text-muted">{text}</p>}
+          {text && <p className="mt-0.5 text-sm text-muted-foreground">{text}</p>}
         </div>
         {action}
       </div>
@@ -51,7 +51,7 @@ function Panel({ title, text, children, action }: { title: string; text?: string
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted">{children}</p>;
+  return <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{children}</p>;
 }
 
 function Swatch({ label, hint, value, onChange }: { label: string; hint: string; value: string; onChange: (v: string) => void }) {
@@ -62,9 +62,9 @@ function Swatch({ label, hint, value, onChange }: { label: string; hint: string;
       </span>
       <span className="min-w-0">
         <span className="block text-sm font-semibold text-navy">{label}</span>
-        <span className="block text-xs text-muted">{hint}</span>
+        <span className="block text-xs text-muted-foreground">{hint}</span>
       </span>
-      <span className="ml-auto font-mono text-[0.7rem] uppercase text-muted">{value}</span>
+      <span className="ml-auto font-mono text-[0.7rem] uppercase text-muted-foreground">{value}</span>
     </label>
   );
 }
@@ -115,11 +115,11 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: () => void; la
 function Slider({ label, value, min, max, step = 5, left, right, onChange, format }: { label: string; value: number; min: number; max: number; step?: number; left: string; right: string; onChange: (v: number) => void; format: (v: number) => string }) {
   return (
     <label className="block">
-      <span className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+      <span className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label} <span className="normal-case tracking-normal text-navy">{format(value)}</span>
       </span>
       <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-2 w-full accent-navy" />
-      <span className="flex justify-between text-[0.7rem] text-muted">
+      <span className="flex justify-between text-[0.7rem] text-muted-foreground">
         <span>{left}</span>
         <span>{right}</span>
       </span>
@@ -295,7 +295,7 @@ export function DesignEditor({
                             <span className="block text-base" style={{ fontFamily: fontFamily(f.key) }}>
                               {f.name}
                             </span>
-                            <span className={`block text-[0.68rem] ${on ? "text-white/70" : "text-muted"}`}>{f.note}</span>
+                            <span className={`block text-[0.68rem] ${on ? "text-white/70" : "text-muted-foreground"}`}>{f.note}</span>
                           </button>
                         );
                       })}
@@ -404,10 +404,10 @@ export function DesignEditor({
                             setFocus(anchorFor(s.key));
                           }}
                           aria-expanded={open}
-                          className={`min-w-0 flex-1 text-left text-sm font-semibold ${s.visible ? "text-navy" : "text-muted line-through"}`}
+                          className={`min-w-0 flex-1 text-left text-sm font-semibold ${s.visible ? "text-navy" : "text-muted-foreground line-through"}`}
                         >
                           {nameOf(s.key)}
-                          <span className="block text-xs font-normal text-muted">{open ? "Close" : "Change look"}</span>
+                          <span className="block text-xs font-normal text-muted-foreground">{open ? "Close" : "Change look"}</span>
                         </button>
                         <Toggle
                           on={s.visible}
@@ -470,7 +470,7 @@ export function DesignEditor({
                     <ul className="divide-y divide-mist/60 rounded-xl ring-1 ring-mist/70">
                       {fields.map(([k, label]) => (
                         <li key={k} className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm">
-                          <span className={design.forms[k] ? "text-ink" : "text-muted line-through"}>{label}</span>
+                          <span className={design.forms[k] ? "text-ink" : "text-muted-foreground line-through"}>{label}</span>
                           <Toggle on={design.forms[k]} label={`Ask for ${label}`} onChange={() => setForms({ [k]: !design.forms[k] })} />
                         </li>
                       ))}
@@ -485,7 +485,7 @@ export function DesignEditor({
                     const shown = !design.hiddenMenu.includes(k) && !sectionHidden;
                     return (
                       <li key={k} className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm">
-                        <span className={shown ? "text-ink" : "text-muted"}>
+                        <span className={shown ? "text-ink" : "text-muted-foreground"}>
                           {menuNames[k]}
                           {sectionHidden && <span className="ml-2 text-xs">(section hidden)</span>}
                         </span>
@@ -517,20 +517,20 @@ export function DesignEditor({
             {state.status === "error" ? (
               <span className="text-danger">{state.message}</span>
             ) : dirty ? (
-              <span className="text-muted">Unsaved changes: visitors still see the published design.</span>
+              <span className="text-muted-foreground">Unsaved changes: visitors still see the published design.</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">Published. Visitors now see this design.</span>
             ) : (
-              <span className="text-muted">The preview shows what visitors see.</span>
+              <span className="text-muted-foreground">The preview shows what visitors see.</span>
             )}
           </p>
           <div className="flex shrink-0 gap-2">
             {dirty && (
-              <button type="button" onClick={() => setDesign(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => setDesign(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Undo changes
               </button>
             )}
-            <button type="button" onClick={() => setDesign(defaultDesign)} className="hidden rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy sm:block">
+            <button type="button" onClick={() => setDesign(defaultDesign)} className="hidden rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy sm:block">
               Original design
             </button>
             <button

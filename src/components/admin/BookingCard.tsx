@@ -16,7 +16,7 @@ function ActionButton({ id, action, label, tone }: { id: number; action: string;
   const tones = {
     primary: "bg-navy text-white hover:bg-navy-deep",
     quiet: "bg-surface text-navy ring-1 ring-mist hover:bg-white",
-    danger: "text-muted hover:bg-danger/8 hover:text-danger",
+    danger: "text-muted-foreground hover:bg-danger/8 hover:text-danger",
   };
   return (
     <form action={updateBooking}>
@@ -43,7 +43,7 @@ export function BookingCard({ b }: { b: Booking }) {
               {b.name}
             </Link>
           </p>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {b.service_title} · {b.minutes} min · {formatPrice(Number(b.price), "en")}
           </p>
         </div>
@@ -56,7 +56,7 @@ export function BookingCard({ b }: { b: Booking }) {
 
       <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
         <div>
-          <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Where</dt>
+          <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Where</dt>
           <dd className="mt-0.5 text-ink">
             {b.location === "home" ? (
               <>
@@ -76,7 +76,7 @@ export function BookingCard({ b }: { b: Booking }) {
           </dd>
         </div>
         <div>
-          <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Contact</dt>
+          <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Contact</dt>
           <dd className="mt-0.5 flex flex-wrap gap-x-4">
             <a href={`tel:${b.phone.replace(/[^\d+]/g, "")}`} className="font-medium text-blue-dark hover:underline">
               {b.phone}
@@ -108,7 +108,7 @@ export function BookingCard({ b }: { b: Booking }) {
           >
             Edit
           </Link>
-          <span className="text-xs text-muted">{b.email ? "The client is emailed automatically." : ""}</span>
+          <span className="text-xs text-muted-foreground">{b.email ? "The client is emailed automatically." : ""}</span>
         </div>
       )}
     </Card>

@@ -68,7 +68,8 @@ export type ButtonShape = "pill" | "rounded" | "square";
 
 /** Fonts loaded by the site layout (next/font); each sets the CSS variable --font-<key>. */
 export const fontChoices = [
-  { key: "poppins", name: "Poppins", note: "Modern and friendly (original)" },
+  { key: "geist", name: "Geist", note: "Crisp and modern (default)" },
+  { key: "poppins", name: "Poppins", note: "Modern and friendly" },
   { key: "inter", name: "Inter", note: "Clean and neutral" },
   { key: "montserrat", name: "Montserrat", note: "Bold and geometric" },
   { key: "nunito", name: "Nunito", note: "Soft and rounded" },
@@ -121,7 +122,7 @@ export const defaultDesign: Design = {
   layout: { servicesColumns: 3, pricingColumns: 3, blogColumns: 3, aboutPhoto: "left", contactForm: "right" },
   buttons: { shape: "pill" },
   hero: { size: "normal", align: "left", shade: 0 },
-  fonts: { body: "poppins", heading: "poppins" },
+  fonts: { body: "geist", heading: "geist" },
   forms: { contactEmail: true, contactMessage: true, contactReceipt: true, bookingHomeVisits: true, bookingNotes: true, bookingReceipt: true },
 };
 
@@ -189,8 +190,8 @@ export function parseDesign(raw: unknown): Design {
       shade: num(h.shade, 0, 80, 0),
     },
     fonts: {
-      body: fontKeys.includes(fo.body as string) ? (fo.body as FontKey) : "poppins",
-      heading: fontKeys.includes(fo.heading as string) ? (fo.heading as FontKey) : "poppins",
+      body: fontKeys.includes(fo.body as string) ? (fo.body as FontKey) : "geist",
+      heading: fontKeys.includes(fo.heading as string) ? (fo.heading as FontKey) : "geist",
     },
     forms: Object.fromEntries(
       (Object.keys(defaultDesign.forms) as (keyof FormFields)[]).map((k) => [k, f[k] !== false]),

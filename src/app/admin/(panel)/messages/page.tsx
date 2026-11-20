@@ -46,7 +46,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
             role="tab"
             aria-selected={filter === f.key}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-              filter === f.key ? "bg-navy text-white" : "text-muted hover:text-navy"
+              filter === f.key ? "bg-navy text-white" : "text-muted-foreground hover:text-navy"
             }`}
           >
             {f.label}

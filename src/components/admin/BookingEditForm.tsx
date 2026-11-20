@@ -12,7 +12,7 @@ const input =
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
       {children}
     </label>
   );
@@ -100,7 +100,7 @@ export function BookingEditForm({
                 }}
                 className={`${input} pr-12`}
               />
-              <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">min</span>
+              <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">min</span>
             </span>
           </Field>
         </div>
@@ -129,13 +129,13 @@ export function BookingEditForm({
           </Field>
           <Field label="Price">
             <span className="relative block">
-              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">$</span>
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
               <input type="number" name="price" min={0} max={10000} step="any" value={price} onChange={(e) => setPrice(e.target.value)} className={`${input} pl-8`} />
             </span>
           </Field>
         </div>
         {service && (
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             List prices: {service.rates.map((r) => `${r.minutes} min $${r.price}`).join(" · ")}. Choosing a length from this list fills in its price.
           </p>
         )}
@@ -147,7 +147,7 @@ export function BookingEditForm({
             <label
               key={loc}
               className={`cursor-pointer rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition ${
-                location === loc ? "border-blue bg-blue/5 text-navy" : "border-mist/70 text-muted hover:border-blue/50"
+                location === loc ? "border-blue bg-blue/5 text-navy" : "border-mist/70 text-muted-foreground hover:border-blue/50"
               }`}
             >
               <input type="radio" name="location" value={loc} checked={location === loc} onChange={() => setLocation(loc)} className="sr-only" />
@@ -207,12 +207,12 @@ export function BookingEditForm({
             </div>
           )}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <label className={`flex items-center gap-2 text-sm ${email ? "text-ink" : "text-muted"}`}>
+            <label className={`flex items-center gap-2 text-sm ${email ? "text-ink" : "text-muted-foreground"}`}>
               <input type="checkbox" name="notify" value="yes" defaultChecked disabled={!email} className="h-4 w-4 accent-navy" />
               {isNew ? "Email the client a confirmation" : "Email the client the updated details"}
             </label>
             <div className="flex gap-2">
-              <Link href="/admin/bookings" className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <Link href="/admin/bookings" className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Cancel
               </Link>
               {warning ? (

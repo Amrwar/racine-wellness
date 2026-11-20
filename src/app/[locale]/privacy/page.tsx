@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getBusiness } from "@/lib/business";
-import { Container, Eyebrow } from "@/components/ui";
-import { PageHeaderArt } from "@/components/art";
+import { Container, PageHero } from "@/components/ui/site";
+import { Badge } from "@/components/ui/badge";
 import { alternatesFor } from "../layout";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
@@ -40,17 +40,14 @@ export default async function PrivacyPage({ params }: PageProps<"/[locale]/priva
 
   return (
     <>
-      <section className="relative isolate -mt-18 overflow-hidden bg-navy pb-16 pt-34 text-white sm:pb-20 sm:pt-38">
-        <PageHeaderArt />
-        <Container>
-          <Eyebrow light>{p.eyebrow}</Eyebrow>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{p.title}</h1>
-          <p className="mt-4 text-mist">{p.updated}</p>
-        </Container>
-      </section>
+      <PageHero eyebrow={p.eyebrow} title={p.title}>
+        <Badge variant="outline" className="mt-5 h-6 px-2.5 text-muted-foreground">
+          {p.updated}
+        </Badge>
+      </PageHero>
       <section className="py-16 sm:py-20">
         <Container>
-          <div className="prose-site max-w-3xl">
+          <div className="prose-site max-w-3xl [&_h2]:border-t [&_h2]:pt-8">
             <p>{p.intro}</p>
             {p.sections.map((s) => (
               <div key={s.title}>

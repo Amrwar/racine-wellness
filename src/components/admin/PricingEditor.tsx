@@ -108,7 +108,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
             />
             <span>
               <span className="block text-sm font-semibold text-navy">Fixed price per session</span>
-              <span className="block text-xs text-muted">
+              <span className="block text-xs text-muted-foreground">
                 The length depends on the client. Clients see one price &ldquo;per session&rdquo;; the minutes below only set how much time is reserved in
                 your calendar when someone books online.
               </span>
@@ -116,7 +116,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
           </label>
 
           <div>
-            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               {s.perSession ? "Time to reserve in your calendar, and the price" : "Durations and prices"}
             </span>
             <ul className="space-y-2">
@@ -137,10 +137,10 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
                       }
                       className={`${input} pr-12`}
                     />
-                    <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">min</span>
+                    <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">min</span>
                   </div>
                   <div className="relative w-36">
-                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">$</span>
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
                     <input
                       type="number"
                       inputMode="decimal"
@@ -204,11 +204,11 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
             {state.status === "error" ? (
               <span className="text-danger">{state.message}</span>
             ) : dirty ? (
-              <span className="text-muted">You have unsaved changes.</span>
+              <span className="text-muted-foreground">You have unsaved changes.</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">Saved. The website now shows these prices.</span>
             ) : (
-              <span className="text-muted">Everything is up to date.</span>
+              <span className="text-muted-foreground">Everything is up to date.</span>
             )}
           </p>
           <div className="flex shrink-0 gap-2">
@@ -216,7 +216,7 @@ export function PricingEditor({ initial }: { initial: Pricing }) {
               <button
                 type="button"
                 onClick={() => setPricing(saved)}
-                className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy"
+                className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy"
               >
                 Undo changes
               </button>
@@ -254,9 +254,9 @@ function IconButton({
       title={label}
       onClick={onClick}
       disabled={disabled}
-      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted transition disabled:opacity-30 ${
+      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground transition disabled:opacity-30 ${
         danger ? "hover:bg-danger/8 hover:text-danger" : "hover:bg-surface hover:text-navy"
-      } disabled:hover:bg-transparent disabled:hover:text-muted`}
+      } disabled:hover:bg-transparent disabled:hover:text-muted-foreground`}
     >
       <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d={d} />

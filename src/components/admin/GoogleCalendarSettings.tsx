@@ -47,14 +47,14 @@ export function GoogleCalendarSettings({
             </svg>
             Google Calendar
           </h2>
-          <p className="mt-1 text-sm leading-relaxed text-muted">
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Times you mark in Google Calendar are taken out of online booking, so clients can&apos;t book over them.
             HealthyZone only reads your calendar; it never changes it.
           </p>
         </div>
         {settings.connected && (
           <form action={removeGoogle}>
-            <button className="rounded-full px-4 py-2 text-sm font-semibold text-muted hover:bg-danger/8 hover:text-danger">Disconnect</button>
+            <button className="rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-danger/8 hover:text-danger">Disconnect</button>
           </form>
         )}
       </div>
@@ -64,7 +64,7 @@ export function GoogleCalendarSettings({
       )}
 
       {!configured ? (
-        <p className="mt-5 rounded-xl bg-surface px-4 py-3 text-sm text-muted">
+        <p className="mt-5 rounded-xl bg-surface px-4 py-3 text-sm text-muted-foreground">
           Waiting for the Google sign-in keys (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET) to be added on the server.
         </p>
       ) : !settings.connected ? (
@@ -91,7 +91,7 @@ export function GoogleCalendarSettings({
           )}
 
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Event colours that block bookings</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Event colours that block bookings</p>
             <div className="flex flex-wrap gap-2">
               {googleColors.map((c) => {
                 const on = colors.includes(c.id);
@@ -102,7 +102,7 @@ export function GoogleCalendarSettings({
                     aria-pressed={on}
                     onClick={() => setColors((x) => (on ? x.filter((y) => y !== c.id) : [...x, c.id]))}
                     className={`flex items-center gap-2 rounded-full py-1.5 pl-2 pr-3.5 text-sm font-medium transition ${
-                      on ? "bg-navy text-white" : "bg-surface text-muted ring-1 ring-mist hover:text-navy"
+                      on ? "bg-navy text-white" : "bg-surface text-muted-foreground ring-1 ring-mist hover:text-navy"
                     }`}
                   >
                     <span className="h-4 w-4 rounded-full ring-2 ring-white/70" style={{ background: c.hex }} />
@@ -111,14 +111,14 @@ export function GoogleCalendarSettings({
                 );
               })}
             </div>
-            <p className="mt-2 text-xs text-muted">
+            <p className="mt-2 text-xs text-muted-foreground">
               In Google Calendar, open an event and pick its colour. Tomato is Google&apos;s red. Events that use the calendar&apos;s default
               colour don&apos;t count; set that calendar to &quot;All events&quot; instead.
             </p>
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Your calendars</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Your calendars</p>
             <ul className="divide-y divide-mist/60 rounded-xl ring-1 ring-mist/70">
               {calendars.map((c) => (
                 <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
@@ -148,7 +148,7 @@ export function GoogleCalendarSettings({
               {state.status === "error" ? (
                 <span className="text-danger">{state.message}</span>
               ) : dirty ? (
-                <span className="text-muted">You have unsaved changes.</span>
+                <span className="text-muted-foreground">You have unsaved changes.</span>
               ) : state.status === "saved" ? (
                 <span className="font-medium text-[#007a43]">Saved. Online booking now follows these settings.</span>
               ) : null}

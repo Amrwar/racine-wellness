@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Check, Link2, Share2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Facebook, Linkedin } from "./icons";
+import { buttonVariants } from "./ui/button";
 
 /** Thin bar at the top of the page showing how far the reader is through the article. */
 export function ReadingProgress({ label }: { label: string }) {
@@ -30,9 +32,9 @@ export function ReadingProgress({ label }: { label: string }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
-      className="fixed inset-x-0 top-18 z-40 h-1 bg-transparent"
+      className="fixed inset-x-0 top-16 z-40 h-0.5 bg-transparent"
     >
-      <div className="h-full origin-left bg-gradient-to-r from-blue to-green transition-[width] duration-150 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
+      <div className="h-full origin-left bg-foreground transition-[width] duration-150 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
     </div>
   );
 }
@@ -46,12 +48,11 @@ export function ShareArticle({ url, title, t }: { url: string; title: string; t:
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
   }, []);
-  const btn =
-    "grid h-10 w-10 place-items-center rounded-full bg-white text-navy ring-1 ring-navy/15 transition hover:bg-blue-dark hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue";
+  const btn = cn(buttonVariants({ variant: "outline", size: "icon-lg" }), "rounded-[var(--btn-radius,0.625rem)] shadow-xs");
   const enc = encodeURIComponent(url);
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <p className="text-sm font-semibold text-navy">{t.share}</p>
+    <div className="flex flex-wrap items-center gap-2">
+      <p className="mr-1 text-sm font-medium text-foreground">{t.share}</p>
       {canShare && (
         <button type="button" className={btn} aria-label={t.share} onClick={() => navigator.share({ title, url }).catch(() => {})}>
           <Share2 aria-hidden className="h-4 w-4" />

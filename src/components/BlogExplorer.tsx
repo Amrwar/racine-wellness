@@ -4,7 +4,10 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Search, X } from "lucide-react";
 import { filterPosts } from "@/lib/blog-search";
+import { cn } from "@/lib/utils";
 import { ArticleCard, type ArticleCardData } from "./ArticleCard";
+import { buttonVariants } from "./ui/button";
+import { Input } from "./ui/input";
 
 export type ExplorerItem = { key: string; text: string; card: ArticleCardData };
 type Labels = { search: string; searchLabel: string; clear: string; all: string; results: string; resultsOne: string; noResults: string; showAll: string; readMore: string };
@@ -39,32 +42,32 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
   return (
     <div>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="relative w-full lg:max-w-sm">
+        <div className="relative w-full lg:max-w-md">
           <label htmlFor="blog-search" className="sr-only">
             {t.searchLabel}
           </label>
-          <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
-          <input
+          <Search aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
             id="blog-search"
             type="search"
             value={query}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => e.key === "Escape" && setQ("")}
             placeholder={t.search}
-            className="w-full rounded-full border border-navy/15 bg-white py-3 pl-12 pr-11 text-ink shadow-sm placeholder:text-muted/70 focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue/30 [&::-webkit-search-cancel-button]:hidden"
+            className="h-10 rounded-lg bg-background pl-10 pr-10 shadow-xs [&::-webkit-search-cancel-button]:hidden"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQ("")}
               aria-label={t.clear}
-              className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-surface hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue"
+              className="absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X aria-hidden className="h-4 w-4" />
             </button>
           )}
         </div>
-        <span aria-hidden className="hidden h-8 w-px bg-navy/15 lg:block" />
+        <span aria-hidden className="hidden h-8 w-px bg-border lg:block" />
         <div role="group" aria-label={t.all} className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           {[{ key: "all", label: t.all }, ...categories].map((c) => {
             const on = category === c.key;
@@ -74,9 +77,10 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
                 type="button"
                 aria-pressed={on}
                 onClick={() => setC(c.key)}
-                className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2 ${
-                  on ? "bg-blue-dark text-white shadow-md shadow-blue/25" : "bg-blue/10 text-navy hover:bg-blue/20"
-                }`}
+                className={cn(
+                  "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-medium shadow-xs transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  on ? "border-primary bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
               >
                 {c.label}
               </button>
@@ -85,12 +89,12 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
         </div>
       </div>
 
-      <p role="status" className="mt-5 text-sm text-muted">
+      <p role="status" className="mt-5 text-sm text-muted-foreground">
         {count}
       </p>
 
       {shown.length > 0 ? (
-        <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+        <ul className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((i) => (
             <li key={i.card.slug}>
               <ArticleCard a={i.card} readMore={t.readMore} />
@@ -98,8 +102,8 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
           ))}
         </ul>
       ) : (
-        <div className="mt-4 rounded-2xl bg-white p-10 text-center ring-1 ring-navy/10">
-          <p className="text-muted">{t.noResults}</p>
+        <div className="mt-4 rounded-xl border border-dashed bg-card p-10 text-center">
+          <p className="text-muted-foreground">{t.noResults}</p>
           <button
             type="button"
             onClick={() => {
@@ -107,7 +111,7 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
               setCategory("all");
               sync("", "all");
             }}
-            className="mt-4 rounded-full bg-blue-dark px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-4 h-9 rounded-[var(--btn-radius,0.625rem)] px-4")}
           >
             {t.showAll}
           </button>
@@ -120,7 +124,7 @@ export function BlogExplorer({ items, featured, categories, t }: { items: Explor
 /** Server-rendered grid shown before the search box loads (and to search engines). */
 export function StaticGrid({ items, readMore }: { items: ExplorerItem[]; readMore: string }) {
   return (
-    <ul className="mt-[5.5rem] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+    <ul className="mt-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((i) => (
         <li key={i.card.slug}>
           <ArticleCard a={i.card} readMore={readMore} />

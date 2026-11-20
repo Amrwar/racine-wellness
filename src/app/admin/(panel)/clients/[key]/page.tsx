@@ -59,7 +59,7 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
           ["Total", formatPrice(c.spent, "en")],
         ].map(([label, value]) => (
           <Card key={label} className="p-5">
-            <p className="text-sm text-muted">{label}</p>
+            <p className="text-sm text-muted-foreground">{label}</p>
             <p className="mt-1 text-3xl font-semibold text-navy">{value}</p>
           </Card>
         ))}
@@ -75,11 +75,11 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
                 <p className="font-semibold text-navy">
                   {formatWhen(start, "en").day} · {localTime(start)}
                 </p>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   {b.service_title}, {b.minutes} min · {formatPrice(Number(b.price), "en")} ·{" "}
                   {b.location === "home" ? `Home visit${b.address ? `, ${b.address}` : ""}` : "Office"}
                 </p>
-                {b.notes && <p className="mt-1 text-sm italic text-muted">“{b.notes}”</p>}
+                {b.notes && <p className="mt-1 text-sm italic text-muted-foreground">“{b.notes}”</p>}
               </div>
               <div className="flex items-center gap-3">
                 <Badge tone={statusTone[b.status]}>{statusLabel[b.status]}</Badge>

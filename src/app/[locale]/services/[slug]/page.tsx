@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check, ChevronDown, ChevronRight, ClipboardList, Sparkles, UserRound } from "lucide-react";
+import { ArrowRight, Check, ClipboardList, Sparkles, UserRound } from "lucide-react";
 import { htmlLang, isLocale, localePath, sectionHref, type Locale } from "@/i18n/config";
-import { LLink } from "@/i18n/LocaleProvider";
 import { getContent, getText } from "@/lib/content";
 import { getPricing } from "@/lib/pricing";
 import { formatPrice, rateLabel } from "@/lib/pricing-data";
 import { categoryOf, servicePhoto, serviceSlugs } from "@/lib/services";
 import { serviceDetails } from "@/lib/service-details";
 import { site } from "@/lib/site";
-import { Container } from "@/components/ui";
+import { Button, Container, Crumbs, PageHero } from "@/components/ui/site";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 import { ServiceIconView } from "@/components/icons";
 import { ServiceCard } from "@/components/ServicesExplorer";
 import { ServiceGuide, serviceLabels, serviceLinks } from "@/components/ServicesShared";
@@ -86,68 +90,49 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-surface via-white to-blue/10">
-        <div aria-hidden className="absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-blue/10 blur-3xl" />
-        <Container className="grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
-              <ol className="flex flex-wrap items-center gap-2">
-                <li>
-                  <LLink href="/" className="hover:text-navy">
-                    {ts.home}
-                  </LLink>
-                </li>
-                <li aria-hidden>
-                  <ChevronRight className="h-4 w-4" />
-                </li>
-                <li>
-                  <LLink href="/services" className="hover:text-navy">
-                    {t.nav.services}
-                  </LLink>
-                </li>
-                <li aria-hidden>
-                  <ChevronRight className="h-4 w-4" />
-                </li>
-                <li aria-current="page" className="font-semibold text-navy">
-                  {s.title[locale]}
-                </li>
-              </ol>
-            </nav>
-            <div className="mb-4 flex items-center gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-navy text-green">
-                <ServiceIconView icon={s.icon} image={s.image} className="h-6 w-6" />
-              </span>
-              {cat && <span className="text-xs font-bold uppercase tracking-[0.2em] text-navy">{ts.categories[cat]}</span>}
-            </div>
-            <h1 className="text-4xl font-semibold leading-[1.08] tracking-[-0.02em] text-navy sm:text-5xl">{s.title[locale]}</h1>
-            <p className="mt-5 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink/80">{s.text[locale]}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href={primary.href}
-                className="group inline-flex items-center gap-2 rounded-[var(--btn-radius,9999px)] bg-blue-dark px-7 py-3.5 font-semibold text-white shadow-lg shadow-blue/25 transition hover:-translate-y-0.5 hover:bg-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2"
-              >
-                {primary.label} <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <LLink href="/services" className="inline-flex items-center rounded-[var(--btn-radius,9999px)] bg-white px-6 py-3.5 font-semibold text-navy ring-1 ring-navy/15 hover:ring-blue-dark">
-                {ts.viewAll}
-              </LLink>
-            </div>
-          </div>
-          <div className="lg:col-span-5">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-surface shadow-2xl shadow-navy/20 ring-1 ring-navy/10">
+      <PageHero
+        breadcrumb={
+          <Crumbs
+            items={[
+              { label: ts.home, href: localePath(locale, "/") },
+              { label: t.nav.services, href: localePath(locale, "/services") },
+              { label: s.title[locale] },
+            ]}
+          />
+        }
+        eyebrow={cat ? ts.categories[cat] : undefined}
+        title={s.title[locale]}
+        aside={
+          <div className="relative overflow-hidden rounded-2xl border bg-muted p-1.5 shadow-xl shadow-foreground/10">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
               <Image src={photo} alt="" fill preload sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-[50%_25%]" />
               {links.price[index] && (
-                <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3.5 py-1.5 text-sm font-bold text-navy shadow-md backdrop-blur">{links.price[index]}</span>
+                <Badge variant="secondary" className="absolute bottom-3 left-3 h-7 bg-background/95 px-3 text-sm font-semibold text-foreground shadow-md backdrop-blur">
+                  {links.price[index]}
+                </Badge>
               )}
+              <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-navy text-green shadow-md">
+                <ServiceIconView icon={s.icon} image={s.image} className="h-4 w-4" />
+              </span>
             </div>
           </div>
-        </Container>
-      </section>
+        }
+      >
+        <p className="mt-5 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-muted-foreground">{s.text[locale]}</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button href={primary.href} size="lg">
+            {primary.label} <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+          <Button href={localePath(locale, "/services")} variant="outline" size="lg">
+            {ts.viewAll}
+          </Button>
+        </div>
+      </PageHero>
 
       {/* ---------- Includes + benefits ---------- */}
       {detail && (
-        <section className="bg-white py-14 sm:py-20">
-          <Container className="grid gap-6 md:grid-cols-2">
+        <section className="bg-background py-14 sm:py-20">
+          <Container className="grid gap-5 md:grid-cols-2">
             <ListCard title={ts.includesTitle} items={L(detail.includes)} />
             <ListCard title={ts.benefitsTitle} items={L(detail.benefits)} accent />
           </Container>
@@ -155,20 +140,22 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
       )}
 
       {/* ---------- What to expect ---------- */}
-      <section className="bg-surface py-14 sm:py-20">
+      <section className="border-t bg-muted/40 py-14 sm:py-20">
         <Container>
-          <h2 className="text-3xl font-semibold tracking-tight text-navy">{ts.expectTitle}</h2>
-          <ol className="mt-8 grid gap-6 md:grid-cols-3">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">{ts.expectTitle}</h2>
+          <ol className="mt-8 grid gap-5 md:grid-cols-3">
             {ts.expect.map((e, i) => {
               const Icon = [ClipboardList, Sparkles, UserRound][i % 3];
               return (
-                <li key={i} className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-navy/10">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-3xl font-bold text-blue-dark">{String(i + 1).padStart(2, "0")}</span>
-                    <Icon aria-hidden className="h-6 w-6 text-navy" />
+                <li key={i} className="rounded-xl border bg-card p-6 shadow-xs">
+                  <div className="mb-5 flex items-center justify-between">
+                    <span className="grid h-10 w-10 place-items-center rounded-lg border bg-muted text-navy">
+                      <Icon aria-hidden className="h-4 w-4" />
+                    </span>
+                    <span className="font-mono text-xs font-medium text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
                   </div>
-                  <h3 className="font-semibold text-navy">{e.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{e.text}</p>
+                  <h3 className="font-semibold tracking-tight text-foreground">{e.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{e.text}</p>
                 </li>
               );
             })}
@@ -177,50 +164,54 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
       </section>
 
       {/* ---------- Suitability, options, preparation ---------- */}
-      <section className="bg-white py-14 sm:py-20">
-        <Container className="grid gap-6 lg:grid-cols-3">
+      <section className="border-t bg-background py-14 sm:py-20">
+        <Container className="grid gap-5 lg:grid-cols-3">
           {detail && (
-            <div className="rounded-2xl bg-surface p-6 ring-1 ring-navy/10 sm:p-8">
-              <h2 className="text-xl font-semibold text-navy">{ts.suitabilityTitle}</h2>
-              <p className="mt-3 leading-relaxed text-muted">{detail.suitability[locale]}</p>
+            <div className="rounded-xl border bg-card p-6 shadow-xs sm:p-7">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">{ts.suitabilityTitle}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{detail.suitability[locale]}</p>
             </div>
           )}
-          <div className="rounded-2xl bg-surface p-6 ring-1 ring-navy/10 sm:p-8">
-            <h2 className="text-xl font-semibold text-navy">{ts.optionsTitle}</h2>
+          <div className="rounded-xl border bg-card p-6 shadow-xs sm:p-7">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">{ts.optionsTitle}</h2>
             {priced ? (
               <>
-                {priced.perSession && <p className="mt-3 text-sm text-muted">{t.pricing.lengthAdapted}</p>}
-                <p className="mt-4 flex flex-wrap gap-2">
+                {priced.perSession && <p className="mt-3 text-sm text-muted-foreground">{t.pricing.lengthAdapted}</p>}
+                <div className="mt-4 divide-y rounded-lg border">
                   {priced.rates.map((r) => (
                     <Link
                       key={r.minutes}
                       href={`${localePath(locale, "/book")}?service=${encodeURIComponent(priced.id)}&minutes=${r.minutes}`}
-                      className="rounded-full bg-white px-3.5 py-1.5 text-sm text-navy ring-1 ring-navy/15 hover:ring-blue-dark"
+                      className="group flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm transition-colors hover:bg-muted"
                     >
-                      {rateLabel(priced, r, t.pricing)} · <span className="font-semibold">{formatPrice(r.price, locale)}</span>
+                      <span className="text-foreground/80">{rateLabel(priced, r, t.pricing)}</span>
+                      <span className="flex items-center gap-1.5 font-semibold tabular-nums text-foreground">
+                        {formatPrice(r.price, locale)}
+                        <ArrowRight aria-hidden className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                      </span>
                     </Link>
                   ))}
-                </p>
-                <LLink href="/pricing" className="mt-4 inline-flex text-sm font-semibold text-blue-dark underline underline-offset-4">
+                </div>
+                <Link href={localePath(locale, "/pricing")} className={cn(buttonVariants({ variant: "link" }), "mt-3 h-auto px-0 text-navy")}>
                   {ts.seePricing}
-                </LLink>
+                </Link>
               </>
             ) : (
               <>
-                <p className="mt-3 leading-relaxed text-muted">{ts.optionsNone}</p>
-                <Link href={sectionHref(locale, "contact")} className="mt-4 inline-flex text-sm font-semibold text-blue-dark underline underline-offset-4">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{ts.optionsNone}</p>
+                <Link href={sectionHref(locale, "contact")} className={cn(buttonVariants({ variant: "outline" }), "mt-4 h-9 px-4")}>
                   {ts.requestInfo}
                 </Link>
               </>
             )}
           </div>
           {detail && (
-            <div className="rounded-2xl bg-surface p-6 ring-1 ring-navy/10 sm:p-8">
-              <h2 className="text-xl font-semibold text-navy">{ts.prepTitle}</h2>
+            <div className="rounded-xl border bg-card p-6 shadow-xs sm:p-7">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">{ts.prepTitle}</h2>
               <ul className="mt-4 space-y-3">
                 {L(detail.preparation).map((p) => (
-                  <li key={p} className="flex items-start gap-3 text-ink">
-                    <Check aria-hidden className="mt-1 h-4 w-4 shrink-0 text-blue-dark" />
+                  <li key={p} className="flex items-start gap-2.5 text-sm text-foreground/85">
+                    <Check aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-navy" />
                     {p}
                   </li>
                 ))}
@@ -230,35 +221,32 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
         </Container>
       </section>
 
-      {/* ---------- FAQ (the site's questions, when Ziad has added some) ---------- */}
+      {/* ---------- FAQ (the site questions, when Ziad has added some) ---------- */}
       {content.faq.items.length > 0 && (
-        <section className="bg-surface py-14 sm:py-20">
+        <section className="border-t bg-muted/40 py-14 sm:py-20">
           <Container>
             <div className="mx-auto max-w-3xl">
-              <h2 className="mb-8 text-3xl font-semibold tracking-tight text-navy">{content.faq.title[locale]}</h2>
-              <div className="space-y-4">
+              <h2 className="mb-8 text-3xl font-semibold tracking-tight text-foreground">{content.faq.title[locale]}</h2>
+              <Accordion type="single" collapsible className="rounded-xl border bg-card px-5 shadow-xs">
                 {content.faq.items.map((f, i) => (
-                  <details key={i} className="group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy/10 [&_summary::-webkit-details-marker]:hidden">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy">
-                      {f.q[locale]}
-                      <ChevronDown aria-hidden className="h-5 w-5 shrink-0 text-blue-dark transition-transform group-open:rotate-180" />
-                    </summary>
-                    <p className="mt-4 whitespace-pre-line leading-relaxed text-muted">{f.a[locale]}</p>
-                  </details>
+                  <AccordionItem key={i} value={`faq-${i}`}>
+                    <AccordionTrigger className="py-5 text-base font-medium hover:no-underline">{f.q[locale]}</AccordionTrigger>
+                    <AccordionContent className="whitespace-pre-line pb-5 text-[0.95rem] leading-relaxed text-muted-foreground">{f.a[locale]}</AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </div>
           </Container>
         </section>
       )}
 
       {/* ---------- Other services + guidance ---------- */}
-      <section className="bg-surface pb-20 pt-4 sm:pt-6">
+      <section className="border-t bg-background py-14 sm:py-20">
         <Container>
           {others.length > 0 && (
             <>
-              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-navy sm:text-3xl">{ts.otherServices}</h2>
-              <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{ts.otherServices}</h2>
+              <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {others.map(({ x, i }) => (
                   <li key={i}>
                     <ServiceCard s={x} index={i} locale={locale} links={links} t={serviceLabels(t)} />
@@ -280,13 +268,14 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
 
 function ListCard({ title, items, accent = false }: { title: string; items: string[]; accent?: boolean }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-navy/10 sm:p-8">
-      <h2 className="text-xl font-semibold text-navy">{title}</h2>
-      <ul className="mt-5 space-y-4">
+    <div className="rounded-xl border bg-card p-6 shadow-xs sm:p-8">
+      <h2 className="text-lg font-semibold tracking-tight text-foreground">{title}</h2>
+      <Separator className="my-5" />
+      <ul className="space-y-3.5">
         {items.map((x) => (
-          <li key={x} className="flex items-start gap-3 text-ink">
-            <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${accent ? "bg-green/25 text-navy-deep" : "bg-navy text-green"}`}>
-              <Check aria-hidden className="h-3.5 w-3.5" />
+          <li key={x} className="flex items-start gap-3 text-foreground/85">
+            <span className={cn("mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full", accent ? "bg-green/25 text-navy-deep" : "bg-navy text-green")}>
+              <Check aria-hidden className="h-3 w-3" />
             </span>
             {x}
           </li>

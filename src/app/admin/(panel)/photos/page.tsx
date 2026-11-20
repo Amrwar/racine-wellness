@@ -42,7 +42,7 @@ export default async function PhotosPage({ searchParams }: PageProps<"/admin/pho
           ))}
         </div>
         {unused.length > 0 && (
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {unused.length} unused {unused.length === 1 ? "photo takes" : "photos take"} {mb(unused.reduce((s, p) => s + p.size, 0))}.
           </p>
         )}
@@ -63,7 +63,7 @@ export default async function PhotosPage({ searchParams }: PageProps<"/admin/pho
                     {p.inUse ? <Badge tone="green">In use</Badge> : <Badge>Not in use</Badge>}
                     <Badge tone="blue">{kind(p.pathname)}</Badge>
                   </div>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-muted-foreground">
                     {day(p.uploadedAt)} · {mb(p.size)}
                   </p>
                   {!p.inUse && <DeletePhoto url={p.url} />}

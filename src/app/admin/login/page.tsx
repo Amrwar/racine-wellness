@@ -19,7 +19,7 @@ export default async function LoginPage() {
         </div>
         <div className="rounded-3xl bg-white p-8 shadow-2xl shadow-black/30">
           <h1 className="text-xl font-semibold text-navy">Welcome back</h1>
-          <p className="mb-6 mt-1 text-sm text-muted">Sign in to manage your website.</p>
+          <p className="mb-6 mt-1 text-sm text-muted-foreground">Sign in to manage your website.</p>
           <LoginForm />
         </div>
       </div>

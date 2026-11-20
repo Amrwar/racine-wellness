@@ -24,7 +24,7 @@ export function MessageCard({ m, compact = false }: { m: Message; compact?: bool
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-navy">{m.name}</p>
-          <p className="text-sm text-muted">{formatDate(m.created_at)}</p>
+          <p className="text-sm text-muted-foreground">{formatDate(m.created_at)}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {isNew ? <Badge tone="blue">New</Badge> : <Badge>Handled</Badge>}
@@ -60,7 +60,7 @@ export function MessageCard({ m, compact = false }: { m: Message; compact?: bool
 
       {!compact && m.reply && (
         <div className="mt-4 rounded-xl bg-surface p-4 ring-1 ring-mist/60">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Your reply{m.replied_at ? ` · ${formatDate(m.replied_at)}` : ""}
           </p>
           <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink">{m.reply}</p>

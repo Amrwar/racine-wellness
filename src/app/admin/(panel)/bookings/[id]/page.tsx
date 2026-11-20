@@ -32,7 +32,7 @@ export default async function EditBookingPage({ params }: PageProps<"/admin/book
           services={pricing.services}
         />
       ) : (
-        <p className="rounded-2xl bg-white p-6 text-muted shadow-card ring-1 ring-mist/60">
+        <p className="rounded-2xl bg-white p-6 text-muted-foreground shadow-card ring-1 ring-mist/60">
           This booking was {booking.status}, so it can no longer be edited.
         </p>
       )}

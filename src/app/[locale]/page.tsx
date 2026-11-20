@@ -1,8 +1,8 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, Gift, Quote, ShieldCheck } from "lucide-react";
-import { isLocale, localePath } from "@/i18n/config";
+import { ArrowRight, BadgeCheck, Clock, Gift, MapPin as MapPinIcon, Quote, ShieldCheck, Star } from "lucide-react";
+import { isLocale, localePath, sectionHref } from "@/i18n/config";
 import { images, site } from "@/lib/site";
 import { getText, getContent } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
@@ -10,7 +10,12 @@ import { getDesign } from "@/lib/design";
 import { columnsClass, heroSizeClass, normalizeSections, spacingClass, styleFor, type DesignSection, type SectionStyle } from "@/lib/design-data";
 import { phoneHref } from "@/lib/business-data";
 import { framingStyle, type Framing, type SitePhoto } from "@/lib/content-data";
-import { Arrow, Button, Check, Container } from "@/components/ui";
+import { cn } from "@/lib/utils";
+import { Button, Check, Container, Eyebrow } from "@/components/ui/site";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ContactForm } from "@/components/ContactForm";
 import { ServiceCard } from "@/components/ServicesExplorer";
 import { ServiceGuide, serviceLabels, serviceLinks } from "@/components/ServicesShared";
@@ -18,10 +23,17 @@ import { PostCard } from "@/components/blog";
 import { getPosts } from "@/lib/posts";
 import { getPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/pricing-data";
-import { Mail, MapPin, Phone, Receipt } from "@/components/icons";
+import { Mail, MapPin, Phone } from "@/components/icons";
 
 /** Icons for the hero's trust row, matched to Ziad's credentials in order. */
-const trustIcons = [BadgeCheck, ShieldCheck, MapPin, Receipt];
+const trustIcons = [BadgeCheck, ShieldCheck, MapPinIcon, Clock];
+
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2);
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -31,24 +43,26 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const pricing = await getPricing();
   const latestPosts = (await getPosts()).slice(0, 3);
   const book = localePath(locale, "/book");
-  const initials = site.owner
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2);
+  const portrait = content.about.photo?.src ?? images.portrait;
+  const initials = initialsOf(site.owner);
 
   /** Home-page sections; Admin → Design sets their order, visibility, spacing and tint. */
   const st = (key: DesignSection) => styleFor(design, key);
   const sections: Record<string, React.ReactNode> = {
     services: (
-      <section id="services" className={`relative isolate overflow-hidden bg-surface ${spacingClass[st("services").spacing]}`}>
+      <section id="services" className={cn("relative isolate overflow-hidden border-t bg-muted/40", spacingClass[st("services").spacing])}>
         <UploadedBackground photo={content.backgrounds.services} framing={content.framing.services} />
-        <Glow className="-right-24 -top-24 h-[34rem] w-[34rem] bg-blue/10" />
         <Tint style={st("services")} />
         <Container>
           <SplitHeader eyebrow={t.services.eyebrow} title={t.services.title} lead={t.services.lead} edit={{ title: "services.title", lead: "services.lead" }} />
           {/* A short preview; the full list with search and filters is on /services */}
-          <ul className={`mt-12 grid gap-6 md:grid-cols-2 ${design.layout.servicesColumns === 3 && content.services.items.length !== 4 ? "xl:grid-cols-3" : ""}`}>
+          <ul
+            className={cn(
+              "mt-12 grid gap-5 md:grid-cols-2",
+              design.layout.servicesColumns === 3 && content.services.items.length !== 4 && "xl:grid-cols-3",
+              content.services.items.length === 4 && "xl:grid-cols-4",
+            )}
+          >
             {content.services.items.slice(0, 4).map((s, i) => (
               <li key={i}>
                 <ServiceCard s={s} index={i} locale={locale} links={serviceLinks(locale, content.services.items, pricing, t)} t={serviceLabels(t)} />
@@ -57,13 +71,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </ul>
           {content.services.items.length > 4 && (
             <div className="mt-8 flex justify-center">
-              <Link
-                href={localePath(locale, "/services")}
-                className="group inline-flex items-center gap-2 rounded-[var(--btn-radius,9999px)] bg-white px-6 py-3 font-semibold text-navy shadow-sm ring-1 ring-navy/15 transition hover:ring-blue-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue"
-              >
+              <Button href={localePath(locale, "/services")} variant="outline">
                 {t.services.viewAll} ({content.services.items.length})
                 <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              </Button>
             </div>
           )}
           <div className="mt-10">
@@ -73,67 +84,75 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
     ),
     pricing: (
-      <section id="pricing" className={`relative isolate overflow-hidden bg-surface ${spacingClass[st("pricing").spacing]}`}>
-        <Glow className="-left-32 bottom-0 h-[30rem] w-[30rem] bg-green/10" />
+      <section id="pricing" className={cn("relative isolate overflow-hidden border-t bg-background", spacingClass[st("pricing").spacing])}>
         <Tint style={st("pricing")} />
         <Container>
           {pricing.promo.enabled && pricing.promo[locale] && (
-            <div className="relative mb-16 overflow-hidden rounded-2xl border-2 border-green/30 bg-navy p-6 text-white shadow-lg sm:p-8">
-              <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-green/10 blur-2xl" />
-              <div className="relative flex flex-col items-center justify-between gap-6 lg:flex-row">
-                <div className="flex items-center gap-4 text-center lg:text-left">
-                  <span className="hidden h-12 w-12 shrink-0 place-items-center rounded-xl bg-green text-navy sm:grid">
-                    <Gift className="h-6 w-6" />
-                  </span>
-                  <p className="text-xl font-semibold">{pricing.promo[locale]}</p>
-                </div>
-                <Link
-                  href={book}
-                  className="shrink-0 rounded-[var(--btn-radius,9999px)] bg-green px-6 py-3 text-sm font-bold text-navy-deep transition hover:-translate-y-0.5 hover:brightness-95"
-                >
-                  {t.pricing.book}
-                </Link>
+            <div className="mb-14 flex flex-col items-start justify-between gap-4 rounded-xl border border-green/40 bg-[color-mix(in_oklab,var(--color-green)_8%,white)] p-4 sm:flex-row sm:items-center sm:p-5">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-navy text-green">
+                  <Gift aria-hidden className="h-4 w-4" />
+                </span>
+                <p className="font-medium text-foreground">{pricing.promo[locale]}</p>
               </div>
+              <Button href={book} className="h-9 shrink-0">
+                {t.pricing.book}
+                <ArrowRight aria-hidden className="h-4 w-4" />
+              </Button>
             </div>
           )}
           <CenterHeader eyebrow={t.pricing.eyebrow} title={t.pricing.title} lead={t.pricing.lead} edit={{ title: "pricing.title", lead: "pricing.lead" }} />
-          <ul className={`mt-14 grid items-stretch gap-8 ${columnsClass.pricing[pricing.services.length > 2 && pricing.services.length !== 4 ? design.layout.pricingColumns : 2]} ${pricing.services.length <= 2 || pricing.services.length === 4 ? "mx-auto max-w-5xl" : ""}`}>
-            {pricing.services.map((item) => {
+          <ul
+            className={cn(
+              "mt-14 grid items-stretch gap-6",
+              columnsClass.pricing[pricing.services.length > 2 && pricing.services.length !== 4 ? design.layout.pricingColumns : 2],
+              (pricing.services.length <= 2 || pricing.services.length === 4) && "mx-auto max-w-4xl",
+            )}
+          >
+            {pricing.services.map((item, idx) => {
               const mins = item.rates.map((r) => r.minutes);
               const range = item.perSession ? t.pricing.perSessionTitle : mins.length > 1 ? `${Math.min(...mins)}–${Math.max(...mins)} min` : `${mins[0]} min`;
+              const featured = idx === 0;
               return (
-                <li key={item.id} className="flex flex-col justify-between rounded-2xl border border-navy/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-lg sm:p-10">
-                  <div>
-                    <div className="mb-3 flex items-start justify-between gap-4">
-                      <h3 className="text-2xl font-semibold text-navy">{item.title[locale]}</h3>
-                      <span className="mt-1 shrink-0 rounded-full bg-navy px-3 py-1 text-xs font-semibold text-white">{range}</span>
-                    </div>
-                    <p className="mb-8 leading-relaxed text-muted">{item.text[locale]}</p>
-                    <dl className="mb-8 space-y-3">
-                      {item.rates.map((r) => (
-                        <div key={r.minutes} className="flex items-baseline justify-between rounded-xl bg-surface px-5 py-4">
-                          <dt className="flex items-center gap-2.5 font-medium text-ink">
-                            <Check className="h-4 w-4 text-blue-dark" />
-                            {item.perSession ? t.pricing.lengthAdapted : t.pricing.duration.replace("{n}", String(r.minutes))}
-                          </dt>
-                          <dd className="text-3xl font-bold tracking-tight text-navy">{formatPrice(r.price, locale)}</dd>
-                        </div>
-                      ))}
-                    </dl>
+                <li
+                  key={item.id}
+                  className={cn(
+                    "relative flex flex-col rounded-2xl border bg-card p-6 shadow-xs transition-shadow hover:shadow-md sm:p-8",
+                    featured && "border-foreground/15 shadow-md ring-1 ring-foreground/5",
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight text-foreground">{item.title[locale]}</h3>
+                    <Badge variant="outline" className="mt-0.5 shrink-0 text-muted-foreground">
+                      {range}
+                    </Badge>
                   </div>
-                  <Link
-                    href={book}
-                    className="w-full rounded-[var(--btn-radius,9999px)] bg-navy py-3.5 text-center text-sm font-bold text-white shadow-md transition hover:bg-navy-deep hover:shadow-lg"
-                  >
-                    {t.pricing.book}
-                  </Link>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.text[locale]}</p>
+                  <Separator className="my-6" />
+                  <dl className="space-y-1">
+                    {item.rates.map((r) => (
+                      <div key={r.minutes} className="flex items-baseline justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted">
+                        <dt className="flex items-center gap-2 text-sm font-medium text-foreground/80">
+                          <Check className="h-4 w-4 text-[color-mix(in_oklab,var(--color-green)_62%,black)]" />
+                          {item.perSession ? t.pricing.lengthAdapted : t.pricing.duration.replace("{n}", String(r.minutes))}
+                        </dt>
+                        <dd className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">{formatPrice(r.price, locale)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="mt-auto pt-8">
+                    <Button href={`${book}?service=${encodeURIComponent(item.id)}`} variant={featured ? "brand" : "outline"} className="w-full">
+                      {t.pricing.book}
+                      <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Button>
+                  </div>
                 </li>
               );
             })}
           </ul>
           {pricing.homeVisits[locale] && (
-            <p className="mx-auto mt-10 flex max-w-3xl items-start justify-center gap-3 text-center text-lg font-medium text-ink">
-              <MapPin className="mt-0.5 h-6 w-6 shrink-0 text-blue-dark" />
+            <p className="mx-auto mt-10 flex max-w-2xl items-start justify-center gap-2.5 text-center text-sm text-muted-foreground">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-navy" />
               {pricing.homeVisits[locale]}
             </p>
           )}
@@ -141,75 +160,79 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
     ),
     about: (
-      <section id="about" className={`relative isolate overflow-hidden border-y border-navy/5 bg-white ${spacingClass[st("about").spacing]}`}>
+      <section id="about" className={cn("relative isolate overflow-hidden border-t bg-background", spacingClass[st("about").spacing])}>
         <UploadedBackground photo={content.backgrounds.about} framing={content.framing.about} />
         <Tint style={st("about")} />
-        <Container className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className={`lg:col-span-5 ${design.layout.aboutPhoto === "right" ? "lg:order-last" : ""}`}>
-            <div className="relative mx-auto max-w-md rounded-2xl border border-navy/10 bg-white p-3 shadow-2xl shadow-navy/15 lg:max-w-none">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
-                <Image
-                  src={content.about.photo?.src ?? images.portrait}
-                  alt={t.about.portraitAlt}
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 90vw"
-                  className="object-cover object-top"
-                />
-                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-transparent to-transparent" />
-                <div className="absolute inset-x-6 bottom-6 text-white">
-                  <p className="text-xl font-semibold">{site.owner}</p>
-                  <p className="text-sm text-white/80">{t.credentialsLine}</p>
+        <Container className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
+          <div className={cn("lg:col-span-5", design.layout.aboutPhoto === "right" && "lg:order-last")}>
+            <div className="relative mx-auto max-w-md lg:max-w-none">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border bg-muted shadow-xl shadow-foreground/10">
+                <Image src={portrait} alt={t.about.portraitAlt} fill sizes="(min-width: 1024px) 40vw, 90vw" className="object-cover object-top" />
+              </div>
+              <div className="absolute -bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl border bg-background/95 p-3 shadow-lg backdrop-blur sm:left-8 sm:right-auto">
+                <Avatar className="h-10 w-10 border">
+                  <AvatarImage src={portrait} alt="" className="object-cover object-top" />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{site.owner}</p>
+                  <p className="truncate text-xs text-muted-foreground">{t.credentialsLine}</p>
                 </div>
+                <BadgeCheck aria-hidden className="ml-1 h-5 w-5 shrink-0 text-blue-dark" />
               </div>
             </div>
           </div>
           <div className="lg:col-span-7">
-            <DotEyebrow>{t.about.eyebrow}</DotEyebrow>
-            <h2 data-edit="about.title" className="mb-6 text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+            <Eyebrow>{t.about.eyebrow}</Eyebrow>
+            <h2 data-edit="about.title" className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {t.about.title}
             </h2>
-            <blockquote
-              data-edit="about.text1"
-              className="mb-6 rounded-xl border-l-4 border-green bg-surface p-6 text-lg italic leading-relaxed text-navy shadow-sm"
-            >
+            <blockquote data-edit="about.text1" className="mt-6 border-l-2 border-green pl-5 text-lg leading-relaxed text-foreground/90">
               {t.about.text1}
             </blockquote>
-            <p data-edit="about.text2" className="mb-8 text-lg leading-relaxed text-muted">
+            <p data-edit="about.text2" className="mt-5 leading-relaxed text-muted-foreground">
               {t.about.text2}
             </p>
-            <ul className="grid gap-4 pt-2 sm:grid-cols-2">
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {t.about.credentials.map((c) => (
-                <li key={c} className="flex items-start gap-3 rounded-xl border border-navy/5 bg-surface p-4">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-navy text-green">
-                    <Check className="h-4 w-4" />
+                <li key={c} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-xs">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-navy text-green">
+                    <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="text-sm font-semibold text-navy">{c}</span>
+                  <span className="text-sm font-medium text-foreground">{c}</span>
                 </li>
               ))}
             </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button href={book}>
+                {t.hero.book}
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Button>
+              <Button href={tel} variant="outline">
+                <Phone className="h-4 w-4" /> {business.phone}
+              </Button>
+            </div>
           </div>
         </Container>
       </section>
     ),
     blog: (
-      <section id="latest" className={`relative isolate overflow-hidden border-t border-navy/5 bg-surface ${spacingClass[st("blog").spacing]}`}>
+      <section id="latest" className={cn("relative isolate overflow-hidden border-t bg-muted/40", spacingClass[st("blog").spacing])}>
         <UploadedBackground photo={content.backgrounds.blog} framing={content.framing.blog} />
         <Tint style={st("blog")} />
         <Container>
-          <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <DotEyebrow>{t.blog.latestEyebrow}</DotEyebrow>
-              <h2 className="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">{t.blog.latestTitle}</h2>
-              <p className="mt-3 max-w-xl text-lg leading-relaxed text-muted">{t.blog.lead}</p>
+              <Eyebrow>{t.blog.latestEyebrow}</Eyebrow>
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t.blog.latestTitle}</h2>
+              <p className="mt-3 max-w-xl text-lg leading-relaxed text-muted-foreground">{t.blog.lead}</p>
             </div>
-            <Link
-              href={localePath(locale, "/blog")}
-              className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-navy hover:text-blue-dark"
-            >
-              {t.blog.viewAll} <Arrow />
-            </Link>
+            <Button href={localePath(locale, "/blog")} variant="outline" className="shrink-0 self-start md:self-auto">
+              {t.blog.viewAll}
+              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Button>
           </div>
-          <ul className={`grid gap-8 ${columnsClass.blog[design.layout.blogColumns]}`}>
+          <ul className={cn("grid gap-6", columnsClass.blog[design.layout.blogColumns])}>
             {latestPosts.map((post) => (
               <li key={post.slug}>
                 <PostCard post={post} locale={locale} t={t.blog} />
@@ -220,47 +243,41 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
     ),
     contact: (
-      <section id="contact" className={`relative isolate overflow-hidden bg-white ${spacingClass[st("contact").spacing]}`}>
+      <section id="contact" className={cn("relative isolate overflow-hidden border-t bg-background", spacingClass[st("contact").spacing])}>
         <UploadedBackground photo={content.backgrounds.contact} framing={content.framing.contact} />
         <Tint style={st("contact")} />
         <Container>
-          <div className="relative overflow-hidden rounded-3xl bg-navy p-8 text-white shadow-2xl shadow-navy/30 sm:p-12 lg:p-16">
-            <div aria-hidden className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-green/15 blur-3xl" />
-            <div aria-hidden className="pointer-events-none absolute -bottom-20 right-0 h-80 w-80 rounded-full bg-blue/20 blur-3xl" />
-            <div className="relative grid gap-12 lg:grid-cols-12">
-              <div className="lg:col-span-5">
-                <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-green">
-                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green" />
-                  {t.contact.eyebrow}
-                </span>
-                <h2 data-edit="contact.title" className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-                  {t.contact.title}
-                </h2>
-                <p data-edit="contact.lead" className="mt-4 text-lg leading-relaxed text-white/80">
-                  {t.contact.lead}
-                </p>
-                <ul className="mt-10 space-y-6">
-                  <Detail icon={Phone} label={t.contact.phone}>
-                    <a href={tel} className="hover:text-green">
-                      {business.phone}
-                    </a>
-                  </Detail>
-                  <Detail icon={Mail} label={t.contact.email}>
-                    <a href={`mailto:${business.email}`} className="break-all hover:text-green">
-                      {business.email}
-                    </a>
-                  </Detail>
-                  <Detail icon={MapPin} label={t.contact.area}>
-                    {t.contact.office}
-                    <span className="block text-sm text-white/65">{t.contact.areaNote}</span>
-                  </Detail>
-                </ul>
-              </div>
-              <div className={`lg:col-span-7 ${design.layout.contactForm === "left" ? "lg:order-first" : ""}`}>
-                <div className="rounded-2xl bg-white p-6 text-ink shadow-2xl shadow-black/20 sm:p-10">
-                  <h3 className="mb-6 text-xl font-semibold text-navy">{t.contact.formTitle}</h3>
-                  <ContactForm t={t.form} fields={design.forms} />
-                </div>
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="lg:col-span-5">
+              <Eyebrow>{t.contact.eyebrow}</Eyebrow>
+              <h2 data-edit="contact.title" className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                {t.contact.title}
+              </h2>
+              <p data-edit="contact.lead" className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                {t.contact.lead}
+              </p>
+              <ul className="mt-10 divide-y rounded-xl border bg-card shadow-xs">
+                <Detail icon={Phone} label={t.contact.phone}>
+                  <a href={tel} className="hover:underline hover:underline-offset-4">
+                    {business.phone}
+                  </a>
+                </Detail>
+                <Detail icon={Mail} label={t.contact.email}>
+                  <a href={`mailto:${business.email}`} className="break-all hover:underline hover:underline-offset-4">
+                    {business.email}
+                  </a>
+                </Detail>
+                <Detail icon={MapPin} label={t.contact.area}>
+                  {t.contact.office}
+                  <span className="block text-sm font-normal text-muted-foreground">{t.contact.areaNote}</span>
+                </Detail>
+              </ul>
+            </div>
+            <div className={cn("lg:col-span-7", design.layout.contactForm === "left" && "lg:order-first")}>
+              <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">{t.contact.formTitle}</h3>
+                <Separator className="my-5" />
+                <ContactForm t={t.form} fields={design.forms} />
               </div>
             </div>
           </div>
@@ -268,24 +285,36 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
     ),
     testimonials: content.testimonials.items.length > 0 && (
-      <section id="testimonials" className={`relative isolate overflow-hidden border-t border-navy/5 bg-surface ${spacingClass[st("testimonials").spacing]}`}>
+      <section id="testimonials" className={cn("relative isolate overflow-hidden border-t bg-muted/40", spacingClass[st("testimonials").spacing])}>
         <Tint style={st("testimonials")} />
         <Container>
-          <h2 data-edit="testimonials.title" className="mb-14 max-w-2xl text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
-            {content.testimonials.title[locale]}
-          </h2>
-          <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <div className="mb-4 flex justify-center gap-0.5 text-amber-400" aria-hidden>
+              {Array.from({ length: 5 }, (_, i) => (
+                <Star key={i} className="h-4 w-4 fill-current" />
+              ))}
+            </div>
+            <h2 data-edit="testimonials.title" className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              {content.testimonials.title[locale]}
+            </h2>
+          </div>
+          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {content.testimonials.items.map((q, i) => (
-              <li key={i} className="flex flex-col justify-between rounded-2xl border border-navy/10 bg-white p-8 shadow-sm">
+              <li key={i} className="flex flex-col justify-between rounded-xl border bg-card p-6 shadow-xs">
                 <div>
-                  <Quote aria-hidden className="mb-4 h-7 w-7 text-blue" />
-                  <blockquote data-edit={`testimonials.items.${i}.quote`} className="mb-6 italic leading-relaxed text-navy">
+                  <Quote aria-hidden className="mb-4 h-5 w-5 text-muted-foreground/50" />
+                  <blockquote data-edit={`testimonials.items.${i}.quote`} className="leading-relaxed text-foreground/90">
                     {q.quote[locale]}
                   </blockquote>
                 </div>
-                <div className="border-t border-navy/10 pt-4">
-                  <p className="text-sm font-bold text-navy">{q.name}</p>
-                  {q.detail[locale] && <p className="text-xs text-muted">{q.detail[locale]}</p>}
+                <div className="mt-6 flex items-center gap-3 border-t pt-4">
+                  <Avatar className="h-9 w-9 border">
+                    <AvatarFallback className="bg-muted text-xs font-semibold text-navy">{initialsOf(q.name)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{q.name}</p>
+                    {q.detail[locale] && <p className="text-xs text-muted-foreground">{q.detail[locale]}</p>}
+                  </div>
                 </div>
               </li>
             ))}
@@ -294,24 +323,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
     ),
     faq: content.faq.items.length > 0 && (
-      <section id="faq" className={`relative isolate overflow-hidden bg-white ${spacingClass[st("faq").spacing]}`}>
+      <section id="faq" className={cn("relative isolate overflow-hidden border-t bg-background", spacingClass[st("faq").spacing])}>
         <Tint style={st("faq")} />
-        <Container>
-          <div className="mx-auto max-w-4xl">
-            <h2 data-edit="faq.title" className="mb-14 text-center text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+        <Container className="grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <h2 data-edit="faq.title" className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {content.faq.title[locale]}
             </h2>
-            <div className="space-y-4">
+            <p className="mt-4 text-muted-foreground">{t.contact.lead}</p>
+            <Button href={sectionHref(locale, "contact")} variant="outline" className="mt-6">
+              {t.nav.contact}
+              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+          </div>
+          <div className="lg:col-span-8">
+            <Accordion type="single" collapsible defaultValue="faq-0" className="rounded-xl border bg-card px-5 shadow-xs">
               {content.faq.items.map((f, i) => (
-                <details key={i} open={i === 0} className="group rounded-2xl border border-navy/10 bg-white p-6 shadow-sm [&_summary::-webkit-details-marker]:hidden">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy">
-                    {f.q[locale]}
-                    <ChevronDown aria-hidden className="h-5 w-5 shrink-0 text-blue-dark transition-transform group-open:rotate-180" />
-                  </summary>
-                  <p className="mt-4 whitespace-pre-line leading-relaxed text-muted">{f.a[locale]}</p>
-                </details>
+                <AccordionItem key={i} value={`faq-${i}`}>
+                  <AccordionTrigger className="py-5 text-base font-medium hover:no-underline">{f.q[locale]}</AccordionTrigger>
+                  <AccordionContent className="whitespace-pre-line pb-5 text-[0.95rem] leading-relaxed text-muted-foreground">{f.a[locale]}</AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </div>
         </Container>
       </section>
@@ -319,26 +352,24 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     ...Object.fromEntries(
       content.blocks.map((b) => [
         b.id,
-        <section key={b.id} id={b.id} className={`relative isolate overflow-hidden bg-white ${spacingClass[st(b.id as DesignSection).spacing]}`}>
+        <section key={b.id} id={b.id} className={cn("relative isolate overflow-hidden border-t bg-background", spacingClass[st(b.id as DesignSection).spacing])}>
           <Tint style={st(b.id as DesignSection)} />
           <Container className={b.photo ? "grid items-center gap-12 lg:grid-cols-2" : "[&>div]:max-w-3xl"}>
             {b.photo && (
-              <div className={`rounded-2xl border border-navy/10 bg-white p-3 shadow-xl shadow-navy/10 ${b.photoSide === "right" ? "lg:order-last" : ""}`}>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
-                  <Image src={b.photo.src} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-                </div>
+              <div className={cn("relative aspect-[4/3] overflow-hidden rounded-2xl border bg-muted shadow-lg shadow-foreground/5", b.photoSide === "right" && "lg:order-last")}>
+                <Image src={b.photo.src} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
               </div>
             )}
             <div>
-              {b.eyebrow[locale] && <DotEyebrow>{b.eyebrow[locale]}</DotEyebrow>}
-              <h2 data-edit={`blocks.${content.blocks.indexOf(b)}.title`} className="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+              {b.eyebrow[locale] && <Eyebrow>{b.eyebrow[locale]}</Eyebrow>}
+              <h2 data-edit={`blocks.${content.blocks.indexOf(b)}.title`} className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {b.title[locale]}
               </h2>
               {b.text[locale]
                 .split(/\n\s*\n/)
                 .filter(Boolean)
                 .map((para, i) => (
-                  <p key={i} className="mt-4 whitespace-pre-line text-lg leading-relaxed text-muted">
+                  <p key={i} className="mt-4 whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
                     {para}
                   </p>
                 ))}
@@ -353,83 +384,76 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
-      {/* ---------- Utility bar ---------- */}
-      <div className="border-b border-navy/5 bg-surface px-5 py-2.5 text-sm sm:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 md:flex-row">
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            <span aria-hidden className="h-2 w-2 rounded-full bg-green ring-4 ring-green/20" />
-            <span className="text-xs font-bold uppercase tracking-wider text-navy">{t.hero.eyebrow}</span>
-            <span aria-hidden className="hidden text-muted sm:inline">•</span>
-            <span className="text-muted">
-              {t.contact.phone}:{" "}
-              <a href={tel} className="font-semibold text-navy hover:underline">
-                {business.phone}
-              </a>
-            </span>
-          </div>
-          <span className="hidden items-center gap-1.5 text-xs font-semibold text-navy md:inline-flex">
-            <BadgeCheck aria-hidden className="h-4 w-4 text-blue-dark" />
-            {t.credentialsLine}
-          </span>
-        </div>
-      </div>
-
-      {/* ---------- Hero: Ziad at work, full-bleed behind the text ---------- */}
-      {/* Phones/tablets: the photo on top, fading into the text below. Desktop: full-bleed. */}
-      <section className="relative isolate overflow-hidden bg-[#1a1b1d] text-white">
-        <HeroImage alt={t.hero.imageAlt} photo={content.hero.photo} />
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 -z-10 h-[78vw] bg-gradient-to-b from-transparent from-40% to-[#1a1b1d] lg:bottom-0 lg:h-auto lg:bg-gradient-to-r lg:from-black/70 lg:from-0% lg:via-black/25 lg:to-transparent"
-        />
-        {/* Extra shading over the photo, set in Admin → Design */}
-        {design.hero.shade > 0 && <div aria-hidden className="absolute inset-0 -z-10 bg-black" style={{ opacity: design.hero.shade / 100 }} />}
-        <Glow className="-bottom-24 -left-24 h-[26rem] w-[26rem] bg-blue/20" />
-        <Container className="relative flex flex-col pb-16 pt-[calc(78vw-3rem)] lg:min-h-[calc(100svh-7rem)] lg:max-h-[56rem] lg:justify-center lg:py-24">
-          <div className={centered ? "mx-auto flex max-w-2xl flex-col items-center text-center" : "flex max-w-xl flex-col items-start"}>
-            <span className="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
-              <span aria-hidden className="h-2 w-2 animate-pulse rounded-full bg-green" />
-              {t.tagline}
-            </span>
-            <h1 data-edit="hero.title" className={`animate-fade-up delay-1 font-semibold leading-[1.08] tracking-[-0.03em] ${heroSizeClass[design.hero.size]}`}>
+      {/* ---------- Hero: headline and actions beside a framed photo of Ziad at work ---------- */}
+      <section className="relative isolate overflow-hidden bg-background">
+        <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
+        <div aria-hidden className="absolute left-1/2 top-0 -z-10 h-80 w-[56rem] max-w-full -translate-x-1/2 rounded-full bg-blue/10 blur-3xl" />
+        <Container className={cn("grid items-center gap-12 pb-16 pt-12 sm:pt-16 lg:gap-16 lg:pb-24 lg:pt-20", !centered && "lg:grid-cols-12")}>
+          <div className={cn(centered ? "mx-auto flex min-w-0 max-w-3xl flex-col items-center text-center" : "flex min-w-0 flex-col items-start lg:col-span-6")}>
+            <Link
+              href={book}
+              className="animate-fade-up group mb-6 inline-flex max-w-full items-center gap-2 rounded-full border bg-background py-1 pl-1 pr-3 text-xs font-medium text-muted-foreground shadow-xs transition hover:bg-muted"
+            >
+              <Badge className="h-5 shrink-0 bg-navy px-2 text-[11px] text-white">
+                <span aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-green" />
+                {t.hero.eyebrow}
+              </Badge>
+              <span className="truncate">{t.tagline}</span>
+              <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <h1 data-edit="hero.title" className={cn("animate-fade-up delay-1 font-semibold leading-[1.05] tracking-[-0.04em] text-foreground", heroSizeClass[design.hero.size])}>
               {t.hero.title}
             </h1>
-            <p data-edit="hero.lead" className="animate-fade-up delay-2 mt-6 max-w-lg text-lg leading-relaxed text-white/85">
+            <p data-edit="hero.lead" className="animate-fade-up delay-2 mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {t.hero.lead}
             </p>
-            <div className={`animate-fade-up delay-3 mt-9 flex w-full flex-col gap-4 sm:w-auto sm:flex-row ${centered ? "justify-center" : ""}`}>
+            <div className={cn("animate-fade-up delay-3 mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row", centered && "justify-center")}>
               <Button href={book} size="lg">
-                {t.hero.book} <ArrowRight aria-hidden className="h-[18px] w-[18px] text-green transition-transform group-hover:translate-x-1" />
+                {t.hero.book}
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
-              <Button href={tel} variant="outline-light" size="lg">
-                <Phone className="h-5 w-5" /> {t.hero.call}
+              <Button href={tel} variant="outline" size="lg">
+                <Phone className="h-4 w-4" /> {t.hero.call}
               </Button>
             </div>
-            {/* Trust highlights */}
-            <ul className="animate-fade-up delay-3 mt-10 grid w-full grid-cols-1 gap-3 border-t border-white/15 pt-6 sm:grid-cols-2">
+            <ul className={cn("animate-fade-up delay-3 mt-10 grid w-full gap-x-6 gap-y-3 border-t pt-6 sm:grid-cols-2", centered && "max-w-2xl")}>
               {t.about.credentials.map((c, i) => {
                 const Icon = trustIcons[i % trustIcons.length];
                 return (
-                  <li key={c} className={`flex items-center gap-2 text-sm font-medium text-white/90 ${centered ? "justify-center" : ""}`}>
-                    <Icon aria-hidden className="h-5 w-5 shrink-0 text-green" />
+                  <li key={c} className={cn("flex items-center gap-2 text-sm text-muted-foreground", centered && "justify-center")}>
+                    <Icon aria-hidden className="h-4 w-4 shrink-0 text-navy" />
                     {c}
                   </li>
                 );
               })}
             </ul>
           </div>
-        </Container>
-        {/* Floating practitioner card (desktop) */}
-        <div className="absolute bottom-8 right-8 hidden rounded-xl border border-white/40 bg-white/90 p-4 text-navy shadow-xl backdrop-blur-md xl:block">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-navy text-sm font-bold text-green">{initials}</span>
-            <div>
-              <p className="text-sm font-bold">{site.owner}</p>
-              <p className="text-xs text-muted">{t.credentialsLine}</p>
+
+          {!centered && (
+            <div className="animate-fade-up delay-2 relative min-w-0 lg:col-span-6">
+              <div className="relative overflow-hidden rounded-2xl border bg-muted p-1.5 shadow-2xl shadow-foreground/10">
+                <div className="relative aspect-[5/4] overflow-hidden rounded-xl sm:aspect-[4/3] lg:aspect-[5/6]">
+                  <HeroImage alt={t.hero.imageAlt} photo={content.hero.photo} />
+                  {design.hero.shade > 0 && <div aria-hidden className="absolute inset-0 bg-black" style={{ opacity: design.hero.shade / 100 }} />}
+                </div>
+              </div>
+              <div className="absolute -bottom-5 left-4 flex items-center gap-3 rounded-xl border bg-background/95 p-3 pr-4 shadow-lg backdrop-blur sm:-left-6">
+                <Avatar className="h-10 w-10 border">
+                  <AvatarImage src={portrait} alt="" className="object-cover object-top" />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{site.owner}</p>
+                  <p className="text-xs text-muted-foreground">{t.credentialsLine}</p>
+                </div>
+              </div>
+              <div className="absolute -top-4 right-4 hidden items-center gap-2 rounded-full border bg-background/95 px-3 py-1.5 text-xs font-medium text-foreground shadow-md backdrop-blur sm:flex">
+                <span aria-hidden className="h-2 w-2 rounded-full bg-green ring-4 ring-green/20" />
+                {t.contact.office}
+              </div>
             </div>
-            <CalendarCheck aria-hidden className="ml-3 h-5 w-5 text-blue-dark" />
-          </div>
-        </div>
+          )}
+        </Container>
       </section>
 
       {normalizeSections(
@@ -438,19 +462,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       )
         .filter((s) => s.visible)
         .map((s) => (
-          <div key={s.key} data-section={s.key}>{sections[s.key]}</div>
+          <div key={s.key} data-section={s.key}>
+            {sections[s.key]}
+          </div>
         ))}
     </>
-  );
-}
-
-/** Small uppercase label with a dot, above a section heading. */
-function DotEyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-dark">
-      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-navy" />
-      {children}
-    </p>
   );
 }
 
@@ -459,12 +475,12 @@ function SplitHeader({ eyebrow, title, lead, edit }: { eyebrow: string; title: s
   return (
     <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
       <div className="max-w-2xl">
-        <DotEyebrow>{eyebrow}</DotEyebrow>
-        <h2 data-edit={edit.title} className="text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h2 data-edit={edit.title} className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {title}
         </h2>
       </div>
-      <p data-edit={edit.lead} className="max-w-md text-lg leading-relaxed text-muted">
+      <p data-edit={edit.lead} className="max-w-md leading-relaxed text-muted-foreground">
         {lead}
       </p>
     </div>
@@ -473,21 +489,16 @@ function SplitHeader({ eyebrow, title, lead, edit }: { eyebrow: string; title: s
 
 function CenterHeader({ eyebrow, title, lead, edit }: { eyebrow: string; title: string; lead: string; edit: { title: string; lead: string } }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
-      <p className="text-xs font-bold uppercase tracking-widest text-blue-dark">{eyebrow}</p>
-      <h2 data-edit={edit.title} className="mb-4 mt-2 text-3xl font-semibold tracking-tight text-navy sm:text-4xl">
+    <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 data-edit={edit.title} className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
         {title}
       </h2>
-      <p data-edit={edit.lead} className="text-lg leading-relaxed text-muted">
+      <p data-edit={edit.lead} className="mt-4 text-lg leading-relaxed text-muted-foreground">
         {lead}
       </p>
     </div>
   );
-}
-
-/** Soft blurred colour glow in the background of a section. */
-function Glow({ className }: { className: string }) {
-  return <div aria-hidden className={`pointer-events-none absolute -z-10 rounded-full blur-3xl ${className}`} />;
 }
 
 /** Colour wash over a section, set per section in Admin → Design (strength 0 = none). */
@@ -502,29 +513,17 @@ function UploadedBackground({ photo, framing }: { photo: SitePhoto | null; frami
   return (
     <>
       <Image src={photo.src} alt="" fill sizes="100vw" className="-z-20 object-cover" style={framingStyle(framing)} />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-white/85" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-background/95" />
     </>
   );
 }
 
-/** Hero photo: the square shot for phones and tablets, the wide (extended wall) version on desktop. */
+/** Hero photo: an uploaded photo if there is one, otherwise Ziad's treatment photo. */
 function HeroImage({ alt, photo }: { alt: string; photo: SitePhoto | null }) {
-  const cls = "absolute inset-x-0 top-0 -z-10 h-[78vw] w-full object-cover object-top lg:bottom-0 lg:h-full lg:object-right";
-  // A photo uploaded from the admin is used for every screen size.
-  if (photo) return <Image src={photo.src} width={photo.width} height={photo.height} alt={alt} sizes="100vw" priority className={cls} />;
-  const common = { alt, sizes: "100vw", loading: "eager", fetchPriority: "high" } as const;
-  const {
-    props: { srcSet: wide },
-  } = getImageProps({ ...common, ...images.hero.wide });
-  const {
-    props: { srcSet: square, ...rest },
-  } = getImageProps({ ...common, ...images.hero.square });
-  return (
-    <picture>
-      <source media="(min-width: 1024px)" srcSet={wide} />
-      <img {...rest} alt={alt} srcSet={square} className={cls} />
-    </picture>
-  );
+  const cls = "absolute inset-0 h-full w-full object-cover object-[60%_30%]";
+  if (photo) return <Image src={photo.src} fill alt={alt} sizes="(min-width: 1024px) 50vw, 100vw" priority className={cls} />;
+  const { props } = getImageProps({ alt, sizes: "(min-width: 1024px) 50vw, 100vw", loading: "eager", fetchPriority: "high", ...images.hero.square });
+  return <img {...props} alt={alt} className={cls} />;
 }
 
 function Detail({
@@ -537,13 +536,13 @@ function Detail({
   children: React.ReactNode;
 }) {
   return (
-    <li className="flex gap-4">
-      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 text-green ring-1 ring-white/15">
-        <Icon className="h-5 w-5" />
+    <li className="flex gap-4 p-4 sm:p-5">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border bg-muted text-navy">
+        <Icon className="h-4 w-4" />
       </span>
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">{label}</p>
-        <div className="mt-1 text-lg font-medium text-white">{children}</div>
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <div className="mt-0.5 font-medium text-foreground">{children}</div>
       </div>
     </li>
   );

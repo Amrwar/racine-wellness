@@ -34,7 +34,7 @@ function Bars({ data, format, label }: { data: { key: string; label: string; val
       </div>
       <div className="mt-2 flex gap-[2px] border-t border-mist pt-1.5">
         {data.map((d) => (
-          <span key={d.key} className="flex-1 text-center text-[0.7rem] text-muted">
+          <span key={d.key} className="flex-1 text-center text-[0.7rem] text-muted-foreground">
             {d.label}
           </span>
         ))}
@@ -91,9 +91,9 @@ export default async function StatsPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {tiles.map((t) => (
           <Card key={t.label} className="p-5">
-            <p className="text-sm text-muted">{t.label}</p>
+            <p className="text-sm text-muted-foreground">{t.label}</p>
             <p className="mt-1 text-3xl font-semibold tracking-tight text-navy">{t.value}</p>
-            {t.note && <p className="mt-0.5 text-xs text-muted">{t.note}</p>}
+            {t.note && <p className="mt-0.5 text-xs text-muted-foreground">{t.note}</p>}
           </Card>
         ))}
       </div>
@@ -101,31 +101,31 @@ export default async function StatsPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h2 className="font-semibold text-navy">Appointments per month</h2>
-          <p className="mb-5 text-sm text-muted">Confirmed, last 12 months</p>
+          <p className="mb-5 text-sm text-muted-foreground">Confirmed, last 12 months</p>
           <Bars label="Appointments per month" data={months.map((m) => ({ key: m.ym, label: monthLabel(m.ym), value: m.n }))} format={(n) => String(n)} />
         </Card>
         <Card className="p-6">
           <h2 className="font-semibold text-navy">Booked value per month</h2>
-          <p className="mb-5 text-sm text-muted">Confirmed, last 12 months</p>
+          <p className="mb-5 text-sm text-muted-foreground">Confirmed, last 12 months</p>
           <Bars label="Booked value per month" data={months.map((m) => ({ key: m.ym, label: monthLabel(m.ym), value: m.revenue }))} format={money} />
         </Card>
         <Card className="p-6">
           <h2 className="font-semibold text-navy">Busiest days</h2>
-          <p className="mb-5 text-sm text-muted">Confirmed appointments by day of the week</p>
+          <p className="mb-5 text-sm text-muted-foreground">Confirmed appointments by day of the week</p>
           <Bars label="Appointments by weekday" data={byDay} format={(n) => String(n)} />
         </Card>
         <Card className="p-6">
           <h2 className="font-semibold text-navy">Most booked treatments</h2>
-          <p className="mb-5 text-sm text-muted">Confirmed appointments</p>
+          <p className="mb-5 text-sm text-muted-foreground">Confirmed appointments</p>
           {services.length === 0 ? (
-            <p className="text-sm text-muted">No confirmed appointments yet.</p>
+            <p className="text-sm text-muted-foreground">No confirmed appointments yet.</p>
           ) : (
             <ul className="space-y-3">
               {services.map((s) => (
                 <li key={s.title} title={`${s.title}: ${s.n} appointments, ${money(s.revenue)}`}>
                   <div className="flex justify-between text-sm">
                     <span className="font-medium text-ink">{s.title}</span>
-                    <span className="text-muted">
+                    <span className="text-muted-foreground">
                       {s.n} · {money(s.revenue)}
                     </span>
                   </div>
@@ -144,7 +144,7 @@ export default async function StatsPage() {
         <summary className="cursor-pointer text-sm font-semibold text-navy">Show the monthly numbers as a table</summary>
         <table className="mt-4 w-full text-sm">
           <thead>
-            <tr className="text-left text-xs uppercase tracking-[0.12em] text-muted">
+            <tr className="text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
               <th className="py-2 font-semibold">Month</th>
               <th className="py-2 text-right font-semibold">Appointments</th>
               <th className="py-2 text-right font-semibold">Booked value</th>

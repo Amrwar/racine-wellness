@@ -39,7 +39,7 @@ export default async function BlogAdminPage() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold text-navy">{p.en.title}</span>
-                <span className="block truncate text-sm text-muted">
+                <span className="block truncate text-sm text-muted-foreground">
                   {formatDate(p.date, "en")} · {p.en.category || "No category"}
                 </span>
               </span>

@@ -5,12 +5,17 @@ import { startTransition, useActionState } from "react";
 import { sendContact, type ContactState } from "@/app/actions/contact";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
-import { Arrow } from "./ui";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Arrow } from "./ui/site";
 
 const initial: ContactState = { status: "idle" };
 
-const field =
-  "w-full rounded-xl border bg-surface px-4 py-3 text-ink placeholder:text-muted/60 transition focus:border-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue/30";
+const field = "h-10 bg-background px-3 shadow-xs";
+const invalid = (err?: string) => (err ? "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" : "");
 
 export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pick<FormFields, "contactEmail" | "contactMessage" | "contactReceipt"> }) {
   const show = { email: fields?.contactEmail !== false, message: fields?.contactMessage !== false, receipt: fields?.contactReceipt !== false };
@@ -22,15 +27,15 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
     return (
       <div
         role="status"
-        className="animate-fade-up rounded-2xl bg-surface p-10 text-center"
+        className="animate-fade-up rounded-xl border border-green/40 bg-card p-8 text-center shadow-xs sm:p-10"
       >
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-navy text-green">
-          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-lg bg-navy text-green">
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="m5 12.5 4.5 4.5L19 7.5" />
           </svg>
         </div>
-        <h3 className="mt-6 text-2xl font-semibold text-navy">{t.successTitle}</h3>
-        <p className="mt-3 text-muted">{state.message}</p>
+        <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground">{t.successTitle}</h3>
+        <p className="mt-3 text-muted-foreground">{state.message}</p>
       </div>
     );
   }
@@ -50,23 +55,23 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label={t.name} htmlFor="name" error={e.name} required={t.required}>
-          <input
+          <Input
             id="name"
             name="name"
             autoComplete="name"
             required
-            className={`${field} ${e.name ? "border-danger" : "border-mist"}`}
+            className={cn(field, invalid(e.name))}
             placeholder={t.namePlaceholder}
           />
         </Field>
         <Field label={t.phone} htmlFor="phone" error={e.phone} required={t.required}>
-          <input
+          <Input
             id="phone"
             name="phone"
             type="tel"
             autoComplete="tel"
             required
-            className={`${field} ${e.phone ? "border-danger" : "border-mist"}`}
+            className={cn(field, invalid(e.phone))}
             placeholder={t.phonePlaceholder}
           />
         </Field>
@@ -74,12 +79,12 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
 
       {show.email && (
       <Field label={t.email} htmlFor="email" error={e.email}>
-        <input
+        <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
-          className={`${field} ${e.email ? "border-danger" : "border-mist"}`}
+          className={cn(field, invalid(e.email))}
           placeholder={t.emailPlaceholder}
         />
       </Field>
@@ -87,11 +92,11 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
 
       {show.message && (
       <Field label={t.message} htmlFor="message" error={e.message}>
-        <textarea
+        <Textarea
           id="message"
           name="message"
           rows={5}
-          className={`${field} resize-y ${e.message ? "border-danger" : "border-mist"}`}
+          className={cn("min-h-28 resize-y bg-background px-3 py-2 shadow-xs", invalid(e.message))}
           placeholder={t.messagePlaceholder}
         />
       </Field>
@@ -100,18 +105,18 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
       {show.receipt && (
       <label
         htmlFor="receipt"
-        className="flex cursor-pointer items-center gap-3 rounded-xl border border-mist bg-surface px-4 py-3 transition has-[:checked]:border-blue has-[:checked]:bg-blue/5"
+        className="flex cursor-pointer items-center gap-3 rounded-lg border bg-background px-4 py-3 shadow-xs transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
       >
         <input
           id="receipt"
           name="receipt"
           type="checkbox"
           value="yes"
-          className="h-5 w-5 shrink-0 cursor-pointer rounded accent-navy"
+          className="h-4 w-4 shrink-0 cursor-pointer rounded accent-primary"
         />
         <span>
-          <span className="block text-sm font-medium text-navy">{t.receipt}</span>
-          <span className="block text-xs text-muted">{t.receiptNote}</span>
+          <span className="block text-sm font-medium text-foreground">{t.receipt}</span>
+          <span className="block text-xs text-muted-foreground">{t.receiptNote}</span>
         </span>
       </label>
       )}
@@ -123,17 +128,17 @@ export function ContactForm({ t, fields }: { t: Dictionary["form"]; fields?: Pic
       </div>
 
       {state.status === "error" && !Object.keys(e).length && (
-        <p role="alert" className="rounded-2xl bg-danger/10 px-4 py-3 text-sm text-danger">
+        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.message}
         </p>
       )}
 
       <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-relaxed text-muted">{t.consent}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{t.consent}</p>
         <button
           type="submit"
           disabled={pending}
-          className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-blue-dark px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue/25 transition hover:-translate-y-0.5 hover:bg-[#00649f] hover:shadow-xl hover:shadow-blue/30 disabled:cursor-wait disabled:opacity-60"
+          className={cn(buttonVariants(), "group h-11 shrink-0 gap-2 rounded-[var(--btn-radius,0.625rem)] px-6 shadow-xs hover:bg-primary/90 disabled:cursor-wait")}
         >
           {pending ? t.sending : t.submit}
           {!pending && <Arrow />}
@@ -159,20 +164,20 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium text-navy">
+      <Label htmlFor={htmlFor} className="mb-2 block text-foreground">
         {label}
         {required && (
           <>
-            <span aria-hidden className="ml-0.5 text-danger">
+            <span aria-hidden className="ml-0.5 text-destructive">
               *
             </span>
             <span className="sr-only"> ({required})</span>
           </>
         )}
-      </label>
+      </Label>
       {children}
       {error && (
-        <p className="mt-1.5 text-xs font-medium text-danger" role="alert">
+        <p className="mt-1.5 text-sm text-destructive" role="alert">
           {error}
         </p>
       )}

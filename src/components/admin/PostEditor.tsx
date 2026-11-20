@@ -17,7 +17,7 @@ const input =
   "w-full rounded-xl border border-mist bg-white px-3.5 py-2.5 text-ink outline-none transition focus:border-blue focus:ring-4 focus:ring-blue/15";
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">{children}</span>;
+  return <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{children}</span>;
 }
 
 function Section({ title, text, children, action }: { title: string; text?: string; children: React.ReactNode; action?: React.ReactNode }) {
@@ -26,7 +26,7 @@ function Section({ title, text, children, action }: { title: string; text?: stri
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-navy">{title}</h2>
-          {text && <p className="mt-0.5 text-sm text-muted">{text}</p>}
+          {text && <p className="mt-0.5 text-sm text-muted-foreground">{text}</p>}
         </div>
         {action}
       </div>
@@ -72,7 +72,7 @@ function IconButton({ label, d, onClick, disabled, danger }: { label: string; d:
       title={label}
       onClick={onClick}
       disabled={disabled}
-      className={`grid h-8 w-8 place-items-center rounded-full text-muted transition disabled:opacity-30 ${
+      className={`grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition disabled:opacity-30 ${
         danger ? "hover:bg-danger/8 hover:text-danger" : "hover:bg-surface hover:text-navy"
       }`}
     >
@@ -149,10 +149,10 @@ function PhotoPicker({ library, onPick, onClose }: { library: Photo[]; onPick: (
             className="flex w-full flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-blue/50 bg-blue/5 px-6 py-6 text-navy transition hover:border-blue disabled:cursor-wait"
           >
             <span className="font-semibold">{progress === null ? "Upload a photo from your device" : `Uploading… ${Math.round(progress)}%`}</span>
-            <span className="text-sm text-muted">JPG, PNG or WebP, up to 20 MB</span>
+            <span className="text-sm text-muted-foreground">JPG, PNG or WebP, up to 20 MB</span>
           </button>
           {error && <p className="mt-3 rounded-xl bg-danger/8 px-4 py-2.5 text-sm text-danger">{error}</p>}
-          <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Or reuse a photo</p>
+          <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Or reuse a photo</p>
           <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
             {library.map((p) => (
               <li key={p.src}>
@@ -232,7 +232,7 @@ function BlockEditor({ block, onChange, library }: { block: Block; onChange: (b:
             placeholder={"One point per line"}
             className={`${input} resize-y leading-relaxed`}
           />
-          <p className="mt-1 text-xs text-muted">One bullet point per line.</p>
+          <p className="mt-1 text-xs text-muted-foreground">One bullet point per line.</p>
         </div>
       );
     case "image":
@@ -306,7 +306,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight text-navy sm:text-3xl">{isNew ? "New article" : post.en.title || "Untitled article"}</h1>
-          <p className="mt-1.5 text-muted">{isNew ? "Write it in English and French, then publish when ready." : "Changes appear on the website when you save."}</p>
+          <p className="mt-1.5 text-muted-foreground">{isNew ? "Write it in English and French, then publish when ready." : "Changes appear on the website when you save."}</p>
         </div>
         {!isNew && saved.published && (
           <a href={`/blog/${saved.slug}`} target="_blank" rel="noopener" className="shrink-0 text-sm font-semibold text-blue-dark hover:underline">
@@ -319,7 +319,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
         title="Publishing"
         action={
           <label className="flex cursor-pointer items-center gap-3">
-            <span className={`text-sm font-semibold ${post.published ? "text-[#007a43]" : "text-muted"}`}>{post.published ? "Published" : "Draft"}</span>
+            <span className={`text-sm font-semibold ${post.published ? "text-[#007a43]" : "text-muted-foreground"}`}>{post.published ? "Published" : "Draft"}</span>
             <button
               type="button"
               role="switch"
@@ -341,7 +341,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
           <label className="block">
             <Label>Web address</Label>
             <div className="flex items-center rounded-xl border border-mist bg-white focus-within:border-blue focus-within:ring-4 focus-within:ring-blue/15">
-              <span className="shrink-0 pl-3.5 text-sm text-muted">healthyzone.ca/blog/</span>
+              <span className="shrink-0 pl-3.5 text-sm text-muted-foreground">healthyzone.ca/blog/</span>
               <input
                 value={post.slug}
                 onChange={(e) => {
@@ -354,7 +354,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
           </label>
         </div>
         {!isNew && post.slug !== saved.slug && saved.published && (
-          <p className="text-sm text-muted">Changing the web address breaks links people may have shared to the old one.</p>
+          <p className="text-sm text-muted-foreground">Changing the web address breaks links people may have shared to the old one.</p>
         )}
       </Section>
 
@@ -385,7 +385,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
                 role="tab"
                 aria-selected={lang === key}
                 onClick={() => setLang(key)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${lang === key ? "bg-navy text-white" : "text-muted hover:text-navy"}`}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${lang === key ? "bg-navy text-white" : "text-muted-foreground hover:text-navy"}`}
               >
                 {label}
                 {post[key].body.length === 0 && <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-danger align-middle" />}
@@ -404,7 +404,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
             >
               Start from the English layout
             </button>
-            <p className="mt-2 text-xs text-muted">Copies the English blocks and photos so you can translate them one by one.</p>
+            <p className="mt-2 text-xs text-muted-foreground">Copies the English blocks and photos so you can translate them one by one.</p>
           </div>
         )}
 
@@ -425,7 +425,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
         </ol>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-mist/60 pt-4">
-          <span className="mr-1 text-sm text-muted">Add:</span>
+          <span className="mr-1 text-sm text-muted-foreground">Add:</span>
           {(Object.keys(blockLabels) as Block["type"][]).map((type) => (
             <button
               key={type}
@@ -441,10 +441,10 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
 
       {!isNew && (
         <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-danger/20 p-5">
-          <p className="text-sm text-muted">Delete this article from the website and the admin.</p>
+          <p className="text-sm text-muted-foreground">Delete this article from the website and the admin.</p>
           {confirmDelete ? (
             <span className="flex items-center gap-2">
-              <span className="text-sm text-muted">Delete for good?</span>
+              <span className="text-sm text-muted-foreground">Delete for good?</span>
               <button
                 type="button"
                 onClick={() => {
@@ -456,7 +456,7 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
               >
                 Delete article
               </button>
-              <button type="button" onClick={() => setConfirmDelete(false)} className="px-2 text-sm text-muted hover:text-navy">
+              <button type="button" onClick={() => setConfirmDelete(false)} className="px-2 text-sm text-muted-foreground hover:text-navy">
                 Cancel
               </button>
             </span>
@@ -478,16 +478,16 @@ export function PostEditor({ initial, isNew, library, justSaved }: { initial: Po
                 ))}
               </ul>
             ) : dirty ? (
-              <span className="text-muted">{isNew ? "Not saved yet." : "You have unsaved changes."}</span>
+              <span className="text-muted-foreground">{isNew ? "Not saved yet." : "You have unsaved changes."}</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">{saved.published ? "Saved. The article is live on the website." : "Saved as a draft. It isn't visible on the website."}</span>
             ) : (
-              <span className="text-muted">Everything is up to date.</span>
+              <span className="text-muted-foreground">Everything is up to date.</span>
             )}
           </div>
           <div className="flex shrink-0 gap-2">
             {dirty && !isNew && (
-              <button type="button" onClick={() => setPost(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => setPost(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Undo changes
               </button>
             )}

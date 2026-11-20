@@ -26,7 +26,7 @@ export function RestoreButton({ id }: { id: number }) {
       >
         {pending ? "Restoring…" : "Yes, restore"}
       </button>
-      <button type="button" onClick={() => setConfirming(false)} className="rounded-full px-2 py-1.5 text-xs text-muted hover:text-navy">
+      <button type="button" onClick={() => setConfirming(false)} className="rounded-full px-2 py-1.5 text-xs text-muted-foreground hover:text-navy">
         Cancel
       </button>
     </span>

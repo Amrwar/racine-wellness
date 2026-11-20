@@ -107,7 +107,7 @@ export default async function OverviewPage() {
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="group">
             <Card className="h-full p-6 transition group-hover:-translate-y-0.5 group-hover:shadow-lg">
-              <p className="text-sm font-medium text-muted">{s.label}</p>
+              <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
               <p className={`mt-2 text-4xl font-semibold tracking-tight ${s.accent ? "text-blue-dark" : "text-navy"}`}>
                 {s.value}
               </p>
@@ -124,7 +124,7 @@ export default async function OverviewPage() {
           </Link>
         </div>
         {upcoming.length === 0 ? (
-          <Card className="p-6 text-sm text-muted">No upcoming appointments yet.</Card>
+          <Card className="p-6 text-sm text-muted-foreground">No upcoming appointments yet.</Card>
         ) : (
           <Card className="divide-y divide-mist/60">
             {upcoming.map((b) => {
@@ -135,7 +135,7 @@ export default async function OverviewPage() {
                     {formatWhen(start, "en").day.replace(/, \d{4}$/, "")} · {localTime(start)}
                   </span>
                   <span className="flex-1 text-ink">
-                    {b.name} <span className="text-sm text-muted">· {b.service_title}, {b.minutes} min · {b.location === "home" ? "Home visit" : "Office"}</span>
+                    {b.name} <span className="text-sm text-muted-foreground">· {b.service_title}, {b.minutes} min · {b.location === "home" ? "Home visit" : "Office"}</span>
                   </span>
                   {b.status === "pending" ? (
                     <span className="rounded-full bg-blue/12 px-2.5 py-0.5 text-xs font-semibold text-blue-dark">To confirm</span>
@@ -158,7 +158,7 @@ export default async function OverviewPage() {
             </Link>
           </div>
           {recent.length === 0 ? (
-            <Card className="p-6 text-sm text-muted">No new messages. You&apos;re all caught up.</Card>
+            <Card className="p-6 text-sm text-muted-foreground">No new messages. You&apos;re all caught up.</Card>
           ) : (
             <ul className="space-y-3">
               {recent.map((m) => (
@@ -180,7 +180,7 @@ export default async function OverviewPage() {
             </Link>
           </div>
           <Card className="overflow-hidden">
-            <div className={`px-6 py-4 text-sm font-semibold ${pricing.promo.enabled ? "bg-navy text-white" : "bg-surface text-muted"}`}>
+            <div className={`px-6 py-4 text-sm font-semibold ${pricing.promo.enabled ? "bg-navy text-white" : "bg-surface text-muted-foreground"}`}>
               {pricing.promo.enabled ? (
                 <span className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-green" /> {pricing.promo.en}
@@ -193,14 +193,14 @@ export default async function OverviewPage() {
               {pricing.services.map((s) => (
                 <li key={s.id} className="flex items-center justify-between gap-4 px-6 py-4">
                   <span className="font-medium text-ink">{s.title.en}</span>
-                  <span className="shrink-0 text-sm text-muted">
+                  <span className="shrink-0 text-sm text-muted-foreground">
                     from {formatPrice(Math.min(...s.rates.map((r) => r.price)), "en")}
                   </span>
                 </li>
               ))}
             </ul>
             {prices.length > 0 && (
-              <p className="border-t border-mist/60 px-6 py-3 text-xs text-muted">
+              <p className="border-t border-mist/60 px-6 py-3 text-xs text-muted-foreground">
                 {formatPrice(Math.min(...prices), "en")} to {formatPrice(Math.max(...prices), "en")} across all sessions
               </p>
             )}
@@ -239,7 +239,7 @@ export default async function OverviewPage() {
           ].map((h) => (
             <Card key={h.title} className="p-5">
               <h3 className="font-semibold text-navy">{h.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{h.text}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{h.text}</p>
             </Card>
           ))}
         </div>

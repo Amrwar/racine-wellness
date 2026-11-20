@@ -114,7 +114,7 @@ export function WeekGrid({
           const closed = !openHours(availability, d);
           return (
             <div key={d} className="border-l border-mist/60 px-2 py-3 text-center">
-              <p className={`text-xs font-semibold uppercase tracking-[0.12em] ${isToday ? "text-blue-dark" : "text-muted"}`}>
+              <p className={`text-xs font-semibold uppercase tracking-[0.12em] ${isToday ? "text-blue-dark" : "text-muted-foreground"}`}>
                 {shortDate(d, { weekday: "short" })}
               </p>
               <p
@@ -124,7 +124,7 @@ export function WeekGrid({
               >
                 {shortDate(d, { day: "numeric" })}
               </p>
-              {closed && <p className="mt-0.5 text-[0.7rem] text-muted">Closed</p>}
+              {closed && <p className="mt-0.5 text-[0.7rem] text-muted-foreground">Closed</p>}
             </div>
           );
         })}
@@ -132,7 +132,7 @@ export function WeekGrid({
 
       {hasAllDay && (
         <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] border-b border-mist/60 bg-surface/60">
-          <p className="self-center pr-2 text-right text-[0.65rem] font-semibold uppercase text-muted">All day</p>
+          <p className="self-center pr-2 text-right text-[0.65rem] font-semibold uppercase text-muted-foreground">All day</p>
           {allDay.map((list, i) => (
             <div key={i} className="space-y-1 border-l border-mist/60 p-1">
               {list.map((e) => (
@@ -149,7 +149,7 @@ export function WeekGrid({
       <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]">
         <div className="relative" style={{ height }}>
           {hours.map((h) => (
-            <span key={h} className="absolute right-2 -translate-y-1/2 text-[0.7rem] font-medium text-muted" style={{ top: y(h) }}>
+            <span key={h} className="absolute right-2 -translate-y-1/2 text-[0.7rem] font-medium text-muted-foreground" style={{ top: y(h) }}>
               {h === first ? "" : fromMinutes(h)}
             </span>
           ))}
@@ -250,7 +250,7 @@ export function WeekList({ days, events, availability, today, now, selectedId }:
         return (
           <div key={d} className={`flex gap-4 p-4 ${isToday ? "bg-blue/5" : ""}`}>
             <div className="w-12 shrink-0 text-center">
-              <p className={`text-xs font-semibold uppercase ${isToday ? "text-blue-dark" : "text-muted"}`}>{shortDate(d, { weekday: "short" })}</p>
+              <p className={`text-xs font-semibold uppercase ${isToday ? "text-blue-dark" : "text-muted-foreground"}`}>{shortDate(d, { weekday: "short" })}</p>
               <p className={`text-xl font-semibold ${isToday ? "text-blue-dark" : "text-navy"}`}>{shortDate(d, { day: "numeric" })}</p>
             </div>
             <ul className="min-w-0 flex-1 space-y-2">
@@ -267,7 +267,7 @@ export function WeekList({ days, events, availability, today, now, selectedId }:
                 return <li key={e.id}>{e.href ? <Link href={e.href} className={cls}>{inner}</Link> : <div className={cls}>{inner}</div>}</li>;
               })}
               {items.length === 0 && (
-                <li className="pt-2 text-sm text-muted">
+                <li className="pt-2 text-sm text-muted-foreground">
                   {openHours(availability, d) ? "Nothing booked" : "Closed"}
                   {openHours(availability, d) && zonedToDate(d, "23:59").getTime() > now && (
                     <Link href={`/admin/bookings/new?date=${d}`} className="ml-2 font-semibold text-blue-dark hover:underline">
@@ -293,7 +293,7 @@ export function MonthGrid({ month, events, availability, today }: { month: strin
     <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-mist/60">
       <div className="grid grid-cols-7 border-b border-mist/60">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <p key={d} className="py-2.5 text-center text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+          <p key={d} className="py-2.5 text-center text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {d}
           </p>
         ))}
@@ -315,7 +315,7 @@ export function MonthGrid({ month, events, availability, today }: { month: strin
             >
               <span
                 className={`grid h-7 w-7 place-items-center rounded-full text-sm font-semibold ${
-                  isToday ? "bg-blue-dark text-white" : inMonth ? "text-navy" : "text-muted/50"
+                  isToday ? "bg-blue-dark text-white" : inMonth ? "text-navy" : "text-muted-foreground/50"
                 }`}
               >
                 {Number(d.slice(8))}
@@ -326,7 +326,7 @@ export function MonthGrid({ month, events, availability, today }: { month: strin
                     {localTime(new Date(e.start))} {e.title}
                   </span>
                 ))}
-                {items.length > 3 && <span className="block px-1.5 text-[0.7rem] font-semibold text-muted">+{items.length - 3} more</span>}
+                {items.length > 3 && <span className="block px-1.5 text-[0.7rem] font-semibold text-muted-foreground">+{items.length - 3} more</span>}
               </span>
               {/* Phones: dots */}
               <span className="mt-1 flex flex-wrap gap-0.5 sm:hidden">

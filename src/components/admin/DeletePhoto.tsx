@@ -30,7 +30,7 @@ export function DeletePhoto({ url }: { url: string }) {
       >
         {pending ? "Deleting…" : "Delete for good"}
       </button>
-      <button type="button" onClick={() => setConfirming(false)} className="text-muted hover:text-navy">
+      <button type="button" onClick={() => setConfirming(false)} className="text-muted-foreground hover:text-navy">
         Cancel
       </button>
       {error && <span className="w-full text-danger">{error}</span>}

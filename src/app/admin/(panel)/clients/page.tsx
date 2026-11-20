@@ -44,7 +44,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/admin/cl
         <EmptyState title={query ? "No client matches" : "No clients yet"} text={query ? "Try another name or number." : "Clients appear here after their first booking."} />
       ) : (
         <Card className="overflow-hidden">
-          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 border-b border-mist/60 px-6 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted md:grid">
+          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 border-b border-mist/60 px-6 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground md:grid">
             <span>Client</span>
             <span>Visits</span>
             <span>Last visit</span>
@@ -57,7 +57,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/admin/cl
                 <Link href={`/admin/clients/${c.key}`} className="grid gap-1 px-6 py-4 transition hover:bg-surface md:grid-cols-[2fr_1fr_1fr_1fr_1fr] md:items-center md:gap-4">
                   <span className="min-w-0">
                     <span className="block truncate font-semibold text-navy">{c.name}</span>
-                    <span className="block truncate text-sm text-muted">
+                    <span className="block truncate text-sm text-muted-foreground">
                       {c.phone}
                       {c.email && ` · ${c.email}`}
                     </span>
@@ -67,11 +67,11 @@ export default async function ClientsPage({ searchParams }: PageProps<"/admin/cl
                     {c.visits}
                     {c.visits > 1 && <span className="ml-2 rounded-full bg-green/15 px-2 py-0.5 text-xs font-semibold text-[#007a43]">Returning</span>}
                   </span>
-                  <span className="text-sm text-muted">
+                  <span className="text-sm text-muted-foreground">
                     <span className="md:hidden">Last: </span>
                     {day(c.last_visit)}
                   </span>
-                  <span className="text-sm text-muted">
+                  <span className="text-sm text-muted-foreground">
                     <span className="md:hidden">Next: </span>
                     {day(c.next_visit)}
                   </span>
@@ -82,7 +82,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/admin/cl
           </ul>
         </Card>
       )}
-      <p className="mt-3 text-xs text-muted">Totals count confirmed appointments that have already happened, at the booked price.</p>
+      <p className="mt-3 text-xs text-muted-foreground">Totals count confirmed appointments that have already happened, at the booked price.</p>
     </>
   );
 }

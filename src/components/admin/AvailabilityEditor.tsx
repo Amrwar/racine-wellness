@@ -14,7 +14,7 @@ function Section({ title, text, children }: { title: string; text?: string; chil
   return (
     <section className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-mist/60 sm:p-7">
       <h2 className="text-lg font-semibold text-navy">{title}</h2>
-      {text && <p className="mt-0.5 text-sm text-muted">{text}</p>}
+      {text && <p className="mt-0.5 text-sm text-muted-foreground">{text}</p>}
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -23,7 +23,7 @@ function Section({ title, text, children }: { title: string; text?: string; chil
 function NumberField({ label, suffix, value, onChange, min, max }: { label: string; suffix: string; value: number; onChange: (n: number) => void; min: number; max: number }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
       <span className="relative block">
         <input
           type="number"
@@ -33,7 +33,7 @@ function NumberField({ label, suffix, value, onChange, min, max }: { label: stri
           onChange={(e) => onChange(Number(e.target.value))}
           className={`${input} w-full pr-16`}
         />
-        <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">{suffix}</span>
+        <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{suffix}</span>
       </span>
     </label>
   );
@@ -73,17 +73,17 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
                     onChange={(e) => setDay(i, { open: e.target.checked })}
                     className="h-5 w-5 cursor-pointer accent-navy"
                   />
-                  <span className={`font-medium ${d.open ? "text-navy" : "text-muted"}`}>{dayNames[i]}</span>
+                  <span className={`font-medium ${d.open ? "text-navy" : "text-muted-foreground"}`}>{dayNames[i]}</span>
                 </label>
                 {d.open ? (
                   <div className="flex items-center gap-2">
                     <input type="time" step={1800} value={d.start} onChange={(e) => setDay(i, { start: e.target.value })} aria-label={`${dayNames[i]} start`} className={`${input} ${invalid ? "border-danger" : ""}`} />
-                    <span className="text-muted">to</span>
+                    <span className="text-muted-foreground">to</span>
                     <input type="time" step={1800} value={d.end} onChange={(e) => setDay(i, { end: e.target.value })} aria-label={`${dayNames[i]} end`} className={`${input} ${invalid ? "border-danger" : ""}`} />
                     {invalid && <span className="text-sm text-danger">End must be after start</span>}
                   </div>
                 ) : (
-                  <span className="text-sm text-muted">Closed</span>
+                  <span className="text-sm text-muted-foreground">Closed</span>
                 )}
               </li>
             );
@@ -97,21 +97,21 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
           <NumberField label="Book at least" suffix="hours ahead" min={0} max={336} value={a.minNoticeHours} onChange={(n) => setA((x) => ({ ...x, minNoticeHours: n }))} />
           <NumberField label="Calendar open for" suffix="days" min={1} max={365} value={a.maxDaysAhead} onChange={(n) => setA((x) => ({ ...x, maxDaysAhead: n }))} />
         </div>
-        <p className="mt-4 text-sm text-muted">Time between appointments leaves room for travel and set-up, especially for home visits.</p>
+        <p className="mt-4 text-sm text-muted-foreground">Time between appointments leaves room for travel and set-up, especially for home visits.</p>
       </Section>
 
       <Section title="Special hours" text="Different hours on one date, such as a holiday eve. They replace that day's usual hours.">
         <div className="flex flex-wrap items-end gap-3">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Date</span>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Date</span>
             <input type="date" min={today} value={special.date} onChange={(e) => setSpecial((s) => ({ ...s, date: e.target.value }))} className={input} />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">From</span>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">From</span>
             <input type="time" step={900} value={special.start} onChange={(e) => setSpecial((s) => ({ ...s, start: e.target.value }))} className={input} />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">To</span>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">To</span>
             <input type="time" step={900} value={special.end} onChange={(e) => setSpecial((s) => ({ ...s, end: e.target.value }))} className={input} />
           </label>
           <button
@@ -141,7 +141,7 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
                     type="button"
                     aria-label={`Remove special hours on ${fmt(s.date)}`}
                     onClick={() => setA((x) => ({ ...x, specialHours: x.specialHours.filter((c) => c.date !== s.date) }))}
-                    className="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-white hover:text-danger"
+                    className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-white hover:text-danger"
                   >
                     ×
                   </button>
@@ -149,14 +149,14 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
               ))}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-muted">No special hours coming up.</p>
+          <p className="mt-4 text-sm text-muted-foreground">No special hours coming up.</p>
         )}
       </Section>
 
       <Section title="Time off" text="Days when no online bookings are accepted, such as holidays.">
         <div className="flex flex-wrap items-end gap-3">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Add a day off</span>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Add a day off</span>
             <input type="date" min={today} value={newDate} onChange={(e) => setNewDate(e.target.value)} className={input} />
           </label>
           <button
@@ -180,7 +180,7 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
                   type="button"
                   aria-label={`Remove ${fmt(d)}`}
                   onClick={() => setA((x) => ({ ...x, closedDates: x.closedDates.filter((c) => c !== d) }))}
-                  className="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-white hover:text-danger"
+                  className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-white hover:text-danger"
                 >
                   ×
                 </button>
@@ -188,7 +188,7 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
             ))}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-muted">No upcoming days off.</p>
+          <p className="mt-4 text-sm text-muted-foreground">No upcoming days off.</p>
         )}
       </Section>
 
@@ -198,16 +198,16 @@ export function AvailabilityEditor({ initial, today }: { initial: Availability; 
             {state.status === "error" ? (
               <span className="text-danger">{state.message}</span>
             ) : dirty ? (
-              <span className="text-muted">You have unsaved changes.</span>
+              <span className="text-muted-foreground">You have unsaved changes.</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">Saved. Online booking now uses these hours.</span>
             ) : (
-              <span className="text-muted">Everything is up to date.</span>
+              <span className="text-muted-foreground">Everything is up to date.</span>
             )}
           </p>
           <div className="flex shrink-0 gap-2">
             {dirty && (
-              <button type="button" onClick={() => setA(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => setA(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Undo changes
               </button>
             )}

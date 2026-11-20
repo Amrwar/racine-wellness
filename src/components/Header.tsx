@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { ArrowRight, Menu } from "lucide-react";
 import { navItems, type NavItem } from "@/lib/site";
 import { localePath, sectionHref, splitLocale, type Locale } from "@/i18n/config";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Dictionary } from "@/i18n/en";
+import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
-import { Button } from "./ui";
+import { Button } from "./ui/site";
+import { Button as UIButton } from "./ui/button";
+import { Separator } from "./ui/separator";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header" | "tagline">; hidden?: string[] }) {
   const items = navItems.filter((item) => !hidden.includes(item.key));
@@ -31,81 +36,82 @@ export function Header({ t, hidden = [] }: { t: Pick<Dictionary, "nav" | "header
       hrefLang={otherLocale}
       lang={otherLocale}
       title={t.header.switchTitle}
-      className="rounded-full border border-white/30 px-3 py-1.5 text-xs font-semibold tracking-widest text-white transition hover:bg-white/10"
+      className="inline-flex h-9 items-center rounded-md border bg-background px-2.5 text-xs font-semibold tracking-wider text-muted-foreground shadow-xs transition hover:bg-muted hover:text-foreground"
     >
       {t.header.switchShort}
     </Link>
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--header-bg,var(--color-navy))]/95 shadow-[0_16px_36px_-12px_rgba(0,48,79,0.25)] backdrop-blur-xl">
-      <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <div className="flex flex-col">
-          <Logo label={t.header.home} className="leading-tight" />
-          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60 sm:block">{t.tagline}</span>
-        </div>
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5 sm:px-8">
+        <Logo label={t.header.home} />
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
           {items.map((item) => (
             <Link
               key={item.key}
               href={hrefFor(item)}
               aria-current={isActive(item) ? "page" : undefined}
-              className={`text-sm font-medium transition hover:text-white ${
-                isActive(item) ? "text-white underline decoration-green decoration-2 underline-offset-8" : "text-white/80"
-              }`}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground",
+                isActive(item) ? "bg-muted text-foreground" : "text-muted-foreground",
+              )}
             >
               {t.nav[item.key]}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {langSwitch}
-          <Button href={localePath(locale, "/book")}>
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green transition-transform group-hover:scale-125" />
+          <Button href={localePath(locale, "/book")} className="h-9">
             {t.header.book}
+            <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
           {langSwitch}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? t.header.closeMenu : t.header.openMenu}
-            className="grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
-          >
-            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
-              {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-            </svg>
-          </button>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <UIButton variant="outline" size="icon-lg" aria-label={open ? t.header.closeMenu : t.header.openMenu}>
+                <Menu className="size-5" />
+              </UIButton>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[85vw] max-w-sm">
+              <SheetHeader>
+                <SheetTitle className="sr-only">{t.header.openMenu}</SheetTitle>
+                <Logo label={t.header.home} />
+                <SheetDescription>{t.tagline}</SheetDescription>
+              </SheetHeader>
+              <Separator />
+              <nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
+                {items.map((item) => (
+                  <Link
+                    key={item.key}
+                    href={hrefFor(item)}
+                    onClick={close}
+                    aria-current={isActive(item) ? "page" : undefined}
+                    className={cn(
+                      "rounded-md px-3 py-3 text-base font-medium transition-colors hover:bg-muted",
+                      isActive(item) ? "bg-muted text-foreground" : "text-foreground/80",
+                    )}
+                  >
+                    {t.nav[item.key]}
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-auto p-4">
+                <Button href={localePath(locale, "/book")} size="lg" className="w-full" onClick={close}>
+                  {t.header.book}
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      <nav
-        id="mobile-menu"
-        aria-label="Mobile"
-        hidden={!open}
-        className="border-t border-white/10 px-5 pb-6 md:hidden"
-      >
-        {items.map((item) => (
-          <Link
-            key={item.key}
-            href={hrefFor(item)}
-            onClick={close}
-            aria-current={isActive(item) ? "page" : undefined}
-            className="block border-b border-white/10 py-4 text-lg font-medium text-white"
-          >
-            {t.nav[item.key]}
-          </Link>
-        ))}
-        <Button href={localePath(locale, "/book")} size="lg" className="mt-6 w-full" onClick={close}>
-          {t.header.book}
-        </Button>
-      </nav>
     </header>
   );
 }

@@ -10,9 +10,9 @@ export const input =
 export function Field({ label, hint, children, className = "" }: { label: string; hint?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
       {children}
-      {hint && <span className="mt-1.5 block text-xs text-muted">{hint}</span>}
+      {hint && <span className="mt-1.5 block text-xs text-muted-foreground">{hint}</span>}
     </label>
   );
 }
@@ -35,7 +35,7 @@ export function Section({
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-navy">{title}</h2>
-          {text && <p className="mt-0.5 text-sm text-muted">{text}</p>}
+          {text && <p className="mt-0.5 text-sm text-muted-foreground">{text}</p>}
         </div>
         {action}
       </div>
@@ -93,7 +93,7 @@ export function BilingualFields({
       </Field>
       <div>
         <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label} · Français</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label} · Français</span>
           <button
             type="button"
             onClick={translate}
@@ -171,7 +171,7 @@ export function useDragReorder(move: (from: number, to: number) => void) {
 /** The six-dot grip shown on draggable cards. */
 export function DragHandle(props: React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span {...props} title="Drag to move" className="cursor-grab touch-none text-muted hover:text-navy active:cursor-grabbing">
+    <span {...props} title="Drag to move" className="cursor-grab touch-none text-muted-foreground hover:text-navy active:cursor-grabbing">
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
         <circle cx="9" cy="6" r="1.5" />
         <circle cx="15" cy="6" r="1.5" />

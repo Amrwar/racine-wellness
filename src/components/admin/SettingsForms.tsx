@@ -39,7 +39,7 @@ export function BusinessForm({ initial, fallbackNotify }: { initial: Business; f
         </div>
         <div>
           <p className="mb-1 text-sm font-semibold text-navy">Social profiles</p>
-          <p className="mb-3 text-sm text-muted">Each link you fill in shows as an icon in the footer and helps Google connect your profiles. Leave empty to hide.</p>
+          <p className="mb-3 text-sm text-muted-foreground">Each link you fill in shows as an icon in the footer and helps Google connect your profiles. Leave empty to hide.</p>
           <div className="grid gap-4 sm:grid-cols-2">
             {socialFields.map((f) => (
               <Field key={f.key} label={f.label}>
@@ -52,7 +52,7 @@ export function BusinessForm({ initial, fallbackNotify }: { initial: Business; f
           <input type="checkbox" name="reminders" value="yes" defaultChecked={initial.reminders} className="mt-1 h-4 w-4 accent-navy" />
           <span>
             <span className="block text-sm font-semibold text-navy">Send appointment reminders</span>
-            <span className="block text-sm text-muted">
+            <span className="block text-sm text-muted-foreground">
               Each morning, clients with a confirmed appointment the next day get a reminder email (in their language). The wording is under Text &amp; photos → All other text → Booking page and client emails.
             </span>
           </span>
@@ -116,7 +116,7 @@ export function PasswordForm({ changedAt }: { changedAt: string | null }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-mist/60 pt-5">
         <div>
           <p className="font-medium text-ink">Signed in on a phone or computer you no longer use?</p>
-          <p className="text-sm text-muted">This signs out everywhere except here.</p>
+          <p className="text-sm text-muted-foreground">This signs out everywhere except here.</p>
           <div className="mt-1">
             <Status state={devices} />
           </div>
@@ -130,7 +130,7 @@ export function PasswordForm({ changedAt }: { changedAt: string | null }) {
           {signingOut ? "Signing out…" : "Sign out other devices"}
         </button>
       </div>
-      <p className="text-xs text-muted">Forgot your password? Ask your web developer to reset it.</p>
+      <p className="text-xs text-muted-foreground">Forgot your password? Ask your web developer to reset it.</p>
     </Section>
   );
 }

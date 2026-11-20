@@ -44,7 +44,7 @@ export default async function HistoryPage() {
                   <li key={r.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
                     <span className="text-ink">
                       Before your change of {when(r.saved_at)}
-                      {i === 0 && <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-xs text-muted ring-1 ring-mist/70">most recent</span>}
+                      {i === 0 && <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-mist/70">most recent</span>}
                     </span>
                     <RestoreButton id={r.id} />
                   </li>

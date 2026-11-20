@@ -54,7 +54,7 @@ export function TextEditor({ initial }: { initial: TextOverrides }) {
         />
       </div>
 
-      {groups.length === 0 && <p className="rounded-2xl bg-white p-6 text-muted shadow-card ring-1 ring-mist/60">Nothing matches “{query}”.</p>}
+      {groups.length === 0 && <p className="rounded-2xl bg-white p-6 text-muted-foreground shadow-card ring-1 ring-mist/60">Nothing matches “{query}”.</p>}
 
       {groups.map(([group, fields]) => {
         const changed = fields.filter((f) => overrides[f.path] && !same(overrides[f.path], f.original)).length;
@@ -63,12 +63,12 @@ export function TextEditor({ initial }: { initial: TextOverrides }) {
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 sm:px-7">
               <span>
                 <span className="block text-lg font-semibold text-navy">{textGroups[group].title}</span>
-                <span className="block text-sm text-muted">{textGroups[group].text}</span>
+                <span className="block text-sm text-muted-foreground">{textGroups[group].text}</span>
               </span>
               <span className="flex shrink-0 items-center gap-3">
                 {changed > 0 && <span className="rounded-full bg-green/15 px-2.5 py-0.5 text-xs font-semibold text-[#007a43]">{changed} edited</span>}
-                <span className="text-xs text-muted">{fields.length}</span>
-                <svg viewBox="0 0 24 24" className="h-5 w-5 text-muted transition group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <span className="text-xs text-muted-foreground">{fields.length}</span>
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-muted-foreground transition group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="m6 9 6 6 6-6" />
                 </svg>
               </span>
@@ -117,17 +117,17 @@ export function TextEditor({ initial }: { initial: TextOverrides }) {
             {state.status === "error" ? (
               <span className="text-danger">{state.message}</span>
             ) : dirty ? (
-              <span className="text-muted">You have unsaved changes.</span>
+              <span className="text-muted-foreground">You have unsaved changes.</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">Saved. The website has been updated.</span>
             ) : (
-              <span className="text-muted">Everything is up to date.</span>
+              <span className="text-muted-foreground">Everything is up to date.</span>
             )}
           </p>
           <div className="flex shrink-0 gap-2">
             {dirty && <PreviewButton kind="text" value={overrides} />}
             {dirty && (
-              <button type="button" onClick={() => setOverrides(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => setOverrides(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Undo changes
               </button>
             )}

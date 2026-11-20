@@ -156,7 +156,7 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
             </div>
           </>
         )}
-        <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
+        <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-navy" /> Confirmed</span>
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded border border-dashed border-blue bg-blue/10" /> Awaiting confirmation</span>
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-surface ring-1 ring-mist" /> Outside opening hours</span>
@@ -178,7 +178,7 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
           <h2 className="text-lg font-semibold text-navy">See bookings in your phone calendar</h2>
           {feed ? (
             <>
-              <p className="mt-1 text-sm leading-relaxed text-muted">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Subscribe once and new bookings appear automatically in Google Calendar, Apple Calendar or Outlook.
                 Requests show as tentative until you confirm them. Keep this link private.
               </p>
@@ -186,24 +186,24 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
               <div className="mt-5 grid gap-4 text-sm sm:grid-cols-3">
                 <div>
                   <p className="font-semibold text-navy">iPhone</p>
-                  <p className="mt-1 text-muted">
+                  <p className="mt-1 text-muted-foreground">
                     <a href={feed.replace(/^https:/, "webcal:")} className="font-medium text-blue-dark hover:underline">Tap here on your iPhone</a>{" "}
                     and choose Subscribe.
                   </p>
                 </div>
                 <div>
                   <p className="font-semibold text-navy">Google Calendar</p>
-                  <p className="mt-1 text-muted">On a computer: Other calendars, +, From URL, then paste the link.</p>
+                  <p className="mt-1 text-muted-foreground">On a computer: Other calendars, +, From URL, then paste the link.</p>
                 </div>
                 <div>
                   <p className="font-semibold text-navy">Outlook</p>
-                  <p className="mt-1 text-muted">Add calendar, Subscribe from web, then paste the link.</p>
+                  <p className="mt-1 text-muted-foreground">Add calendar, Subscribe from web, then paste the link.</p>
                 </div>
               </div>
-              <p className="mt-4 text-xs text-muted">Calendar apps refresh subscribed calendars on their own schedule, so a new booking can take a little while to appear.</p>
+              <p className="mt-4 text-xs text-muted-foreground">Calendar apps refresh subscribed calendars on their own schedule, so a new booking can take a little while to appear.</p>
             </>
           ) : (
-            <p className="mt-1 text-sm text-muted">Available once the admin login is fully set up (SESSION_SECRET).</p>
+            <p className="mt-1 text-sm text-muted-foreground">Available once the admin login is fully set up (SESSION_SECRET).</p>
           )}
         </Card>
       </section>

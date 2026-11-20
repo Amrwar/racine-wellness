@@ -13,7 +13,7 @@ export function Checklist({ items }: { items: ChecklistItem[] }) {
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-mist/60 px-6 py-5">
         <div>
           <h2 className="text-lg font-semibold text-navy">Getting set up</h2>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {left} {left === 1 ? "step" : "steps"} left to make the website fully yours.
           </p>
         </div>
@@ -38,8 +38,8 @@ export function Checklist({ items }: { items: ChecklistItem[] }) {
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className={`font-semibold ${i.done ? "text-muted line-through decoration-mist" : "text-navy"}`}>{i.title}</p>
-              {!i.done && <p className="mt-0.5 text-sm text-muted">{i.text}</p>}
+              <p className={`font-semibold ${i.done ? "text-muted-foreground line-through decoration-mist" : "text-navy"}`}>{i.title}</p>
+              {!i.done && <p className="mt-0.5 text-sm text-muted-foreground">{i.text}</p>}
             </div>
             {!i.done && (
               <Link href={i.href} className="shrink-0 rounded-full bg-surface px-4 py-2 text-sm font-semibold text-navy ring-1 ring-mist/70 hover:ring-blue">

@@ -94,7 +94,7 @@ export function LivePreview({ kind, value, focus }: { kind: PreviewableKey; valu
             </button>
           ))}
         </div>
-        <span className="flex items-center gap-1.5 text-xs text-muted" aria-live="polite">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground" aria-live="polite">
           <span className={`h-2 w-2 rounded-full ${status === "updating" ? "animate-pulse bg-blue" : status === "error" ? "bg-danger" : "bg-green"}`} />
           {status === "updating" ? "Updating…" : status === "error" ? "Preview failed" : "Live preview"}
         </span>

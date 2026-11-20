@@ -9,7 +9,7 @@ import { LLink } from "@/i18n/LocaleProvider";
 import { getPosts } from "@/lib/posts";
 import { site } from "@/lib/site";
 import { categoriesOf, categoryKey, searchText } from "@/lib/blog-search";
-import { Container } from "@/components/ui";
+import { Container, Eyebrow } from "@/components/ui/site";
 import { BlogCta, FeaturedPost, cardData } from "@/components/blog";
 import { BlogExplorer, StaticGrid, type ExplorerItem } from "@/components/BlogExplorer";
 import { alternatesFor } from "../layout";
@@ -57,47 +57,41 @@ export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) 
   return (
     <>
       {/* ---------- Hero: headline left, the HealthyZone studio right ---------- */}
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-surface via-white to-blue/10">
-        <div className="absolute inset-y-0 right-0 -z-10 hidden w-[55%] md:block">
-          <Image src="/images/blog/studio-table.webp" alt="" fill preload sizes="55vw" className="object-cover object-[50%_60%]" />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-surface via-surface/50 to-transparent" />
-        </div>
-        <div aria-hidden className="absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-blue/10 blur-3xl" />
-        <Container className="pb-36 pt-10 sm:pb-40 sm:pt-12">
-          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
-            <ol className="flex items-center gap-2">
-              <li>
-                <LLink href="/" className="hover:text-navy">
-                  {t.blog.home}
-                </LLink>
-              </li>
-              <li aria-hidden>
-                <ChevronRight className="h-4 w-4" />
-              </li>
-              <li aria-current="page" className="font-semibold text-navy">
-                {t.nav.blog}
-              </li>
-            </ol>
-          </nav>
-          <p className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-navy">
-            <span aria-hidden className="h-0.5 w-5 rounded-full bg-green" />
-            {t.blog.eyebrow}
-          </p>
-          <h1 className="max-w-xl text-4xl font-semibold leading-[1.08] tracking-[-0.02em] text-navy sm:text-5xl lg:text-6xl">{t.blog.title}</h1>
-          <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink/80">{t.blog.lead}</p>
+      <section className="relative isolate overflow-hidden border-b bg-background">
+        <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
+        <Container className="grid items-center gap-10 py-12 sm:py-16 md:grid-cols-[1.1fr_1fr] lg:gap-14">
+          <div>
+            <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+              <ol className="flex items-center gap-1.5">
+                <li>
+                  <LLink href="/" className="transition-colors hover:text-foreground">
+                    {t.blog.home}
+                  </LLink>
+                </li>
+                <li aria-hidden>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </li>
+                <li aria-current="page" className="font-medium text-foreground">
+                  {t.nav.blog}
+                </li>
+              </ol>
+            </nav>
+            <Eyebrow>{t.blog.eyebrow}</Eyebrow>
+            <h1 className="max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight text-foreground sm:text-5xl">{t.blog.title}</h1>
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">{t.blog.lead}</p>
+          </div>
+          <div className="relative hidden aspect-[4/3] overflow-hidden rounded-2xl border bg-muted shadow-xs md:block">
+            <Image src="/images/blog/studio-table.webp" alt="" fill preload sizes="(min-width: 1152px) 520px, 45vw" className="object-cover object-[50%_60%]" />
+          </div>
         </Container>
       </section>
 
-      <section className="bg-surface pb-16 sm:pb-20">
+      <section className="bg-muted/40 py-12 sm:py-16">
         <Container>
-          {featured && (
-            <div className="-mt-24 sm:-mt-28">
-              <FeaturedPost post={featured} locale={locale} t={t.blog} />
-            </div>
-          )}
+          {featured && <FeaturedPost post={featured} locale={locale} t={t.blog} />}
           {rest.length > 0 && (
-            <div className="mt-12">
-              <h2 className="mb-6 text-3xl font-semibold tracking-tight text-navy">{t.blog.latest}</h2>
+            <div className="mt-14">
+              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t.blog.latest}</h2>
               {/* The search box reads ?q= and ?category= from the address, so it renders in the browser; the plain grid stands in until then. */}
               <Suspense fallback={<StaticGrid items={items.filter((i) => i.card.slug !== featured.slug)} readMore={t.blog.readMore} />}>
                 <BlogExplorer items={items} featured={featured.slug} categories={categoriesOf(posts, locale)} t={labels} />

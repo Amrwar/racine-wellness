@@ -136,7 +136,7 @@ export function ContentEditor({
                 <p className="flex items-center gap-2 font-semibold text-navy">
                   <DragHandle {...drag.handle(i)} />
                   Service {i + 1}
-                  {item.title.en && <span className="font-normal text-muted"> · {item.title.en}</span>}
+                  {item.title.en && <span className="font-normal text-muted-foreground"> · {item.title.en}</span>}
                 </p>
                 <div className="flex gap-1">
                   <SmallButton label="Move up" disabled={i === 0} onClick={() => move(i, -1)} d="M12 19V5M5 12l7-7 7 7" />
@@ -256,7 +256,7 @@ export function ContentEditor({
               <BilingualFields label="Quote" multiline rows={3} {...bi("testimonials", "items", i, "quote")} />
               <div className="grid gap-4 sm:grid-cols-3">
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Name</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Name</span>
                   <input
                     value={t.name}
                     placeholder="e.g. Marie T."
@@ -377,17 +377,17 @@ export function ContentEditor({
             {state.status === "error" ? (
               <span className="text-danger">{state.message}</span>
             ) : dirty ? (
-              <span className="text-muted">You have unsaved changes.</span>
+              <span className="text-muted-foreground">You have unsaved changes.</span>
             ) : state.status === "saved" ? (
               <span className="font-medium text-[#007a43]">Saved. The website has been updated.</span>
             ) : (
-              <span className="text-muted">Everything is up to date.</span>
+              <span className="text-muted-foreground">Everything is up to date.</span>
             )}
           </p>
           <div className="flex shrink-0 gap-2">
             {dirty && <PreviewButton kind="content" value={content} />}
             {dirty && (
-              <button type="button" onClick={() => setContent(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => setContent(saved)} className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-navy">
                 Undo changes
               </button>
             )}
@@ -412,7 +412,7 @@ function SmallButton({ label, d, onClick, disabled, danger = false }: { label: s
       title={label}
       onClick={onClick}
       disabled={disabled}
-      className={`grid h-9 w-9 place-items-center rounded-full transition disabled:opacity-30 ${danger ? "text-danger hover:bg-danger/10" : "text-muted hover:bg-white hover:text-navy"}`}
+      className={`grid h-9 w-9 place-items-center rounded-full transition disabled:opacity-30 ${danger ? "text-danger hover:bg-danger/10" : "text-muted-foreground hover:bg-white hover:text-navy"}`}
     >
       <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d={d} />
@@ -509,11 +509,11 @@ function IconPicker({ item, onChange }: { item: ServiceItem; onChange: (change: 
   }
 
   const tile = (on: boolean) =>
-    `grid h-11 w-11 place-items-center rounded-xl transition ${on ? "bg-navy text-green ring-2 ring-blue" : "bg-white text-muted ring-1 ring-mist hover:text-navy hover:ring-blue"}`;
+    `grid h-11 w-11 place-items-center rounded-xl transition ${on ? "bg-navy text-green ring-2 ring-blue" : "bg-white text-muted-foreground ring-1 ring-mist hover:text-navy hover:ring-blue"}`;
 
   return (
     <fieldset>
-      <legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Icon</legend>
+      <legend className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Icon</legend>
       <div className="flex flex-wrap gap-2">
         {item.image && (
           <span className={tile(true)} title="Your uploaded icon">
@@ -546,12 +546,12 @@ function IconPicker({ item, onChange }: { item: ServiceItem; onChange: (change: 
           {progress === null ? "Upload your own icon" : `Uploading… ${Math.round(progress)}%`}
         </button>
         {item.image && (
-          <button type="button" onClick={() => onChange({ image: null })} className="font-medium text-muted hover:text-navy">
+          <button type="button" onClick={() => onChange({ image: null })} className="font-medium text-muted-foreground hover:text-navy">
             Remove uploaded icon
           </button>
         )}
       </div>
-      <p className="mt-1 text-xs text-muted">Uploaded icons sit on the dark blue tile: a white or light icon on a transparent background (PNG or SVG) looks best.</p>
+      <p className="mt-1 text-xs text-muted-foreground">Uploaded icons sit on the dark blue tile: a white or light icon on a transparent background (PNG or SVG) looks best.</p>
       {error && <p className="mt-1 text-sm text-danger">{error}</p>}
     </fieldset>
   );
@@ -578,7 +578,7 @@ function FramingControls({
   return (
     <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div>
-        <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">Preview on a computer screen</p>
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Preview on a computer screen</p>
         <div className="relative aspect-[16/7] overflow-hidden rounded-xl bg-ink ring-1 ring-mist/70">
           <Image src={src} alt="" fill sizes="400px" className="object-cover" style={framingStyle(value)} />
         </div>
@@ -586,7 +586,7 @@ function FramingControls({
       <div className="space-y-3">
         {sliders.map((s) => (
           <label key={s.key} className="block">
-            <span className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+            <span className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               {s.label}
               <span className="normal-case tracking-normal">{s.key === "zoom" ? `${value.zoom}%` : `${value[s.key]}%`}</span>
             </span>
@@ -598,7 +598,7 @@ function FramingControls({
               onChange={(e) => onChange({ ...value, [s.key]: Number(e.target.value) })}
               className="mt-1 w-full accent-navy"
             />
-            <span className="flex justify-between text-[0.7rem] text-muted">
+            <span className="flex justify-between text-[0.7rem] text-muted-foreground">
               <span>{s.left}</span>
               <span>{s.right}</span>
             </span>
@@ -675,13 +675,13 @@ function PhotoField({
 
   return (
     <div>
-      <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted">{label}</p>
+      <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
       <div className="flex flex-wrap items-center gap-5">
         {kind !== "background" && <div className={`relative shrink-0 overflow-hidden rounded-xl bg-surface ring-1 ring-mist/70 ${kind === "portrait" ? "h-36 w-28" : "h-28 w-48"}`}>
           {photo?.src || fallback ? (
             <Image src={photo?.src ?? fallback} alt="" fill sizes="200px" className="object-cover object-top" />
           ) : (
-            <span className="grid h-full place-items-center text-xs text-muted">No photo</span>
+            <span className="grid h-full place-items-center text-xs text-muted-foreground">No photo</span>
           )}
         </div>}
         <div className="space-y-2">
@@ -702,12 +702,12 @@ function PhotoField({
               {progress === null ? "Upload a new photo" : `Uploading… ${Math.round(progress)}%`}
             </button>
             {photo && (
-              <button type="button" onClick={() => onChange(null)} className="rounded-full px-4 py-2 text-sm font-medium text-muted hover:text-navy">
+              <button type="button" onClick={() => onChange(null)} className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground hover:text-navy">
                 {fallback ? "Use the original photo" : "Remove photo"}
               </button>
             )}
           </div>
-          <p className="max-w-sm text-xs text-muted">{note} JPG, PNG or WebP, up to 20 MB.</p>
+          <p className="max-w-sm text-xs text-muted-foreground">{note} JPG, PNG or WebP, up to 20 MB.</p>
           {error && <p className="text-sm text-danger">{error}</p>}
         </div>
       </div>

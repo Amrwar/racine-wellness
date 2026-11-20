@@ -152,22 +152,22 @@ export function SiteEditor() {
         <aside className="fixed right-4 top-24 z-[95] w-64 overflow-hidden rounded-2xl bg-white text-ink shadow-2xl ring-1 ring-black/10">
           <div className="flex items-center justify-between border-b border-mist/70 px-4 py-3">
             <p className="text-sm font-semibold text-navy">Sections</p>
-            <button type="button" aria-label="Close" onClick={() => setPanel(false)} className="text-muted hover:text-navy">
+            <button type="button" aria-label="Close" onClick={() => setPanel(false)} className="text-muted-foreground hover:text-navy">
               ×
             </button>
           </div>
-          <p className="px-4 pt-2 text-xs text-muted">Top of the page always comes first.</p>
+          <p className="px-4 pt-2 text-xs text-muted-foreground">Top of the page always comes first.</p>
           <ol className="max-h-[60vh] space-y-1 overflow-y-auto p-2">
             {sections.map((s, i) => (
               <li key={s.key} className="flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-surface">
                 <button
                   type="button"
-                  className={`min-w-0 flex-1 truncate text-left text-sm ${s.visible ? "text-navy" : "text-muted line-through"}`}
+                  className={`min-w-0 flex-1 truncate text-left text-sm ${s.visible ? "text-navy" : "text-muted-foreground line-through"}`}
                   onClick={() => document.querySelector(`[data-section="${s.key}"]`)?.scrollIntoView({ behavior: "smooth" })}
                 >
                   {s.name}
                 </button>
-                <button type="button" aria-label="Move up" disabled={i === 0} onClick={() => changeSections((l) => swap(l, i, i - 1))} className="grid h-7 w-7 place-items-center rounded text-muted hover:bg-white hover:text-navy disabled:opacity-30">
+                <button type="button" aria-label="Move up" disabled={i === 0} onClick={() => changeSections((l) => swap(l, i, i - 1))} className="grid h-7 w-7 place-items-center rounded text-muted-foreground hover:bg-white hover:text-navy disabled:opacity-30">
                   ↑
                 </button>
                 <button
@@ -175,7 +175,7 @@ export function SiteEditor() {
                   aria-label="Move down"
                   disabled={i === sections.length - 1}
                   onClick={() => changeSections((l) => swap(l, i, i + 1))}
-                  className="grid h-7 w-7 place-items-center rounded text-muted hover:bg-white hover:text-navy disabled:opacity-30"
+                  className="grid h-7 w-7 place-items-center rounded text-muted-foreground hover:bg-white hover:text-navy disabled:opacity-30"
                 >
                   ↓
                 </button>
@@ -189,7 +189,7 @@ export function SiteEditor() {
               </li>
             ))}
           </ol>
-          <p className="border-t border-mist/70 px-4 py-2.5 text-xs text-muted">Photos, colours and more: in the admin.</p>
+          <p className="border-t border-mist/70 px-4 py-2.5 text-xs text-muted-foreground">Photos, colours and more: in the admin.</p>
         </aside>
       )}
     </>
