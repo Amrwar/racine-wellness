@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { ArrowRight, Check, ClipboardList, Sparkles, UserRound } from "lucide-react";
 import { htmlLang, isLocale, localePath, sectionHref, type Locale } from "@/i18n/config";
 import { getContent, getText } from "@/lib/content";
@@ -104,6 +105,7 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
         title={s.title[locale]}
         aside={
           <div className="relative overflow-hidden rounded-2xl border bg-muted p-1.5 shadow-xl shadow-foreground/10">
+            <ViewTransition name={`service-photo-${slug}`} share="morph" default="none">
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
               <Image src={photo} alt="" fill preload sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover object-[50%_25%]" />
               {links.price[index] && (
@@ -115,6 +117,7 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/servi
                 <ServiceIconView icon={s.icon} image={s.image} className="h-4 w-4" />
               </span>
             </div>
+            </ViewTransition>
           </div>
         }
       >

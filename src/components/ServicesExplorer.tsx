@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { ArrowRight, Dumbbell, Footprints, Hand, Leaf, Search, Sparkles, Trophy, X } from "lucide-react";
 import type { ServiceItem } from "@/lib/content-data";
 import type { Locale } from "@/i18n/config";
@@ -33,8 +33,10 @@ export function ServiceCard({ s, index, locale, links, t }: { s: ServiceItem; in
   const cat = categoryOf(s);
   const bookable = isBookable(s);
   const price = links.price[index];
+  const slug = links.detail[index].split("/").pop();
   return (
     <article className="group @container flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-xs transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/5 motion-reduce:hover:translate-y-0">
+      <ViewTransition name={`service-photo-${slug}`} share="morph" default="none">
       <div className="relative aspect-[16/10] overflow-hidden border-b bg-muted">
         <Image
           src={servicePhoto(s)}
@@ -49,6 +51,7 @@ export function ServiceCard({ s, index, locale, links, t }: { s: ServiceItem; in
           </Badge>
         )}
       </div>
+      </ViewTransition>
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-center gap-2">
           <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border bg-muted text-navy">

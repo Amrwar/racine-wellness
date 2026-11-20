@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ArticleCard } from "@/components/ArticleCard";
-import { ReadingProgress, ShareArticle } from "@/components/ArticleExtras";
+import { ShareArticle } from "@/components/ArticleExtras";
 import { ArticleBody, AuthorCard, BlogCta, CoverImage, cardData } from "@/components/blog";
 import { alternatesFor } from "../../layout";
 
@@ -88,9 +88,8 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/blog/
 
   return (
     <>
-      <ReadingProgress label={t.blog.progress} />
       <article>
-        <header className="relative isolate overflow-hidden border-b bg-background pb-10 pt-6 sm:pb-12 sm:pt-8">
+        <header className="relative isolate -mt-16 overflow-hidden border-b bg-background pb-10 pt-22 sm:pb-12 sm:pt-24">
           <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
           <Container className="max-w-3xl">
             <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">

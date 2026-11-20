@@ -43,7 +43,7 @@ export function Button({ href, variant = "brand", size = "md", children, classNa
         "group rounded-[var(--btn-radius,0.625rem)] font-medium shadow-xs",
         size === "md" ? "h-10 gap-2 px-4 text-sm" : "h-12 gap-2 px-6 text-[0.95rem]",
         variant === "navy" && "bg-foreground hover:bg-foreground/85",
-        variant === "brand" && "hover:bg-primary/90",
+        variant === "brand" && "btn-shine hover:bg-primary/90",
         variant === "outline-light" && "border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:text-white",
         className,
       )}
@@ -161,7 +161,7 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative isolate overflow-hidden border-b bg-background">
+    <section data-hero className="relative isolate -mt-16 overflow-hidden border-b bg-background pt-16">
       <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
       <div aria-hidden className="absolute left-1/2 top-0 -z-10 h-72 w-[48rem] max-w-full -translate-x-1/2 rounded-full bg-blue/10 blur-3xl" />
       <Container className={cn("py-12 sm:py-16", aside && "grid items-center gap-10 lg:grid-cols-12")}>

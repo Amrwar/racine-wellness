@@ -6,39 +6,6 @@ import { cn } from "@/lib/utils";
 import { Facebook, Linkedin } from "./icons";
 import { buttonVariants } from "./ui/button";
 
-/** Thin bar at the top of the page showing how far the reader is through the article. */
-export function ReadingProgress({ label }: { label: string }) {
-  const [pct, setPct] = useState(0);
-  useEffect(() => {
-    const article = document.getElementById("article-body");
-    if (!article) return;
-    const update = () => {
-      const r = article.getBoundingClientRect();
-      const total = r.height - window.innerHeight * 0.6;
-      setPct(Math.max(0, Math.min(100, ((window.innerHeight * 0.4 - r.top) / Math.max(total, 1)) * 100)));
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
-  return (
-    <div
-      role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(pct)}
-      className="fixed inset-x-0 top-16 z-40 h-0.5 bg-transparent"
-    >
-      <div className="h-full origin-left bg-foreground transition-[width] duration-150 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
-    </div>
-  );
-}
-
 /** Share buttons: the device's share sheet when available, plus Facebook, LinkedIn and copy link. */
 export function ShareArticle({ url, title, t }: { url: string; title: string; t: { share: string; copyLink: string; copied: string } }) {
   const [copied, setCopied] = useState(false);

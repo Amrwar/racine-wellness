@@ -57,7 +57,7 @@ export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) 
   return (
     <>
       {/* ---------- Hero: headline left, the HealthyZone studio right ---------- */}
-      <section className="relative isolate overflow-hidden border-b bg-background">
+      <section className="relative isolate -mt-16 overflow-hidden border-b bg-background pt-16">
         <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
         <Container className="grid items-center gap-10 py-12 sm:py-16 md:grid-cols-[1.1fr_1fr] lg:gap-14">
           <div>

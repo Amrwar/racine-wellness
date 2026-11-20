@@ -10,7 +10,7 @@ export default function NotFound() {
   const t = getDictionary(locale);
 
   return (
-    <section className="relative isolate flex min-h-[70svh] items-center overflow-hidden py-20">
+    <section className="relative isolate -mt-16 flex min-h-[80svh] items-center overflow-hidden pb-20 pt-36">
       <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_40%,black,transparent)]" />
       <Container>
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">

@@ -35,7 +35,7 @@ export default async function PricingPage({ params }: PageProps<"/[locale]/prici
   return (
     <>
       {/* ---------- Header & highlights ---------- */}
-      <section className="relative isolate overflow-hidden border-b bg-background pb-16 pt-14 sm:pt-20">
+      <section className="relative isolate -mt-16 overflow-hidden border-b bg-background pb-16 pt-30 sm:pt-36">
         <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
         <Container>
           <div className="mx-auto flex max-w-4xl flex-col items-center text-center">

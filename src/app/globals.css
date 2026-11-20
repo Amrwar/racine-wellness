@@ -156,7 +156,70 @@
 .prose-site ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1.1rem; color: var(--muted-foreground); line-height: 1.75; }
 .prose-site a { color: var(--color-navy); text-decoration: underline; text-underline-offset: 3px; }
 
+/* ---------- Motion system ---------- */
+
+/* Cursor spotlight on cards (cursor position set by <Effects />; scroll reveal lives there too). */
+main :is(.bg-card.border, article.border):not(.absolute):not(.fixed):not(.sticky):not([data-no-reveal] *) { position: relative; }
+main :is(.bg-card.border, article.border):not([data-no-reveal] *)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--color-blue) 9%, transparent), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+main :is(.bg-card.border, article.border):not([data-no-reveal] *):hover::after { opacity: 1; }
+main :is(.bg-card.border, article.border):not([data-no-reveal] *):hover { border-color: color-mix(in oklab, var(--color-navy) 22%, var(--border)); }
+
+/* Light sweep across primary buttons on hover. */
+.btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-shine:hover::before { transform: translateX(120%); }
+
+/* Slow drifting colour light behind heroes. */
+@keyframes aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(6%, 4%, 0) scale(1.08); }
+  66% { transform: translate3d(-5%, 2%, 0) scale(0.96); }
+}
+.aurora { animation: aurora 18s ease-in-out infinite; will-change: transform; }
+.aurora-slow { animation: aurora 26s ease-in-out infinite reverse; will-change: transform; }
+
+/* Infinite marquee. */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee 40s linear infinite; }
+.marquee-wrap:hover .marquee { animation-play-state: paused; }
+
+/* Scroll-driven parallax and header progress (progressive enhancement). */
+@supports (animation-timeline: view()) {
+  @keyframes parallax { from { transform: translateY(-5%) scale(1.1); } to { transform: translateY(5%) scale(1.1); } }
+  [data-parallax] { animation: parallax linear both; animation-timeline: view(); }
+  @keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .scroll-progress { animation: grow-x linear both; animation-timeline: scroll(root); }
+}
+
+/* Page transitions (React <ViewTransition>, see [locale]/template.tsx). */
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; transform: translateY(10px); } }
+::view-transition-old(.page-exit) { animation: 180ms ease-out both vt-fade-out; }
+::view-transition-new(.page-enter) { animation: 420ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both vt-fade-in; }
+::view-transition-group(.morph) { animation-duration: 450ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+::view-transition-image-pair(.morph) { animation-name: vt-via-blur; }
+@keyframes vt-via-blur { 40% { filter: blur(3px); } }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .marquee, .aurora, .aurora-slow { animation: none; }
 }

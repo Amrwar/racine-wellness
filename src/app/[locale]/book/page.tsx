@@ -37,7 +37,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
   return (
     <div className="bg-muted/40">
       {/* Hero */}
-      <section className="relative isolate overflow-hidden border-b bg-background">
+      <section className="relative isolate -mt-16 overflow-hidden border-b bg-background pt-16">
         <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
         <Container className="max-w-[1320px] py-12 sm:py-16">
           <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
@@ -67,7 +67,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[lo
         </Container>
       </section>
 
-      <section className="pb-20 pt-10">
+      <section data-no-reveal className="pb-20 pt-10">
         <Container className="max-w-[1320px]">
           <BookingForm
             t={t.booking}

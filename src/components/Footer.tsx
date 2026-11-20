@@ -139,6 +139,12 @@ export function Footer({ t, business, locale }: { t: Dictionary; business: Busin
           </LLink>
         </div>
       </Container>
+      {/* Oversized faded wordmark */}
+      <div aria-hidden className="pointer-events-none select-none overflow-hidden">
+        <p className="-mb-[0.2em] bg-gradient-to-b from-white/[0.09] to-transparent bg-clip-text text-center text-[clamp(4.5rem,19vw,17rem)] font-semibold leading-none tracking-[-0.06em] text-transparent">
+          {site.name}
+        </p>
+      </div>
     </footer>
   );
 }

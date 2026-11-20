@@ -121,6 +121,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                     featured && "border-foreground/15 shadow-md ring-1 ring-foreground/5",
                   )}
                 >
+                  {featured && <span aria-hidden className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-blue to-transparent" />}
                   <div className="flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight text-foreground">{item.title[locale]}</h3>
                     <Badge variant="outline" className="mt-0.5 shrink-0 text-muted-foreground">
@@ -167,7 +168,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <div className={cn("lg:col-span-5", design.layout.aboutPhoto === "right" && "lg:order-last")}>
             <div className="relative mx-auto max-w-md lg:max-w-none">
               <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border bg-muted shadow-xl shadow-foreground/10">
-                <Image src={portrait} alt={t.about.portraitAlt} fill sizes="(min-width: 1024px) 40vw, 90vw" className="object-cover object-top" />
+                <Image data-parallax src={portrait} alt={t.about.portraitAlt} fill sizes="(min-width: 1024px) 40vw, 90vw" className="object-cover object-top" />
               </div>
               <div className="absolute -bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl border bg-background/95 p-3 shadow-lg backdrop-blur sm:left-8 sm:right-auto">
                 <Avatar className="h-10 w-10 border">
@@ -385,9 +386,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       {/* ---------- Hero: headline and actions beside a framed photo of Ziad at work ---------- */}
-      <section className="relative isolate overflow-hidden bg-background">
+      <section data-hero className="relative isolate -mt-16 overflow-hidden bg-background pt-16">
         <div aria-hidden className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
-        <div aria-hidden className="absolute left-1/2 top-0 -z-10 h-80 w-[56rem] max-w-full -translate-x-1/2 rounded-full bg-blue/10 blur-3xl" />
+        <div aria-hidden className="aurora absolute -top-24 left-[8%] -z-10 h-[26rem] w-[34rem] max-w-[90vw] rounded-full bg-blue/15 blur-3xl" />
+        <div aria-hidden className="aurora-slow absolute right-[4%] top-32 -z-10 h-[22rem] w-[28rem] max-w-[80vw] rounded-full bg-green/12 blur-3xl" />
         <Container className={cn("grid items-center gap-12 pb-16 pt-12 sm:pt-16 lg:gap-16 lg:pb-24 lg:pt-20", !centered && "lg:grid-cols-12")}>
           <div className={cn(centered ? "mx-auto flex min-w-0 max-w-3xl flex-col items-center text-center" : "flex min-w-0 flex-col items-start lg:col-span-6")}>
             <Link
@@ -401,14 +403,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               <span className="truncate">{t.tagline}</span>
               <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
             </Link>
-            <h1 data-edit="hero.title" className={cn("animate-fade-up delay-1 font-semibold leading-[1.05] tracking-[-0.04em] text-foreground", heroSizeClass[design.hero.size])}>
+            <h1 data-edit="hero.title" className={cn(
+                "animate-fade-up delay-1 bg-gradient-to-br from-foreground from-40% to-[color-mix(in_oklab,var(--color-navy)_85%,var(--color-blue))] bg-clip-text pb-1 font-semibold leading-[1.05] tracking-[-0.04em] text-transparent caret-foreground",
+                heroSizeClass[design.hero.size],
+              )}>
               {t.hero.title}
             </h1>
             <p data-edit="hero.lead" className="animate-fade-up delay-2 mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {t.hero.lead}
             </p>
             <div className={cn("animate-fade-up delay-3 mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row", centered && "justify-center")}>
-              <Button href={book} size="lg">
+              <Button href={book} size="lg" className="shadow-lg shadow-navy/20">
                 {t.hero.book}
                 <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
@@ -437,7 +442,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   {design.hero.shade > 0 && <div aria-hidden className="absolute inset-0 bg-black" style={{ opacity: design.hero.shade / 100 }} />}
                 </div>
               </div>
-              <div className="absolute -bottom-5 left-4 flex items-center gap-3 rounded-xl border bg-background/95 p-3 pr-4 shadow-lg backdrop-blur sm:-left-6">
+              <div className="animate-float-slow absolute -bottom-5 left-4 flex items-center gap-3 rounded-xl border bg-background/95 p-3 pr-4 shadow-lg backdrop-blur sm:-left-6">
                 <Avatar className="h-10 w-10 border">
                   <AvatarImage src={portrait} alt="" className="object-cover object-top" />
                   <AvatarFallback>{initials}</AvatarFallback>
@@ -447,7 +452,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   <p className="text-xs text-muted-foreground">{t.credentialsLine}</p>
                 </div>
               </div>
-              <div className="absolute -top-4 right-4 hidden items-center gap-2 rounded-full border bg-background/95 px-3 py-1.5 text-xs font-medium text-foreground shadow-md backdrop-blur sm:flex">
+              <div className="animate-float absolute -top-4 right-4 hidden items-center gap-2 rounded-full border bg-background/95 px-3 py-1.5 text-xs font-medium text-foreground shadow-md backdrop-blur sm:flex">
                 <span aria-hidden className="h-2 w-2 rounded-full bg-green ring-4 ring-green/20" />
                 {t.contact.office}
               </div>
@@ -455,6 +460,22 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           )}
         </Container>
       </section>
+
+      {/* ---------- Marquee: services and credentials ---------- */}
+      <div className="marquee-wrap relative overflow-hidden border-y bg-muted/40 py-4 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+        <div className="marquee flex w-max">
+          {[0, 1].map((copy) => (
+            <ul key={copy} aria-hidden={copy === 1 || undefined} className="flex shrink-0 items-center">
+              {[...content.services.items.map((s) => s.title[locale]), ...t.about.credentials].map((label, i) => (
+                <li key={i} className="flex items-center gap-8 pr-8 text-sm font-medium whitespace-nowrap text-muted-foreground">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green" />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
 
       {normalizeSections(
         design,
@@ -521,9 +542,9 @@ function UploadedBackground({ photo, framing }: { photo: SitePhoto | null; frami
 /** Hero photo: an uploaded photo if there is one, otherwise Ziad's treatment photo. */
 function HeroImage({ alt, photo }: { alt: string; photo: SitePhoto | null }) {
   const cls = "absolute inset-0 h-full w-full object-cover object-[60%_30%]";
-  if (photo) return <Image src={photo.src} fill alt={alt} sizes="(min-width: 1024px) 50vw, 100vw" priority className={cls} />;
+  if (photo) return <Image data-parallax src={photo.src} fill alt={alt} sizes="(min-width: 1024px) 50vw, 100vw" priority className={cls} />;
   const { props } = getImageProps({ alt, sizes: "(min-width: 1024px) 50vw, 100vw", loading: "eager", fetchPriority: "high", ...images.hero.square });
-  return <img {...props} alt={alt} className={cls} />;
+  return <img data-parallax {...props} alt={alt} className={cls} />;
 }
 
 function Detail({

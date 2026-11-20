@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SectionLinks } from "@/components/SectionLinks";
+import { Effects } from "@/components/Effects";
 import { site } from "@/lib/site";
 import { getContent, getText } from "@/lib/content";
 import { getBusiness } from "@/lib/business";
@@ -109,6 +110,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           </main>
           <Footer t={t} business={business} locale={locale} />
           <SectionLinks />
+          <Effects />
           {preview && (
             <Suspense>
               <PreviewBanner />
